@@ -67,8 +67,15 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] `+ Add blocker` available at active blockers header (local state only)
 - [ ] `+ Add blocker task` available within blocker cards
 - [ ] Resolved blockers are collapsed by default
+- [ ] Patient milestone journey exists between resolved blockers and automation center
+- [ ] Milestone journey is collapsed by default
+- [ ] Milestone journey uses vertical progression (Admission top -> Discharge bottom)
+- [ ] Core scaffold milestones always visible
+- [ ] Conditional milestone markers only visible when blocker-linked or recently changed
+- [ ] Completed segments render in teal; blocked in rose; pending in amber; future in gray
+- [ ] Node click opens detail drawer with evidence metadata
+- [ ] Drawer supports `Focus blocker` action for linked blockers
 - [ ] Automation Command Center renders mode/status/last-run/next-run + start/pause/resume
-- [ ] Full patient journey panel exists and is collapsed by default
 
 ### S3 Confirm modal
 - [ ] Action, reason, target, microcopy shown
@@ -116,6 +123,8 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] `worklist_view_state.rank_position`
 - [ ] `worklist_view_state.rank_reasons`
 - [ ] `blockers.items[].evidence_summary`
+- [ ] `encounter_timeline.events[]`
+- [ ] `milestones.items[]`
 - [ ] `evidence_items.items[]`
 - [ ] `parsed_insights.items[].confidence_label`
 - [ ] `proposed_actions.items[].execution_mode_default`

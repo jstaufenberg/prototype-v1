@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import AutomationCommandCenter, { type AutomationStatus } from './AutomationCommandCenter';
-import PatientJourneyPanel from './PatientJourneyPanel';
+import MilestoneJourney from './MilestoneJourney';
 import ReferralTracking from './ReferralTracking';
 import StickyActionBar from './StickyActionBar';
 import { formatSubchip } from '../utils/chipLanguage';
@@ -179,6 +179,20 @@ export default function PatientDetail({
     setTaskDraftByBlocker((prev) => ({ ...prev, [blockerId]: '' }));
   };
 
+  const focusBlockerInView = (blockerId: string) => {
+    setOpenBlockerId(blockerId);
+    const linkedActions = blockerActionMap.get(blockerId) ?? [];
+    if (linkedActions[0]) {
+      setSelectedActionState({ blockerId, actionId: linkedActions[0].action_id });
+    }
+    window.setTimeout(() => {
+      document.getElementById(`blocker-card-${blockerId}`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }, 0);
+  };
+
   return (
     <section className="panel">
       {showHandoff && (
@@ -312,6 +326,7 @@ export default function PatientDetail({
           return (
             <li
               key={blocker.blocker_id}
+              id={`blocker-card-${blocker.blocker_id}`}
               className={`blocker ${severityClass(blocker.severity)}${isSelectedBlocker ? ' blocker-selected' : ''}`}
               aria-current={isSelectedBlocker ? 'true' : undefined}
             >
@@ -525,6 +540,13 @@ export default function PatientDetail({
         </details>
       )}
 
+      <MilestoneJourney
+        patient={patient}
+        blockerStatusOverride={blockerStatusOverride}
+        currentStateId={currentStateId}
+        onFocusBlocker={focusBlockerInView}
+      />
+
       <AutomationCommandCenter
         actions={patient.proposed_actions.items}
         executionModeByAction={executionModeByAction}
@@ -536,8 +558,6 @@ export default function PatientDetail({
           setAutomationStatusByAction((prev) => ({ ...prev, [actionId]: status }))
         }
       />
-
-      <PatientJourneyPanel patient={patient} />
 
       {recentlyActedActions.length > 0 && (
         <div style={{ marginTop: 12 }}>

@@ -118,8 +118,8 @@ Information order:
 2. sticky Quick Action Center
 3. active blockers
 4. resolved blockers (collapsed)
-5. Automation Command Center
-6. See full patient journey (collapsed)
+5. Patient milestone journey (collapsed)
+6. Automation Command Center
 
 Shows:
 - active blockers (collapsed by default)
@@ -146,6 +146,16 @@ Background mode preset:
 Utility controls:
 - `+ Add blocker` (local-only prototype draft)
 - `+ Add blocker task` (local blocker-scoped tasks)
+
+Patient milestone journey:
+- collapsed section between resolved blockers and automation center
+- vertical line progression from admission (top) to discharge (bottom)
+- completed segments/nodes shown in teal
+- hybrid density:
+  - always show core scaffold milestones
+  - show conditional milestone markers only when blocker-linked or recently changed
+- node click opens compact detail drawer (why/current state/last updated/evidence/linked blocker)
+- discharge endpoint always visible in muted style until reached
 
 Automation Command Center:
 - one row per automation-capable action
@@ -206,6 +216,8 @@ From `../data/ehr-mock-data/schema-v1.json`:
 - `blockers.items[]`
 - `blockers.items[].evidence_summary`
 - `blockers.items[].nested_steps[]`
+- `encounter_timeline.events[]`
+- `milestones.items[]`
 - `evidence_items.items[]`
 - `parsed_insights.items[]` (snippets retained for compatibility; do not render)
 - `proposed_actions.items[]` including:
@@ -226,6 +238,8 @@ From `../data/ehr-mock-data/schema-v1.json`:
 - S2 local blocker controls select/sync top action and do not execute directly.
 - Background execution mode is visible and configurable per recommended action.
 - Automation Command Center is visible and controllable in patient detail.
+- Milestone journey appears as collapsed section with admission-to-discharge vertical line.
+- Milestone journey node click opens drawer and can focus linked blocker.
 - `State view` appears only in internal demo tools.
 - `PT-##` is not rendered in user-facing screens.
 - Prototype runs non-linearly from any patient at `T0`.

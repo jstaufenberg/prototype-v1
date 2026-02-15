@@ -23,6 +23,12 @@ export interface PatientRecord {
       auth_reference?: string | null;
     };
   };
+  encounter_timeline: {
+    events: EncounterTimelineEvent[];
+  };
+  milestones: {
+    items: MilestoneItem[];
+  };
   worklist_view_state: {
     bucket_status: string;
     rank_position: number;
@@ -53,10 +59,16 @@ export interface Blocker {
   type: string;
   severity: 'RED' | 'ORANGE' | 'YELLOW';
   status: BlockerStatus;
+  owner?: string;
+  display_mode?: string;
   description: string;
   summary_line: string;
   due_by_local?: string | null;
   next_action_id?: string | null;
+  surfaced_at_local?: string | null;
+  resolved_at_local?: string | null;
+  related_milestones?: string[];
+  source_refs?: string[];
   nested_steps: NestedStep[];
   evidence_summary: {
     source_count: number;
@@ -72,6 +84,29 @@ export interface NestedStep {
   step_kind: 'PREREQUISITE' | 'EXECUTION' | 'TRACKING' | 'DECISION';
   execution_mode: 'AGENT_AUTOMATIC' | 'CM_PERMISSION_REQUIRED' | 'AGENT_BACKGROUND' | 'CM_DECISION';
   status: 'DONE' | 'PENDING' | 'NOT_STARTED' | 'NOT_NEEDED';
+  visibility?: string;
+  last_updated_local?: string;
+}
+
+export interface EncounterTimelineEvent {
+  event_id: string;
+  timestamp_local: string;
+  event_type: string;
+  title: string;
+  details: string;
+}
+
+export interface MilestoneItem {
+  milestone_id: string;
+  label: string;
+  tier: 'SCAFFOLD' | 'CM_CRITICAL';
+  display_emphasis: 'MUTED' | 'PROMINENT';
+  visibility: 'INTERNAL_ONLY' | 'SURFACE_WHEN_BLOCKED';
+  status: 'DONE' | 'PENDING' | 'NOT_STARTED' | 'NOT_NEEDED';
+  status_reason: string;
+  last_updated_local: string;
+  source_refs: string[];
+  changes_next_action: boolean;
 }
 
 export interface ParsedInsight {
@@ -131,4 +166,27 @@ export interface DemoSnapshot {
     rank_reasons?: string[];
   };
   action_statuses: Array<{ action_id: string; status: ActionStatus }>;
+}
+
+export interface MilestoneJourneyNode {
+  id: string;
+  nodeType: 'MILESTONE' | 'BLOCKER' | 'ENDPOINT';
+  label: string;
+  statusLabel: 'Complete' | 'Pending' | 'Blocked' | 'Not started';
+  statusTone: 'COMPLETE' | 'PENDING' | 'BLOCKED' | 'FUTURE';
+  timestampLocal?: string | null;
+  why: string;
+  chips: string[];
+  milestoneId?: string;
+  blockerId?: string;
+  linkedBlockerIds: string[];
+  evidenceCount: number;
+  evidenceItems: Array<{
+    id: string;
+    label: string;
+    source: string;
+    timestamp: string;
+  }>;
+  segmentBefore: 'COMPLETE' | 'PENDING' | 'BLOCKED' | 'FUTURE' | 'NONE';
+  segmentAfter: 'COMPLETE' | 'PENDING' | 'BLOCKED' | 'FUTURE' | 'NONE';
 }
