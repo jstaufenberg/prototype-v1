@@ -9,6 +9,8 @@ export interface PatientRecord {
   };
   patient_profile: {
     patient_name: string;
+    dob?: string;
+    sex?: string;
     mrn: string;
     primary_diagnosis: string;
     attending_physician: string;

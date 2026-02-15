@@ -449,20 +449,34 @@ button.secondary:hover {
   padding: 14px;
 }
 
+.snapshot-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
 .snapshot-card h3 {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 16px;
+}
+
+.snapshot-card-summary {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 .snapshot-entry-list {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .snapshot-entry {
   border: 1px solid #bcbcbc;
   background: #fcfcfc;
-  padding: 10px;
+  padding: 9px 10px;
 }
 
 .snapshot-entry-name {
@@ -474,7 +488,7 @@ button.secondary:hover {
 .snapshot-entry-line {
   margin: 4px 0 0 24px;
   display: grid;
-  grid-template-columns: 60px 1fr;
+  grid-template-columns: 64px 1fr;
   gap: 8px;
   font-size: 14px;
 }
@@ -482,6 +496,20 @@ button.secondary:hover {
 .snapshot-entry-label {
   color: var(--muted);
   font-weight: 600;
+}
+
+.snapshot-entry-details {
+  margin: 6px 0 0 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.snapshot-entry-details summary {
+  cursor: pointer;
+}
+
+.snapshot-entry-details p {
+  margin: 4px 0 0;
 }
 
 .snapshot-buttons {

@@ -7,15 +7,30 @@ interface ShiftStartSnapshotProps {
 
 interface SnapshotEntry {
   id: string;
-  name: string;
-  age: number | null;
-  room: string;
-  item: string;
-  metaLabel: 'Updated' | 'Due' | 'Count';
-  metaValue: string;
+  header: string;
+  reason: string;
+  reasonDetails: string[];
+  when: string;
+  status: string;
 }
 
-function computeAge(dob?: string): number | null {
+interface SnapshotCard {
+  title: string;
+  items: SnapshotEntry[];
+  itemCount: number;
+  patientCount: number;
+}
+
+interface PatientAggregate {
+  patientId: string;
+  header: string;
+  rankPosition: number;
+  dueItems: Array<{ description: string; dueAt: number }>;
+  overnightItems: Array<{ description: string; updatedAt: number | null }>;
+  reviewCount: number;
+}
+
+function computeAge(dob?: string | null): number | null {
   if (!dob) return null;
   const birth = new Date(dob);
   if (Number.isNaN(birth.getTime())) return null;
@@ -27,35 +42,86 @@ function computeAge(dob?: string): number | null {
   return age >= 0 ? age : null;
 }
 
-function formatDueLabel(value?: string | null): string {
-  if (!value) return 'N/A';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+function toTimestamp(value?: string | null): number | null {
+  if (!value) return null;
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function formatClock(timestamp: number): string {
+  return new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function formatWhenWithRelative(timestamp: number, now: number): string {
+  const diffMinutes = Math.round((timestamp - now) / 60000);
+  const absMinutes = Math.abs(diffMinutes);
+  const hours = Math.floor(absMinutes / 60);
+  const minutes = absMinutes % 60;
+  const timeText = formatClock(timestamp);
+
+  if (diffMinutes >= 0) {
+    if (hours > 0) return `${timeText} (in ${hours}h${minutes > 0 ? ` ${minutes}m` : ''})`;
+    return `${timeText} (in ${minutes}m)`;
+  }
+
+  if (hours > 0) return `${timeText} (overdue ${hours}h${minutes > 0 ? ` ${minutes}m` : ''})`;
+  return `${timeText} (overdue ${absMinutes}m)`;
+}
+
+function summarizeReason(lines: string[]): { summary: string; details: string[] } {
+  const unique = Array.from(new Set(lines.filter(Boolean)));
+  if (unique.length === 0) {
+    return { summary: 'No additional details', details: [] };
+  }
+
+  if (unique.length === 1) {
+    const single = unique[0];
+    const summary = single.length > 96 ? `${single.slice(0, 93)}...` : single;
+    return { summary, details: single.length > 96 ? [single] : [] };
+  }
+
+  const first = unique[0];
+  const summary = `${first.length > 70 ? `${first.slice(0, 67)}...` : first} +${unique.length - 1} more`;
+  return { summary, details: unique };
+}
+
+function demographicToken(age: number | null, sex?: string | null): string {
+  if (age == null) return sex ?? 'N/A';
+  return `${age}${sex ?? ''}`;
+}
+
+function makeHeader(name: string, age: number | null, sex: string | null | undefined, room: string): string {
+  return `${name} · ${demographicToken(age, sex)} · ${room}`;
 }
 
 export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftStartSnapshotProps) {
-  const overnightChanges: SnapshotEntry[] = [];
-  const dueToday: SnapshotEntry[] = [];
-  const needsReview: SnapshotEntry[] = [];
+  const aggregates = new Map<string, PatientAggregate>();
+  const now = Date.now();
 
   for (const patient of patients) {
     const name = patient.patient_profile.patient_name;
-    const age = computeAge((patient.patient_profile as { dob?: string }).dob);
+    const age = computeAge(patient.patient_profile.dob);
+    const sex = patient.patient_profile.sex ?? null;
     const room = patient.patient_profile.current_location?.bed ?? 'Unknown';
     const bucket = patient.worklist_view_state.bucket_status;
+    const patientId = patient.meta.patient_id;
+
+    const aggregate: PatientAggregate = aggregates.get(patientId) ?? {
+      patientId,
+      header: makeHeader(name, age, sex, room),
+      rankPosition: patient.worklist_view_state.rank_position,
+      dueItems: [],
+      overnightItems: [],
+      reviewCount: 0
+    };
 
     if (bucket === 'Delayed' || bucket === 'At Risk') {
       for (const blocker of patient.blockers.items) {
-        if (blocker.status === 'ACTIVE' && blocker.due_by_local) {
-          dueToday.push({
-            id: `${patient.meta.patient_id}-${blocker.blocker_id}-due`,
-            name,
-            age,
-            room,
-            item: blocker.description,
-            metaLabel: 'Due',
-            metaValue: formatDueLabel(blocker.due_by_local)
+        const dueAt = toTimestamp(blocker.due_by_local);
+        if (blocker.status === 'ACTIVE' && dueAt != null) {
+          aggregate.dueItems.push({
+            description: blocker.description,
+            dueAt
           });
         }
       }
@@ -63,39 +129,96 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
 
     for (const blocker of patient.blockers.items) {
       if (blocker.status === 'RESOLVED') {
-        overnightChanges.push({
-          id: `${patient.meta.patient_id}-${blocker.blocker_id}-resolved`,
-          name,
-          age,
-          room,
-          item: blocker.description,
-          metaLabel: 'Updated',
-          metaValue: 'Resolved overnight'
+        aggregate.overnightItems.push({
+          description: blocker.description,
+          updatedAt: toTimestamp(blocker.evidence_summary?.last_evidence_update_local)
         });
       }
     }
 
     const pendingActions = patient.proposed_actions.items.filter((a) => a.status === 'PROPOSED');
     if (pendingActions.length > 0 && (bucket === 'Delayed' || bucket === 'At Risk')) {
-      needsReview.push({
-        id: `${patient.meta.patient_id}-review`,
-        name,
-        age,
-        room,
-        item: 'Actions awaiting review',
-        metaLabel: 'Count',
-        metaValue: `${pendingActions.length}`
-      });
+      aggregate.reviewCount = pendingActions.length;
     }
+
+    aggregates.set(patientId, aggregate);
   }
 
-  const flaggedCount = needsReview.length;
+  const values = Array.from(aggregates.values());
 
-  const cards = [
-    { title: 'Overnight changes', items: overnightChanges },
-    { title: 'Due today', items: dueToday },
-    { title: 'Needs review', items: needsReview }
+  const overnightEntries = values
+    .filter((entry) => entry.overnightItems.length > 0)
+    .sort((a, b) => {
+      const aLatest = Math.max(...a.overnightItems.map((item) => item.updatedAt ?? 0));
+      const bLatest = Math.max(...b.overnightItems.map((item) => item.updatedAt ?? 0));
+      return bLatest - aLatest;
+    })
+    .map<SnapshotEntry>((entry) => {
+      const { summary, details } = summarizeReason(entry.overnightItems.map((item) => item.description));
+      const latest = Math.max(...entry.overnightItems.map((item) => item.updatedAt ?? 0));
+      return {
+        id: `${entry.patientId}-overnight`,
+        header: entry.header,
+        reason: summary,
+        reasonDetails: details,
+        when: latest > 0 ? `${formatClock(latest)} (overnight)` : 'Overnight',
+        status: entry.overnightItems.length > 1 ? `${entry.overnightItems.length} changes resolved` : 'Resolved'
+      };
+    });
+
+  const dueEntries = values
+    .filter((entry) => entry.dueItems.length > 0)
+    .sort((a, b) => Math.min(...a.dueItems.map((item) => item.dueAt)) - Math.min(...b.dueItems.map((item) => item.dueAt)))
+    .map<SnapshotEntry>((entry) => {
+      const { summary, details } = summarizeReason(entry.dueItems.map((item) => item.description));
+      const earliestDue = Math.min(...entry.dueItems.map((item) => item.dueAt));
+      return {
+        id: `${entry.patientId}-due`,
+        header: entry.header,
+        reason: summary,
+        reasonDetails: details,
+        when: formatWhenWithRelative(earliestDue, now),
+        status: entry.dueItems.length > 1 ? `${entry.dueItems.length} due items` : '1 due item'
+      };
+    });
+
+  const reviewEntries = values
+    .filter((entry) => entry.reviewCount > 0)
+    .sort((a, b) => {
+      if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
+      return a.rankPosition - b.rankPosition;
+    })
+    .map<SnapshotEntry>((entry) => ({
+      id: `${entry.patientId}-review`,
+      header: entry.header,
+      reason: 'Actions awaiting review',
+      reasonDetails: [],
+      when: 'Now',
+      status: `${entry.reviewCount} pending actions`
+    }));
+
+  const cards: SnapshotCard[] = [
+    {
+      title: 'Overnight changes',
+      items: overnightEntries,
+      itemCount: values.reduce((sum, entry) => sum + entry.overnightItems.length, 0),
+      patientCount: overnightEntries.length
+    },
+    {
+      title: 'Due today',
+      items: dueEntries,
+      itemCount: values.reduce((sum, entry) => sum + entry.dueItems.length, 0),
+      patientCount: dueEntries.length
+    },
+    {
+      title: 'Needs review',
+      items: reviewEntries,
+      itemCount: values.reduce((sum, entry) => sum + entry.reviewCount, 0),
+      patientCount: reviewEntries.length
+    }
   ].filter((card) => card.items.length > 0).slice(0, 3);
+
+  const flaggedCount = reviewEntries.length;
 
   const timestamp = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
@@ -111,21 +234,34 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
       <div className="snapshot-cards">
         {cards.map((card) => (
           <div key={card.title} className="snapshot-card">
-            <h3>{card.title}</h3>
+            <div className="snapshot-card-head">
+              <h3>{card.title}</h3>
+              <p className="snapshot-card-summary">{card.itemCount} items, {card.patientCount} patients</p>
+            </div>
             <div className="snapshot-entry-list">
               {card.items.slice(0, 3).map((entry) => (
                 <article key={entry.id} className="snapshot-entry">
-                  <p className="snapshot-entry-name">
-                    {entry.name}, Age {entry.age ?? 'N/A'}, Room {entry.room}
+                  <p className="snapshot-entry-name">{entry.header}</p>
+                  <p className="snapshot-entry-line">
+                    <span className="snapshot-entry-label">Reason</span>
+                    <span>{entry.reason}</span>
                   </p>
                   <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">Item</span>
-                    <span>{entry.item}</span>
+                    <span className="snapshot-entry-label">When</span>
+                    <span>{entry.when}</span>
                   </p>
                   <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">{entry.metaLabel}</span>
-                    <span>{entry.metaValue}</span>
+                    <span className="snapshot-entry-label">Status</span>
+                    <span>{entry.status}</span>
                   </p>
+                  {entry.reasonDetails.length > 0 && (
+                    <details className="snapshot-entry-details">
+                      <summary>View details</summary>
+                      {entry.reasonDetails.map((detail, index) => (
+                        <p key={`${entry.id}-detail-${index}`}>{detail}</p>
+                      ))}
+                    </details>
+                  )}
                 </article>
               ))}
             </div>
