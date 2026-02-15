@@ -12,6 +12,8 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - Ranking uses `rank_position` + `rank_reasons` only.
 - Render no backend codes in user-facing UI.
 - Do not render source snippets in default UI.
+- Parent chips and subchips must use the same language model in S0 and S1.
+- Subchips must be typed (`Requirement:`, `Dependency:`, `Deadline:`, `Status:`, `Failure:`, `Task:`, `Risk:`, `Owner:`, `Note:`).
 
 ## 2) Screen inventory
 - `S0` Shift-start snapshot
@@ -30,6 +32,10 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Page-level freshness (`As of [time]`)
 - [ ] Buttons: `Go to worklist`, conditional `Review flagged (N)`
 - [ ] Empty state: `All quiet` + single CTA
+- [ ] Uses same parent chips and subchips as S1
+- [ ] Per parent chip: show first subchip + inline `+N more` expansion
+- [ ] Expanded subchips keep same visual weight (no inset mini-card)
+- [ ] Legend text present for chip semantics
 
 ### S1 Worklist
 - [ ] Re-entry behavior wired (`>=90`, `30–89`, `<30` min)
@@ -39,10 +45,13 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Primary row button: `Open patient plan`
 - [ ] No row-level approve/dismiss buttons
 - [ ] Page-level freshness + refresh control
+- [ ] Subchips render typed prefixes and deterministic order
+- [ ] Legend text matches S0
 
 ### S2 Patient detail
 - [ ] Active blockers collapsed by default
 - [ ] Blocker card shows due-by + per-item freshness
+- [ ] Collapsed blocker summary labels use typed chip language where applicable
 - [ ] Blocker shows `Evidence: N sources` + `View evidence`
 - [ ] Evidence drawer lists source metadata (not snippets)
 - [ ] Nested steps shown only inside blocker detail

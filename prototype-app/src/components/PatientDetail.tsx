@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import ReferralTracking from './ReferralTracking';
 import StickyActionBar from './StickyActionBar';
+import { formatSubchip } from '../utils/chipLanguage';
 import type {
   ActionStatus,
   BlockerStatus,
@@ -199,9 +200,18 @@ export default function PatientDetail({
                   <strong>{blocker.blocker_id}</strong>
                   <p>{blocker.description}</p>
                   <small>{blocker.summary_line}</small>
-                  {blocker.due_by_local && (
-                    <p className="due-by">Due by {blocker.due_by_local}</p>
-                  )}
+                  <div className="blocker-summary-chips">
+                    {blocker.due_by_local && (
+                      <span className="sub-tag">
+                        {formatSubchip(`Deadline: ${blocker.due_by_local}`, blocker.description)}
+                      </span>
+                    )}
+                    {blocker.summary_line && (
+                      <span className="sub-tag">
+                        {formatSubchip(`Status: ${blocker.summary_line}`, blocker.description)}
+                      </span>
+                    )}
+                  </div>
                   <div className="blocker-meta">
                     <span>
                       Evidence: {blocker.evidence_summary.source_count} sources

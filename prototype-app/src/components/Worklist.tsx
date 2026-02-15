@@ -1,5 +1,6 @@
 import type { PatientRecord } from '../types/mockData';
 import StickyActionBar from './StickyActionBar';
+import { groupChips } from '../utils/chipGrouping';
 
 interface WorklistProps {
   patients: PatientRecord[];
@@ -49,38 +50,6 @@ function formatWorklistTime(value?: string | null): string | null {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
   return parsed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-
-function mapSubTags(statusChips: string[], subTags: string[]) {
-  const used = new Set<number>();
-  const grouped = statusChips.map((chip) => ({ chip, tags: [] as string[] }));
-
-  const chipMatcher = (chip: string) => {
-    const value = chip.toLowerCase();
-    if (value.includes('auth')) return /auth|payer|insurance|denial|appeal/i;
-    if (value.includes('placement') || value.includes('facility')) return /snf|facility|placement|delivery|response|transport|bed/i;
-    if (value.includes('md') || value.includes('sign')) return /md|physician|sign/i;
-    if (value.includes('family')) return /family|decision/i;
-    return /.^/; // match nothing by default
-  };
-
-  grouped.forEach((group) => {
-    const matcher = chipMatcher(group.chip);
-    subTags.forEach((tag, idx) => {
-      if (!used.has(idx) && matcher.test(tag)) {
-        group.tags.push(tag);
-        used.add(idx);
-      }
-    });
-  });
-
-  const leftovers = subTags.filter((_, idx) => !used.has(idx));
-  if (leftovers.length > 0) {
-    if (grouped.length === 0) grouped.push({ chip: 'Needs attention', tags: leftovers });
-    else grouped[0].tags.push(...leftovers);
-  }
-
-  return grouped;
 }
 
 export default function Worklist({
@@ -149,6 +118,9 @@ export default function Worklist({
         stickyOffset={8}
         compact
       />
+      <p className="chip-legend">
+        Subchips show Requirement, Dependency, Deadline, Status, Failure, and Task details.
+      </p>
       <ul className="worklist" aria-label="Patient worklist">
         {sorted.map((patient) => {
           const stateId = stateByPatientId[patient.meta.patient_id];
@@ -158,7 +130,7 @@ export default function Worklist({
           const age = computeAge(patient.patient_profile.dob);
           const sex = patient.patient_profile.sex ?? null;
           const bed = patient.patient_profile.current_location?.bed ?? 'Unknown';
-          const groupedBlockers = mapSubTags(
+          const groupedBlockers = groupChips(
             patient.worklist_view_state.status_chips,
             patient.worklist_view_state.sub_tags
           );

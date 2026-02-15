@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import type { PatientRecord } from '../types/mockData';
 import StickyActionBar from './StickyActionBar';
+import type { ChipGroup } from '../utils/chipGrouping';
+import { groupChips } from '../utils/chipGrouping';
 
 interface ShiftStartSnapshotProps {
   patients: PatientRecord[];
@@ -10,6 +13,8 @@ interface ShiftStartSnapshotProps {
 interface SnapshotEntry {
   id: string;
   header: string;
+  bucket: string;
+  chipGroups: ChipGroup[];
   reason: string;
   when: string;
   status: string;
@@ -30,6 +35,8 @@ interface SnapshotCard {
 interface PatientAggregate {
   patientId: string;
   header: string;
+  bucket: string;
+  chipGroups: ChipGroup[];
   rankPosition: number;
   dueItems: Array<{ description: string; dueAt: number }>;
   overnightItems: Array<{ description: string; updatedAt: number | null }>;
@@ -88,9 +95,11 @@ function makeHeader(name: string, age: number | null, sex: string | null | undef
   return `${name} · ${demographicToken(age, sex)} · ${room}`;
 }
 
-function additionalReasonLabel(count: number): string {
-  if (count === 1) return '1 additional reason — View all';
-  return `${count} additional reasons — View all`;
+function bucketClass(bucket: string) {
+  if (bucket === 'Delayed') return 'bucket-delayed';
+  if (bucket === 'At Risk') return 'bucket-at-risk';
+  if (bucket === 'Pending') return 'bucket-pending';
+  return 'bucket-on-track';
 }
 
 export default function ShiftStartSnapshot({
@@ -98,6 +107,7 @@ export default function ShiftStartSnapshot({
   lastActiveAt,
   onGoToWorklist
 }: ShiftStartSnapshotProps) {
+  const [expandedSubchips, setExpandedSubchips] = useState<Record<string, boolean>>({});
   const aggregates = new Map<string, PatientAggregate>();
   const now = Date.now();
 
@@ -112,6 +122,8 @@ export default function ShiftStartSnapshot({
     const aggregate: PatientAggregate = aggregates.get(patientId) ?? {
       patientId,
       header: makeHeader(name, age, sex, room),
+      bucket,
+      chipGroups: groupChips(patient.worklist_view_state.status_chips, patient.worklist_view_state.sub_tags),
       rankPosition: patient.worklist_view_state.rank_position,
       dueItems: [],
       overnightItems: [],
@@ -168,6 +180,8 @@ export default function ShiftStartSnapshot({
       return {
         id: `${entry.patientId}-overnight`,
         header: entry.header,
+        bucket: entry.bucket,
+        chipGroups: entry.chipGroups,
         reason: clipped(primary.description),
         when: latest > 0 ? `${formatClock(latest)} (overnight)` : 'Overnight',
         status: entry.overnightItems.length > 1 ? `${entry.overnightItems.length} changes closed` : 'Closed',
@@ -189,6 +203,8 @@ export default function ShiftStartSnapshot({
       return {
         id: `${entry.patientId}-due`,
         header: entry.header,
+        bucket: entry.bucket,
+        chipGroups: entry.chipGroups,
         reason: clipped(primary.description),
         when: formatWhenWithRelative(primary.dueAt, now),
         status: entry.dueItems.length > 1 ? `${entry.dueItems.length} open items` : '1 open item',
@@ -205,6 +221,8 @@ export default function ShiftStartSnapshot({
     .map<SnapshotEntry>((entry) => ({
       id: `${entry.patientId}-review`,
       header: entry.header,
+      bucket: entry.bucket,
+      chipGroups: entry.chipGroups,
       reason: 'Actions awaiting review',
       when: 'Now',
       status: entry.reviewCount === 1 ? '1 open item' : `${entry.reviewCount} open items`,
@@ -252,6 +270,9 @@ export default function ShiftStartSnapshot({
         stickyOffset={8}
         compact
       />
+      <p className="chip-legend">
+        Subchips show Requirement, Dependency, Deadline, Status, Failure, and Task details.
+      </p>
 
       {cards.length === 0 && (
         <p className="snapshot-empty">All quiet. No recent changes, no actions due, nothing awaiting review.</p>
@@ -267,42 +288,82 @@ export default function ShiftStartSnapshot({
             <div className="snapshot-entry-list">
               {card.items.slice(0, 3).map((entry) => (
                 <article key={entry.id} className="snapshot-entry">
-                  <p className="snapshot-entry-name">{entry.header}</p>
-                  <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">Why this matters</span>
-                    <span>{entry.reason}</span>
-                  </p>
-                  <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">Action by</span>
-                    <span>{entry.when}</span>
-                  </p>
-                  <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">Current state</span>
-                    <span>{entry.status}</span>
-                  </p>
-                  {entry.extraItems.length > 0 && (
-                    <details className="snapshot-entry-details">
-                      <summary>{additionalReasonLabel(entry.extraItems.length)}</summary>
-                      <div className="snapshot-extra-list">
-                        {entry.extraItems.map((item, index) => (
-                          <article key={`${entry.id}-extra-${index}`} className="snapshot-extra-item">
+                  <div className="snapshot-entry-head">
+                    <p className="snapshot-entry-name">{entry.header}</p>
+                    <span className={`bucket ${bucketClass(entry.bucket)}`}>{entry.bucket}</span>
+                  </div>
+                  {entry.chipGroups.length > 0 && (
+                    <div className="snapshot-chip-stack blocker-stack">
+                      {entry.chipGroups.map((group) => {
+                        const toggleKey = `${entry.id}:${group.chip}`;
+                        const expanded = expandedSubchips[toggleKey] ?? false;
+                        const visibleTags = expanded ? group.tags : group.tags.slice(0, 1);
+                        const hiddenCount = Math.max(group.tags.length - visibleTags.length, 0);
+
+                        return (
+                          <div key={`${entry.id}-${group.chip}`} className="blocker-line">
+                            <span className="chip">{group.chip}</span>
+                            {visibleTags.length > 0 && (
+                              <div
+                                className={`subchip-stack subchip-inline-list${expanded ? '' : ' subchip-collapsed-preview'}`}
+                              >
+                                {visibleTags.map((tag) => (
+                                  <span key={`${entry.id}-${group.chip}-${tag}`} className="sub-tag">
+                                    {tag}
+                                  </span>
+                                ))}
+                                {hiddenCount > 0 && (
+                                  <button
+                                    className="subchip-toggle"
+                                    aria-expanded={expanded}
+                                    onClick={() =>
+                                      setExpandedSubchips((prev) => ({ ...prev, [toggleKey]: true }))
+                                    }
+                                  >
+                                    +{hiddenCount} more
+                                  </button>
+                                )}
+                                {expanded && group.tags.length > 1 && (
+                                  <button
+                                    className="subchip-toggle"
+                                    aria-expanded={expanded}
+                                    onClick={() =>
+                                      setExpandedSubchips((prev) => ({ ...prev, [toggleKey]: false }))
+                                    }
+                                  >
+                                    Show less
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  <div className="snapshot-reason-list">
+                    {[{ reason: entry.reason, when: entry.when, status: entry.status }, ...entry.extraItems].map(
+                      (reasonItem, index, allReasons) => (
+                        <div key={`${entry.id}-reason-${index}`} className="snapshot-reason-block">
+                          {reasonItem.reason && (
                             <p className="snapshot-entry-line">
                               <span className="snapshot-entry-label">Why this matters</span>
-                              <span>{item.reason}</span>
+                              <span>{reasonItem.reason}</span>
                             </p>
-                            <p className="snapshot-entry-line">
-                              <span className="snapshot-entry-label">Action by</span>
-                              <span>{item.when}</span>
-                            </p>
-                            <p className="snapshot-entry-line">
-                              <span className="snapshot-entry-label">Current state</span>
-                              <span>{item.status}</span>
-                            </p>
-                          </article>
-                        ))}
-                      </div>
-                    </details>
-                  )}
+                          )}
+                          <p className="snapshot-entry-line">
+                            <span className="snapshot-entry-label">Action by</span>
+                            <span>{reasonItem.when}</span>
+                          </p>
+                          <p className="snapshot-entry-line">
+                            <span className="snapshot-entry-label">Current state</span>
+                            <span>{reasonItem.status}</span>
+                          </p>
+                          {index < allReasons.length - 1 && <div className="snapshot-reason-separator" />}
+                        </div>
+                      )
+                    )}
+                  </div>
                 </article>
               ))}
             </div>

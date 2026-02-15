@@ -30,6 +30,13 @@ Precedence: if this document conflicts with older roadmap/sprint/planning docs, 
   - `Dismiss [what] suggestion`
 - Never use generic `Approve`/`Dismiss` in primary path.
 
+### Chip language system
+- Parent chips describe the blocker category (for example: `Auth Pending`, `Placement Needed`).
+- Subchips always use typed labels: `Requirement:`, `Dependency:`, `Deadline:`, `Status:`, `Failure:`, `Task:`, `Risk:`, `Owner:`, `Note:`.
+- S0 and S1 share the same chip wording and grouping logic.
+- S0 uses subchip preview (`1 visible +N more`) with inline expansion; expanded tags keep equal visual weight.
+- No orphan subchips: every subchip nests under a parent blocker chip.
+
 ### Provenance model
 - No backend codes rendered in UI.
 - No source snippets in default UI.
@@ -72,6 +79,8 @@ Shows:
 - Due today
 - Needs review
 - Page-level `As of [time]`
+- same blocker chips/subchips as S1
+- compact legend: `Subchips show Requirement, Dependency, Deadline, Status, Failure, and Task details.`
 
 Buttons:
 - `Go to worklist`
@@ -87,6 +96,8 @@ Goal: triage only.
 Per row:
 - identity + status label
 - human-readable blocker labels
+- typed subchips with explicit prefixes
+- compact legend matches S0
 - rank line (plain-English reason)
 - single row action: `Open patient plan`
 
