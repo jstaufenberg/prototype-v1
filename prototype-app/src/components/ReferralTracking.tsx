@@ -1,4 +1,4 @@
-import type { Blocker, ExecutionModeDefault } from '../types/mockData';
+import type { Blocker } from '../types/mockData';
 
 interface ReferralTrackingProps {
   blocker: Blocker;

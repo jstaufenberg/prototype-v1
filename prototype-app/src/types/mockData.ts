@@ -17,8 +17,8 @@ export interface PatientRecord {
     insurance: {
       payer_name: string;
       auth_status: string;
-      auth_deadline_local?: string;
-      auth_reference?: string;
+      auth_deadline_local?: string | null;
+      auth_reference?: string | null;
     };
   };
   worklist_view_state: {
@@ -29,7 +29,7 @@ export interface PatientRecord {
     status_chips: string[];
     sub_tags: string[];
     last_agent_update: string;
-    next_recommended_action_id?: string;
+    next_recommended_action_id?: string | null;
   };
   blockers: {
     items: Blocker[];
@@ -53,8 +53,8 @@ export interface Blocker {
   status: BlockerStatus;
   description: string;
   summary_line: string;
-  due_by_local?: string;
-  next_action_id?: string;
+  due_by_local?: string | null;
+  next_action_id?: string | null;
   nested_steps: NestedStep[];
   evidence_summary: {
     source_count: number;
