@@ -18,9 +18,13 @@ Precedence: if this document conflicts with older roadmap/sprint/planning docs, 
 
 ### Interaction model
 - Worklist is triage-only: row action is only `Open patient plan`.
-- Blockers are primary: details and steps live inside blocker cards.
-- One primary recommendation at a time in patient detail.
-- Additional recommendations stay collapsed under `Other possible actions (N)`.
+- Blockers are the single source of truth for rationale and evidence.
+- Patient detail execution is top-driven:
+  - local blocker controls select action
+  - Quick Action Center executes action
+- Additional recommendations stay under blocker-level local selection controls.
+- `State view` control is internal-only (inside demo tools), not visible in patient UI.
+- `PT-##` identifiers are not rendered in user-facing UI.
 
 ### Language and copy
 - Primary action grammar: `Have agent [verb] [target] [when]`.
@@ -109,15 +113,24 @@ Top controls:
 ### S2: Patient detail (`F-01`, `F-02`, `F-04`, `F-05`, `F-06`, `F-18`)
 Goal: decide + delegate.
 
+Information order:
+1. patient identity strip
+2. sticky Quick Action Center
+3. active blockers
+4. resolved blockers (collapsed)
+5. Automation Command Center
+6. See full patient journey (collapsed)
+
 Shows:
 - active blockers (collapsed by default)
 - blocker due-by + evidence summary + per-item freshness
-- nested steps inside blocker only
-- insights with confidence labels (`High/Moderate/Low`)
-- one recommended action card
-- collapsed `Other possible actions (N)`
+- blocker-local rationale section (`Why this blocker matters`)
+- nested steps and referral tracking inside blocker only
+- local blocker controls: `Select action for Quick Action Center`
+- no standalone `What the agent found` section
+- no standalone `Recommended action` section
 
-Action card controls:
+Quick Action Center controls:
 - primary: `Have agent ...`
 - secondary: snooze/dismiss phrasing
 - execution mode selector:
@@ -131,8 +144,13 @@ Background mode preset:
   - `Notify me only on change/failure`
 
 Utility controls:
-- `+ Add task`
-- `Log external action`
+- `+ Add blocker` (local-only prototype draft)
+- `+ Add blocker task` (local blocker-scoped tasks)
+
+Automation Command Center:
+- one row per automation-capable action
+- mode, status, last run, next run
+- controls: `Start`, `Pause`, `Resume`
 
 ### S3: Confirm modal (`F-05`, `F-06`, `F-18`)
 Goal: explicit handoff boundary.
@@ -204,6 +222,10 @@ From `../data/ehr-mock-data/schema-v1.json`:
 - Confirm modal primary button is `Confirm and run`.
 - Each active blocker shows `Evidence: N sources` + `View evidence`.
 - Source snippets are not rendered in default UI.
-- S2 shows one primary action card; others are collapsed.
+- S2 Quick Action Center is the only execution surface.
+- S2 local blocker controls select/sync top action and do not execute directly.
 - Background execution mode is visible and configurable per recommended action.
+- Automation Command Center is visible and controllable in patient detail.
+- `State view` appears only in internal demo tools.
+- `PT-##` is not rendered in user-facing screens.
 - Prototype runs non-linearly from any patient at `T0`.

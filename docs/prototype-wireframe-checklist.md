@@ -7,11 +7,13 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 ## 1) Canonical rules
 - Worklist is triage-only; per-row action is only `Open patient plan`.
 - Primary CTA uses `Have agent ...` grammar.
-- Blockers are primary UI object; milestones are background context.
-- One primary recommended action visible at a time in S2.
+- Blockers are primary UI object and own rationale/evidence context.
+- S2 execution model is `local selects, top runs`.
 - Ranking uses `rank_position` + `rank_reasons` only.
 - Render no backend codes in user-facing UI.
 - Do not render source snippets in default UI.
+- Do not render `PT-##` in user-facing UI.
+- Keep `State view` in internal demo tools only.
 - Parent chips and subchips must use the same language model in S0 and S1.
 - Subchips must be typed (`Requirement:`, `Dependency:`, `Deadline:`, `Status:`, `Failure:`, `Task:`, `Risk:`, `Owner:`, `Note:`).
 
@@ -55,12 +57,18 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Blocker shows `Evidence: N sources` + `View evidence`
 - [ ] Evidence drawer lists source metadata (not snippets)
 - [ ] Nested steps shown only inside blocker detail
-- [ ] Insights show confidence label only (`High/Moderate/Low`)
-- [ ] One primary recommendation card visible
-- [ ] Additional cards under `Other possible actions (N)` collapse
-- [ ] Primary CTA text equals `Have agent ...`
-- [ ] Secondary CTA uses `Snooze...` or `Dismiss...` phrasing
+- [ ] Blocker-local rationale appears under `Why this blocker matters`
+- [ ] No standalone `What the agent found` section
+- [ ] No standalone `Recommended action` section
+- [ ] Quick Action Center is sticky and always visible
+- [ ] Blocker-local CTA is `Select action for Quick Action Center`
+- [ ] Only Quick Action Center executes (`Have agent ...`)
 - [ ] Execution mode controls visible (`One-time` / `Keep monitoring in background`)
+- [ ] `+ Add blocker` available at active blockers header (local state only)
+- [ ] `+ Add blocker task` available within blocker cards
+- [ ] Resolved blockers are collapsed by default
+- [ ] Automation Command Center renders mode/status/last-run/next-run + start/pause/resume
+- [ ] Full patient journey panel exists and is collapsed by default
 
 ### S3 Confirm modal
 - [ ] Action, reason, target, microcopy shown
@@ -87,10 +95,15 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Handoff banner shows changes requiring review count
 - [ ] Incoming CM sees same blockers/actions/tasks
 
+### Internal demo tools
+- [ ] `State view` selector is present only in internal demo tools
+- [ ] Internal demo tools are collapsed by default
+
 ## 4) Button inventory
 - [ ] `Go to worklist`
 - [ ] `Review flagged (N)`
 - [ ] `Open patient plan`
+- [ ] `Select action for Quick Action Center`
 - [ ] `Have agent [verb] [target] [when]`
 - [ ] `Snooze [what] to [time]`
 - [ ] `Dismiss [what] suggestion`

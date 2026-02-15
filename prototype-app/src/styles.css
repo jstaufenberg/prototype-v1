@@ -320,6 +320,14 @@ button.secondary:hover {
   font-size: 14px;
 }
 
+.section-head {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .state-strip {
   margin-top: 10px;
   display: flex;
@@ -340,6 +348,11 @@ button.secondary:hover {
 .blocker {
   border: 1px solid #ddd;
   margin-bottom: 8px;
+}
+
+.blocker.blocker-selected {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px #d8e4ff;
 }
 
 .blocker-toggle {
@@ -364,6 +377,24 @@ button.secondary:hover {
   flex-wrap: wrap;
 }
 
+.blocker-local-actions {
+  padding: 0 10px 6px;
+  display: grid;
+  gap: 8px;
+}
+
+.blocker-local-action-row {
+  border: 1px solid #d8d8d8;
+  padding: 8px;
+  background: #fcfcfc;
+}
+
+.action-selected {
+  border-color: var(--blue);
+  color: #1a3d8f;
+  font-weight: 600;
+}
+
 .blocker-meta {
   display: flex;
   gap: 8px;
@@ -371,6 +402,66 @@ button.secondary:hover {
   margin-top: 4px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.quick-action-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quick-action-mode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.blocker-task-entry {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 10px 8px;
+}
+
+.blocker-task-entry input {
+  min-width: 280px;
+  flex: 1;
+}
+
+.blocker-task-list {
+  margin: 0 10px 10px;
+  padding-left: 18px;
+}
+
+.blocker-task-list li {
+  margin: 3px 0;
+}
+
+.local-blocker {
+  background: #fffef8;
+}
+
+.add-blocker-form {
+  border: 1px solid #d3d3d3;
+  background: #fcfcfc;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.add-blocker-form input {
+  width: 100%;
+}
+
+.blocker-insights {
+  border-top: 1px dashed #ddd;
+  padding: 8px 10px 2px;
+}
+
+.blocker-insights h4 {
+  margin: 0 0 8px;
 }
 
 .nested-steps li {
@@ -609,6 +700,66 @@ button.secondary:hover {
 
 .resolved-blocker strong {
   color: var(--muted);
+}
+
+.automation-command-center {
+  margin-top: 12px;
+  border: 1px solid #d9d9d9;
+  padding: 10px;
+  background: #fcfcfc;
+}
+
+.automation-command-center h3 {
+  margin: 0 0 4px;
+}
+
+.automation-table {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.automation-row {
+  border: 1px solid #d7d7d7;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.automation-main p {
+  margin: 4px 0 0;
+}
+
+.automation-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 4px 10px;
+  font-size: 13px;
+}
+
+.automation-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.patient-journey-panel {
+  margin-top: 12px;
+  border: 1px solid #d6d6d6;
+  padding: 8px 10px;
+}
+
+.patient-journey-panel > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.journey-steps {
+  margin: 8px 0 0;
+  padding-left: 16px;
+}
+
+.journey-steps li {
+  margin-bottom: 8px;
 }
 
 /* Freshness */

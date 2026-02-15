@@ -105,7 +105,6 @@ export default function App() {
     setPendingModalAction(null);
   };
 
-  // Find a failure recovery action for the current patient (PT-01 A-0102 channel switch)
   const failureRecoveryAction = useMemo(() => {
     if (!selectedPatient) return null;
     return selectedPatient.proposed_actions.items.find(
@@ -154,6 +153,21 @@ export default function App() {
           {failureRecoveryAction && (
             <button onClick={() => setShowFailureModal(true)}>Show failure recovery modal</button>
           )}
+          {selectedPatient && (
+            <label>
+              State view
+              <select
+                value={stateByPatientId[selectedPatient.meta.patient_id]}
+                onChange={(event) => applySnapshot(selectedPatient.meta.patient_id, event.target.value)}
+              >
+                {selectedPatient.demo_state_snapshots.map((snapshot) => (
+                  <option key={snapshot.state_id} value={snapshot.state_id}>
+                    {snapshot.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
       </details>
 
@@ -178,7 +192,6 @@ export default function App() {
             onExecutionModeChange={(actionId, mode) =>
               setExecutionModeByAction((prev) => ({ ...prev, [actionId]: mode }))
             }
-            onStateChange={(stateId) => applySnapshot(selectedPatient.meta.patient_id, stateId)}
             onClose={() => setSelectedPatientId(null)}
             showHandoff={showHandoff}
           />

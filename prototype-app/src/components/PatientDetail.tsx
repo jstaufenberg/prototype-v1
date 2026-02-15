@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react';
+import AutomationCommandCenter, { type AutomationStatus } from './AutomationCommandCenter';
+import PatientJourneyPanel from './PatientJourneyPanel';
 import ReferralTracking from './ReferralTracking';
 import StickyActionBar from './StickyActionBar';
 import { formatSubchip } from '../utils/chipLanguage';
+import {
+  actionsForBlocker,
+  findDefaultSelectedAction,
+  type SelectedActionState
+} from '../utils/patientActionSelection';
 import type {
   ActionStatus,
   BlockerStatus,
@@ -19,9 +26,15 @@ interface PatientDetailProps {
   onPrimaryAction: (action: ProposedAction, mode: ExecutionModeDefault) => void;
   onSecondaryAction: (action: ProposedAction) => void;
   onExecutionModeChange: (actionId: string, mode: ExecutionModeDefault) => void;
-  onStateChange: (stateId: string) => void;
   onClose: () => void;
   showHandoff?: boolean;
+}
+
+interface LocalBlocker {
+  blocker_id: string;
+  title: string;
+  summary: string;
+  created_at: string;
 }
 
 function severityClass(severity: string) {
@@ -53,16 +66,19 @@ export default function PatientDetail({
   onPrimaryAction,
   onSecondaryAction,
   onExecutionModeChange,
-  onStateChange,
   onClose,
   showHandoff
 }: PatientDetailProps) {
   const [openBlockerId, setOpenBlockerId] = useState<string | null>(null);
-
-  const evidenceById = useMemo(
-    () => Object.fromEntries(patient.evidence_items.items.map((item) => [item.evidence_id, item])),
-    [patient.evidence_items.items]
-  );
+  const [selectedActionState, setSelectedActionState] = useState<SelectedActionState>(null);
+  const [automationStatusByAction, setAutomationStatusByAction] =
+    useState<Record<string, AutomationStatus>>({});
+  const [taskDraftByBlocker, setTaskDraftByBlocker] = useState<Record<string, string>>({});
+  const [blockerTasks, setBlockerTasks] = useState<Record<string, string[]>>({});
+  const [showAddBlockerForm, setShowAddBlockerForm] = useState(false);
+  const [newBlockerTitle, setNewBlockerTitle] = useState('');
+  const [newBlockerSummary, setNewBlockerSummary] = useState('');
+  const [localBlockers, setLocalBlockers] = useState<LocalBlocker[]>([]);
 
   const activeBlockers = useMemo(
     () =>
@@ -80,13 +96,6 @@ export default function PatientDetail({
     [patient.blockers.items, blockerStatusOverride]
   );
 
-  const recentlyActedActions = useMemo(() => {
-    return patient.proposed_actions.items.filter((action) => {
-      const status = actionStatusOverride[action.action_id];
-      return status === 'EXECUTED' || status === 'DISMISSED' || status === 'SNOOZED';
-    });
-  }, [patient.proposed_actions.items, actionStatusOverride]);
-
   const proposedActions = useMemo(() => {
     return patient.proposed_actions.items
       .filter((action) => {
@@ -96,14 +105,79 @@ export default function PatientDetail({
       .sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority));
   }, [patient.proposed_actions.items, actionStatusOverride]);
 
-  const primaryAction = proposedActions[0] ?? null;
-  const secondaryActions = proposedActions.slice(1);
-  const primaryActionMode = primaryAction
-    ? executionModeByAction[primaryAction.action_id] ?? primaryAction.execution_mode_default
+  const blockerActionMap = useMemo(() => {
+    const map = new Map<string, ProposedAction[]>();
+    activeBlockers.forEach((blocker) => {
+      map.set(blocker.blocker_id, actionsForBlocker(blocker, proposedActions));
+    });
+    return map;
+  }, [activeBlockers, proposedActions]);
+
+  const effectiveSelected = useMemo<SelectedActionState>(() => {
+    if (!selectedActionState) return findDefaultSelectedAction(activeBlockers, proposedActions);
+
+    const blockerExists = activeBlockers.some((blocker) => blocker.blocker_id === selectedActionState.blockerId);
+    const actionExists = proposedActions.some((action) => action.action_id === selectedActionState.actionId);
+    if (!blockerExists || !actionExists) {
+      return findDefaultSelectedAction(activeBlockers, proposedActions);
+    }
+    return selectedActionState;
+  }, [activeBlockers, proposedActions, selectedActionState]);
+
+  const selectedAction = useMemo(
+    () =>
+      effectiveSelected
+        ? proposedActions.find((action) => action.action_id === effectiveSelected.actionId) ?? null
+        : null,
+    [effectiveSelected, proposedActions]
+  );
+
+  const selectedBlocker = useMemo(
+    () =>
+      effectiveSelected
+        ? activeBlockers.find((blocker) => blocker.blocker_id === effectiveSelected.blockerId) ?? null
+        : null,
+    [activeBlockers, effectiveSelected]
+  );
+
+  const selectedActionMode = selectedAction
+    ? executionModeByAction[selectedAction.action_id] ?? selectedAction.execution_mode_default
     : 'ONE_TIME';
-  const hasRecommendedAction = Boolean(primaryAction);
 
   const currentSnapshot = patient.demo_state_snapshots.find((s) => s.state_id === currentStateId);
+
+  const recentlyActedActions = useMemo(() => {
+    return patient.proposed_actions.items.filter((action) => {
+      const status = actionStatusOverride[action.action_id];
+      return status === 'EXECUTED' || status === 'DISMISSED' || status === 'SNOOZED';
+    });
+  }, [patient.proposed_actions.items, actionStatusOverride]);
+
+  const submitNewBlocker = () => {
+    const title = newBlockerTitle.trim();
+    if (!title) return;
+    const summary = newBlockerSummary.trim() || 'Added manually by case manager.';
+    const next: LocalBlocker = {
+      blocker_id: `LOCAL-${localBlockers.length + 1}`,
+      title,
+      summary,
+      created_at: new Date().toISOString()
+    };
+    setLocalBlockers((prev) => [...prev, next]);
+    setShowAddBlockerForm(false);
+    setNewBlockerTitle('');
+    setNewBlockerSummary('');
+  };
+
+  const submitBlockerTask = (blockerId: string) => {
+    const draft = (taskDraftByBlocker[blockerId] ?? '').trim();
+    if (!draft) return;
+    setBlockerTasks((prev) => ({
+      ...prev,
+      [blockerId]: [...(prev[blockerId] ?? []), draft]
+    }));
+    setTaskDraftByBlocker((prev) => ({ ...prev, [blockerId]: '' }));
+  };
 
   return (
     <section className="panel">
@@ -120,7 +194,6 @@ export default function PatientDetail({
       <div className="detail-header">
         <h2>{patient.patient_profile.patient_name}</h2>
         <div className="detail-header-actions">
-          <span className="patient-id">{patient.meta.patient_id}</span>
           <button className="detail-close" aria-label="Close patient panel" onClick={onClose}>
             ×
           </button>
@@ -135,70 +208,128 @@ export default function PatientDetail({
         <span>{patient.patient_profile.insurance.payer_name}</span>
       </div>
 
-      <div className="state-strip">
-        <label htmlFor="state-select">State view</label>
-        <select
-          id="state-select"
-          value={currentStateId}
-          onChange={(event) => onStateChange(event.target.value)}
-        >
-          {patient.demo_state_snapshots.map((snapshot) => (
-            <option key={snapshot.state_id} value={snapshot.state_id}>
-              {snapshot.state_id} - {snapshot.label}
-            </option>
-          ))}
-        </select>
-        <span className="subtle">{currentSnapshot?.timestamp_local}</span>
-      </div>
       <div className="panel-top-actions">
         <StickyActionBar
           stickyOffset={0}
           compact
-          contextText="Recommended next action"
+          contextText="Quick Action Center"
           primaryAction={
-            hasRecommendedAction ? (
+            selectedAction ? (
               <button
                 className="primary-action"
-                onClick={() => onPrimaryAction(primaryAction, primaryActionMode)}
+                onClick={() => onPrimaryAction(selectedAction, selectedActionMode)}
               >
-                {primaryAction.cta_primary}
+                {selectedAction.cta_primary}
               </button>
-            ) : undefined
+            ) : (
+              <span className="subtle">Select a blocker action to run.</span>
+            )
           }
           secondaryActions={
-            hasRecommendedAction ? (
-              <div className="inline-actions">
-                {primaryAction.cta_secondary && (
-                  <button className="secondary" onClick={() => onSecondaryAction(primaryAction)}>
-                    {primaryAction.cta_secondary}
+            selectedAction ? (
+              <div className="quick-action-controls">
+                <span>
+                  <strong>Selected action:</strong> {selectedAction.title}
+                </span>
+                <span className="subtle">
+                  Linked blocker: {selectedBlocker?.description ?? selectedBlocker?.blocker_id}
+                </span>
+                <label className="quick-action-mode" htmlFor={`quick-mode-${selectedAction.action_id}`}>
+                  Mode
+                  <select
+                    id={`quick-mode-${selectedAction.action_id}`}
+                    value={selectedActionMode}
+                    onChange={(event) =>
+                      onExecutionModeChange(
+                        selectedAction.action_id,
+                        event.target.value as ExecutionModeDefault
+                      )
+                    }
+                  >
+                    <option value="ONE_TIME">One-time</option>
+                    <option value="BACKGROUND">Keep monitoring in background</option>
+                  </select>
+                </label>
+                {selectedAction.cta_secondary && (
+                  <button className="secondary" onClick={() => onSecondaryAction(selectedAction)}>
+                    {selectedAction.cta_secondary}
                   </button>
                 )}
               </div>
-            ) : (
-              <span className="subtle">No action needed now.</span>
-            )
+            ) : undefined
           }
         />
       </div>
 
-      <h3>Active blockers</h3>
+      <div className="section-head">
+        <h3>Active blockers</h3>
+        <button className="secondary" onClick={() => setShowAddBlockerForm((prev) => !prev)}>
+          + Add blocker
+        </button>
+      </div>
+
+      {showAddBlockerForm && (
+        <div className="add-blocker-form">
+          <input
+            type="text"
+            value={newBlockerTitle}
+            onChange={(event) => setNewBlockerTitle(event.target.value)}
+            placeholder="Blocker title"
+          />
+          <input
+            type="text"
+            value={newBlockerSummary}
+            onChange={(event) => setNewBlockerSummary(event.target.value)}
+            placeholder="Summary / reason"
+          />
+          <div className="inline-actions">
+            <button className="primary-action" onClick={submitNewBlocker}>
+              Save blocker
+            </button>
+            <button className="secondary" onClick={() => setShowAddBlockerForm(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       <ul className="blockers">
         {activeBlockers.map((blocker) => {
           const isOpen = openBlockerId === blocker.blocker_id;
+          const isSelectedBlocker = effectiveSelected?.blockerId === blocker.blocker_id;
           const linkedEvidence = patient.evidence_items.items.filter((e) =>
             e.linked_to.blocker_ids.includes(blocker.blocker_id)
           );
+          const linkedInsights = patient.parsed_insights.items.filter((insight) => {
+            const refs = insight.evidence_refs ?? [];
+            return refs.some((ref) => linkedEvidence.some((ev) => ev.evidence_id === ref));
+          });
+          const linkedActions = blockerActionMap.get(blocker.blocker_id) ?? [];
+          const selectedActionForBlocker = linkedActions.find(
+            (action) => action.action_id === effectiveSelected?.actionId
+          );
 
           return (
-            <li key={blocker.blocker_id} className={`blocker ${severityClass(blocker.severity)}`}>
+            <li
+              key={blocker.blocker_id}
+              className={`blocker ${severityClass(blocker.severity)}${isSelectedBlocker ? ' blocker-selected' : ''}`}
+              aria-current={isSelectedBlocker ? 'true' : undefined}
+            >
               <button
                 className="blocker-toggle"
                 aria-expanded={isOpen}
-                onClick={() => setOpenBlockerId(isOpen ? null : blocker.blocker_id)}
+                onClick={() => {
+                  setOpenBlockerId(isOpen ? null : blocker.blocker_id);
+                  if (!selectedActionForBlocker && linkedActions[0]) {
+                    setSelectedActionState({
+                      blockerId: blocker.blocker_id,
+                      actionId: linkedActions[0].action_id
+                    });
+                  }
+                }}
               >
                 <div>
-                  <strong>{blocker.blocker_id}</strong>
-                  <p>{blocker.description}</p>
+                  <strong>{blocker.description}</strong>
                   <small>{blocker.summary_line}</small>
                   <div className="blocker-summary-chips">
                     {blocker.due_by_local && (
@@ -213,19 +344,103 @@ export default function PatientDetail({
                     )}
                   </div>
                   <div className="blocker-meta">
-                    <span>
-                      Evidence: {blocker.evidence_summary.source_count} sources
-                    </span>
-                    <span>
-                      Last updated: {blocker.evidence_summary.last_evidence_update_local}
-                    </span>
+                    <span>Evidence: {blocker.evidence_summary.source_count} sources</span>
+                    <span>Last updated: {blocker.evidence_summary.last_evidence_update_local}</span>
                   </div>
                 </div>
                 <span>{isOpen ? 'Hide' : 'Show'}</span>
               </button>
 
+              <div className="blocker-local-actions">
+                {linkedActions.map((action) => (
+                  <div key={action.action_id} className="blocker-local-action-row">
+                    <button
+                      className={`secondary${effectiveSelected?.actionId === action.action_id ? ' action-selected' : ''}`}
+                      aria-selected={effectiveSelected?.actionId === action.action_id ? 'true' : 'false'}
+                      onClick={() =>
+                        setSelectedActionState({
+                          blockerId: blocker.blocker_id,
+                          actionId: action.action_id
+                        })
+                      }
+                    >
+                      {effectiveSelected?.actionId === action.action_id
+                        ? 'Selected for Quick Action Center'
+                        : 'Select action for Quick Action Center'}
+                    </button>
+                    <p className="subtle">{action.title}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="inline-actions">
+                <button className="secondary" onClick={() => setTaskDraftByBlocker((prev) => ({ ...prev, [blocker.blocker_id]: prev[blocker.blocker_id] ?? '' }))}>
+                  + Add blocker task
+                </button>
+                {selectedActionForBlocker && (
+                  <button
+                    className="secondary"
+                    onClick={() =>
+                      setAutomationStatusByAction((prev) => ({
+                        ...prev,
+                        [selectedActionForBlocker.action_id]:
+                          (prev[selectedActionForBlocker.action_id] ?? 'IDLE') === 'RUNNING'
+                            ? 'PAUSED'
+                            : 'RUNNING'
+                      }))
+                    }
+                  >
+                    {(automationStatusByAction[selectedActionForBlocker.action_id] ?? 'IDLE') === 'RUNNING'
+                      ? 'Pause automation'
+                      : 'Start automation'}
+                  </button>
+                )}
+              </div>
+
+              {taskDraftByBlocker[blocker.blocker_id] !== undefined && (
+                <div className="blocker-task-entry">
+                  <input
+                    type="text"
+                    value={taskDraftByBlocker[blocker.blocker_id] ?? ''}
+                    onChange={(event) =>
+                      setTaskDraftByBlocker((prev) => ({
+                        ...prev,
+                        [blocker.blocker_id]: event.target.value
+                      }))
+                    }
+                    placeholder="Add task linked to this blocker"
+                  />
+                  <button className="secondary" onClick={() => submitBlockerTask(blocker.blocker_id)}>
+                    Save task
+                  </button>
+                </div>
+              )}
+
+              {(blockerTasks[blocker.blocker_id] ?? []).length > 0 && (
+                <ul className="blocker-task-list">
+                  {(blockerTasks[blocker.blocker_id] ?? []).map((task, index) => (
+                    <li key={`${blocker.blocker_id}-task-${index}`}>{task}</li>
+                  ))}
+                </ul>
+              )}
+
               {isOpen && (
                 <>
+                  {linkedInsights.length > 0 && (
+                    <div className="blocker-insights">
+                      <h4>Why this blocker matters</h4>
+                      <ul className="insights">
+                        {linkedInsights.map((insight) => (
+                          <li key={insight.insight_id}>
+                            <strong>{insight.title}</strong>
+                            <p>{insight.value}</p>
+                            <small>Confidence: {insight.confidence_label}</small>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <details className="evidence-drawer">
                     <summary>{blocker.evidence_summary.view_evidence_label}</summary>
                     <ul>
@@ -251,17 +466,25 @@ export default function PatientDetail({
 
                   <ReferralTracking
                     blocker={blocker}
-                    backgroundMode={primaryActionMode === 'BACKGROUND'}
-                    primaryActionLabel={primaryAction?.cta_primary}
+                    backgroundMode={
+                      Boolean(selectedActionForBlocker) &&
+                      (executionModeByAction[selectedActionForBlocker!.action_id] ??
+                        selectedActionForBlocker!.execution_mode_default) === 'BACKGROUND'
+                    }
+                    primaryActionLabel={selectedActionForBlocker?.cta_primary}
                     onPrimaryAction={
-                      hasRecommendedAction
-                        ? () => onPrimaryAction(primaryAction, primaryActionMode)
+                      selectedActionForBlocker
+                        ? () =>
+                            setSelectedActionState({
+                              blockerId: blocker.blocker_id,
+                              actionId: selectedActionForBlocker.action_id
+                            })
                         : undefined
                     }
-                    secondaryActionLabel={primaryAction?.cta_secondary}
+                    secondaryActionLabel={selectedActionForBlocker?.cta_secondary}
                     onSecondaryAction={
-                      hasRecommendedAction && primaryAction?.cta_secondary
-                        ? () => onSecondaryAction(primaryAction)
+                      selectedActionForBlocker?.cta_secondary
+                        ? () => onSecondaryAction(selectedActionForBlocker)
                         : undefined
                     }
                   />
@@ -270,6 +493,22 @@ export default function PatientDetail({
             </li>
           );
         })}
+
+        {localBlockers.map((blocker) => (
+          <li key={blocker.blocker_id} className="blocker sev-yellow local-blocker">
+            <div className="blocker-toggle">
+              <div>
+                <strong>{blocker.title}</strong>
+                <small>{blocker.summary}</small>
+                <div className="blocker-summary-chips">
+                  <span className="sub-tag">Source: You added this</span>
+                  <span className="sub-tag">Created: {new Date(blocker.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+                </div>
+              </div>
+              <span>Manual</span>
+            </div>
+          </li>
+        ))}
       </ul>
 
       {resolvedBlockers.length > 0 && (
@@ -278,46 +517,31 @@ export default function PatientDetail({
           <ul className="blockers" style={{ marginTop: 8 }}>
             {resolvedBlockers.map((blocker) => (
               <li key={blocker.blocker_id} className="resolved-blocker">
-                <strong>{blocker.blocker_id}</strong>
-                <p>{blocker.description}</p>
-                <small>{blocker.summary_line}</small>
+                <strong>{blocker.description}</strong>
+                <p>{blocker.summary_line}</p>
               </li>
             ))}
           </ul>
         </details>
       )}
 
-      <h3>What the agent found</h3>
-      <ul className="insights">
-        {patient.parsed_insights.items.map((insight) => {
-          const insightEvidence = (insight.evidence_refs ?? [])
-            .map((id) => evidenceById[id])
-            .filter(Boolean);
+      <AutomationCommandCenter
+        actions={patient.proposed_actions.items}
+        executionModeByAction={executionModeByAction}
+        actionStatusOverride={actionStatusOverride}
+        automationStatusByAction={automationStatusByAction}
+        currentTimestamp={currentSnapshot?.timestamp_local}
+        onSetExecutionMode={onExecutionModeChange}
+        onSetAutomationStatus={(actionId, status) =>
+          setAutomationStatusByAction((prev) => ({ ...prev, [actionId]: status }))
+        }
+      />
 
-          return (
-            <li key={insight.insight_id}>
-              <strong>{insight.title}</strong>
-              <p>{insight.value}</p>
-              <small>{insight.confidence_label} confidence</small>
-              {insightEvidence.length > 0 && (
-                <details className="evidence-drawer">
-                  <summary>View evidence ({insightEvidence.length})</summary>
-                  <ul>
-                    {insightEvidence.map((item) => (
-                      <li key={item.evidence_id}>
-                        {item.source_label} - {item.author_or_system} - {item.timestamp_local}
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <PatientJourneyPanel patient={patient} />
 
       {recentlyActedActions.length > 0 && (
-        <div style={{ marginBottom: 12 }}>
+        <div style={{ marginTop: 12 }}>
+          <h3>Recent outcomes</h3>
           {recentlyActedActions.map((action) => {
             const status = actionStatusOverride[action.action_id]!;
             return (
@@ -328,99 +552,6 @@ export default function PatientDetail({
             );
           })}
         </div>
-      )}
-
-      <h3>Recommended action</h3>
-      <ul className="actions">
-        {!primaryAction && <li className="subtle">No action needed now.</li>}
-
-        {primaryAction && (
-          <li key={primaryAction.action_id} className="action-card">
-            <div>
-              <strong>{primaryAction.title}</strong>
-              <p>{primaryAction.reason}</p>
-              <small>{primaryAction.permission_microcopy}</small>
-            </div>
-
-            {(() => {
-              const actionEvidence = patient.evidence_items.items.filter((item) =>
-                item.linked_to.action_ids.includes(primaryAction.action_id)
-              );
-              return (
-                <>
-                  <p className="subtle">
-                    Evidence: {actionEvidence.length} sources
-                  </p>
-                  {actionEvidence.length > 0 && (
-                    <details className="evidence-drawer">
-                      <summary>View evidence ({actionEvidence.length})</summary>
-                      <ul>
-                        {actionEvidence.map((item) => (
-                          <li key={item.evidence_id}>
-                            {item.source_label} - {item.author_or_system} - {item.timestamp_local}
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
-                  )}
-                </>
-              );
-            })()}
-
-            <div className="action-mode">
-              <label htmlFor={`mode-${primaryAction.action_id}`}>Mode</label>
-              <select
-                id={`mode-${primaryAction.action_id}`}
-                value={executionModeByAction[primaryAction.action_id] ?? primaryAction.execution_mode_default}
-                onChange={(event) =>
-                  onExecutionModeChange(
-                    primaryAction.action_id,
-                    event.target.value as ExecutionModeDefault
-                  )
-                }
-              >
-                <option value="ONE_TIME">One-time</option>
-                <option value="BACKGROUND">Keep monitoring in background</option>
-              </select>
-            </div>
-
-            {(executionModeByAction[primaryAction.action_id] ?? primaryAction.execution_mode_default) ===
-              'BACKGROUND' && (
-              <>
-                <p className="subtle">
-                  Background preset: every {primaryAction.background_policy.cadence_hours}h for up to{' '}
-                  {primaryAction.background_policy.max_duration_hours}h. Notify on{' '}
-                  {primaryAction.background_policy.notify_on.join(', ')}.
-                </p>
-                {primaryAction.background_policy.stop_conditions.length > 0 && (
-                  <ul className="guardrails">
-                    {primaryAction.background_policy.stop_conditions.map((condition) => (
-                      <li key={condition}>{condition}</li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
-            <p className="subtle">Use the sticky action bar to run or defer this action.</p>
-          </li>
-        )}
-      </ul>
-
-      {secondaryActions.length > 0 && (
-        <details className="other-actions">
-          <summary>Other possible actions ({secondaryActions.length})</summary>
-          <ul className="actions">
-            {secondaryActions.map((action) => (
-              <li key={action.action_id} className="action-card secondary-card">
-                <strong>{action.title}</strong>
-                <p>{action.reason}</p>
-                <button onClick={() => onPrimaryAction(action, executionModeByAction[action.action_id] ?? action.execution_mode_default)}>
-                  {action.cta_primary}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </details>
       )}
     </section>
   );
