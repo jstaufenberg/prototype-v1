@@ -17,6 +17,7 @@ interface PatientDetailProps {
   onSecondaryAction: (action: ProposedAction) => void;
   onExecutionModeChange: (actionId: string, mode: ExecutionModeDefault) => void;
   onStateChange: (stateId: string) => void;
+  onClose: () => void;
   showHandoff?: boolean;
 }
 
@@ -50,6 +51,7 @@ export default function PatientDetail({
   onSecondaryAction,
   onExecutionModeChange,
   onStateChange,
+  onClose,
   showHandoff
 }: PatientDetailProps) {
   const [openBlockerId, setOpenBlockerId] = useState<string | null>(null);
@@ -110,7 +112,12 @@ export default function PatientDetail({
 
       <div className="detail-header">
         <h2>{patient.patient_profile.patient_name}</h2>
-        <span className="patient-id">{patient.meta.patient_id}</span>
+        <div className="detail-header-actions">
+          <span className="patient-id">{patient.meta.patient_id}</span>
+          <button className="detail-close" aria-label="Close patient panel" onClick={onClose}>
+            ×
+          </button>
+        </div>
       </div>
 
       <div className="meta-grid">

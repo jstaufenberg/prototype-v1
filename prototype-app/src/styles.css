@@ -122,6 +122,24 @@ header p {
   margin-top: 6px;
 }
 
+.blocker-stack {
+  margin-top: 6px;
+  display: grid;
+  gap: 6px;
+}
+
+.blocker-line {
+  display: grid;
+  gap: 4px;
+}
+
+.subchip-stack {
+  margin-left: 20px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .chip,
 .sub-tag {
   font-size: 12px;
@@ -183,6 +201,29 @@ button.secondary:hover {
 
 .detail-header h2 {
   margin: 0;
+}
+
+.detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  border: 1px solid #999;
+  background: #fff;
+}
+
+.detail-close:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .meta-grid {
@@ -311,6 +352,59 @@ button.secondary:hover {
 .other-actions summary {
   cursor: pointer;
   color: #1f4ba5;
+}
+
+.detail-empty-panel {
+  position: relative;
+  border-style: dashed;
+  border-color: #b8b8b8;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.detail-empty-panel .detail-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.detail-empty-shell {
+  margin-top: 14px;
+  border: 1px dashed #c4c4c4;
+  padding: 12px;
+}
+
+.shell-line {
+  background: #ececec;
+  border: 1px solid #e0e0e0;
+  height: 10px;
+  margin-bottom: 8px;
+}
+
+.shell-title {
+  width: 55%;
+  height: 14px;
+}
+
+.shell-meta {
+  width: 35%;
+}
+
+.shell-block {
+  border: 1px dashed #d0d0d0;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+.shell-label {
+  width: 20%;
+}
+
+.shell-body {
+  width: 80%;
+}
+
+.shell-body.short {
+  width: 62%;
 }
 
 .modal-backdrop {

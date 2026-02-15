@@ -36,7 +36,7 @@ function defaultExecutionModes() {
 
 export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('worklist');
-  const [selectedPatientId, setSelectedPatientId] = useState<string>(patients[0].meta.patient_id);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(patients[0].meta.patient_id);
   const [stateByPatientId, setStateByPatientId] = useState<Record<string, string>>(defaultStateByPatientId);
   const [actionStatusById, setActionStatusById] = useState<Record<string, ActionStatus>>({});
   const [blockerStatusById, setBlockerStatusById] = useState<Record<string, BlockerStatus>>({});
@@ -47,7 +47,7 @@ export default function App() {
   const [showFailureModal, setShowFailureModal] = useState(false);
 
   const selectedPatient = useMemo(
-    () => patients.find((p) => p.meta.patient_id === selectedPatientId) ?? patients[0],
+    () => (selectedPatientId ? patients.find((p) => p.meta.patient_id === selectedPatientId) ?? null : null),
     [selectedPatientId]
   );
 
@@ -88,7 +88,7 @@ export default function App() {
   };
 
   const confirmAction = () => {
-    if (!pendingModalAction) return;
+    if (!pendingModalAction || !selectedPatient) return;
 
     const patientId = selectedPatient.meta.patient_id;
     setActionStatusById((prev) => ({ ...prev, [pendingModalAction.action.action_id]: 'EXECUTED' }));
@@ -104,6 +104,7 @@ export default function App() {
 
   // Find a failure recovery action for the current patient (PT-01 A-0102 channel switch)
   const failureRecoveryAction = useMemo(() => {
+    if (!selectedPatient) return null;
     return selectedPatient.proposed_actions.items.find(
       (a) => a.action_id === 'A-0102' && (actionStatusById[a.action_id] ?? a.status) === 'PROPOSED'
     ) ?? null;
@@ -149,26 +150,51 @@ export default function App() {
       <div className="layout">
         <Worklist
           patients={patients}
-          activePatientId={selectedPatient.meta.patient_id}
+          activePatientId={selectedPatient?.meta.patient_id ?? null}
           stateByPatientId={stateByPatientId}
           onSelectPatient={setSelectedPatientId}
           showHandoff={showHandoff}
         />
 
-        <PatientDetail
-          patient={selectedPatient}
-          currentStateId={stateByPatientId[selectedPatient.meta.patient_id]}
-          actionStatusOverride={actionStatusById}
-          blockerStatusOverride={blockerStatusById}
-          executionModeByAction={executionModeByAction}
-          onPrimaryAction={handlePrimaryAction}
-          onSecondaryAction={handleSecondaryAction}
-          onExecutionModeChange={(actionId, mode) =>
-            setExecutionModeByAction((prev) => ({ ...prev, [actionId]: mode }))
-          }
-          onStateChange={(stateId) => applySnapshot(selectedPatient.meta.patient_id, stateId)}
-          showHandoff={showHandoff}
-        />
+        {selectedPatient ? (
+          <PatientDetail
+            patient={selectedPatient}
+            currentStateId={stateByPatientId[selectedPatient.meta.patient_id]}
+            actionStatusOverride={actionStatusById}
+            blockerStatusOverride={blockerStatusById}
+            executionModeByAction={executionModeByAction}
+            onPrimaryAction={handlePrimaryAction}
+            onSecondaryAction={handleSecondaryAction}
+            onExecutionModeChange={(actionId, mode) =>
+              setExecutionModeByAction((prev) => ({ ...prev, [actionId]: mode }))
+            }
+            onStateChange={(stateId) => applySnapshot(selectedPatient.meta.patient_id, stateId)}
+            onClose={() => setSelectedPatientId(null)}
+            showHandoff={showHandoff}
+          />
+        ) : (
+          <section className="panel detail-empty-panel" aria-label="No patient selected">
+            <button className="detail-close" aria-label="Close patient panel" disabled>
+              ×
+            </button>
+            <h2>No patient selected</h2>
+            <p className="subtle">Select a patient on the left to view plan and actions.</p>
+            <div className="detail-empty-shell">
+              <div className="shell-line shell-title" />
+              <div className="shell-line shell-meta" />
+              <div className="shell-block">
+                <div className="shell-line shell-label" />
+                <div className="shell-line shell-body" />
+                <div className="shell-line shell-body" />
+              </div>
+              <div className="shell-block">
+                <div className="shell-line shell-label" />
+                <div className="shell-line shell-body" />
+                <div className="shell-line shell-body short" />
+              </div>
+            </div>
+          </section>
+        )}
       </div>
 
       {pendingModalAction && (
