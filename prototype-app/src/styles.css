@@ -454,14 +454,34 @@ button.secondary:hover {
   font-size: 16px;
 }
 
-.snapshot-card ul {
-  margin: 0;
-  padding-left: 18px;
+.snapshot-entry-list {
+  display: grid;
+  gap: 10px;
 }
 
-.snapshot-card li {
-  margin: 4px 0;
+.snapshot-entry {
+  border: 1px solid #bcbcbc;
+  background: #fcfcfc;
+  padding: 10px;
+}
+
+.snapshot-entry-name {
+  margin: 0;
   font-size: 14px;
+  font-weight: 600;
+}
+
+.snapshot-entry-line {
+  margin: 4px 0 0 24px;
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.snapshot-entry-label {
+  color: var(--muted);
+  font-weight: 600;
 }
 
 .snapshot-buttons {
