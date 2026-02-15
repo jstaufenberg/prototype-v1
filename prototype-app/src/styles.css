@@ -506,10 +506,25 @@ button.secondary:hover {
 
 .snapshot-entry-details summary {
   cursor: pointer;
+  color: var(--muted);
+  font-weight: 600;
 }
 
-.snapshot-entry-details p {
-  margin: 4px 0 0;
+.snapshot-extra-list {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.snapshot-extra-item {
+  border: 1px solid #d7d7d7;
+  background: #f7f7f7;
+  padding: 6px 8px;
+}
+
+.snapshot-extra-item .snapshot-entry-line {
+  margin-left: 10px;
+  font-size: 13px;
 }
 
 .snapshot-buttons {

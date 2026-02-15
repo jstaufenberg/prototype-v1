@@ -9,9 +9,13 @@ interface SnapshotEntry {
   id: string;
   header: string;
   reason: string;
-  reasonDetails: string[];
   when: string;
   status: string;
+  extraItems: Array<{
+    reason: string;
+    when: string;
+    status: string;
+  }>;
 }
 
 interface SnapshotCard {
@@ -68,21 +72,9 @@ function formatWhenWithRelative(timestamp: number, now: number): string {
   return `${timeText} (overdue ${absMinutes}m)`;
 }
 
-function summarizeReason(lines: string[]): { summary: string; details: string[] } {
-  const unique = Array.from(new Set(lines.filter(Boolean)));
-  if (unique.length === 0) {
-    return { summary: 'No additional details', details: [] };
-  }
-
-  if (unique.length === 1) {
-    const single = unique[0];
-    const summary = single.length > 96 ? `${single.slice(0, 93)}...` : single;
-    return { summary, details: single.length > 96 ? [single] : [] };
-  }
-
-  const first = unique[0];
-  const summary = `${first.length > 70 ? `${first.slice(0, 67)}...` : first} +${unique.length - 1} more`;
-  return { summary, details: unique };
+function clipped(text: string, max = 92): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, max - 3)}...`;
 }
 
 function demographicToken(age: number | null, sex?: string | null): string {
@@ -154,15 +146,21 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
       return bLatest - aLatest;
     })
     .map<SnapshotEntry>((entry) => {
-      const { summary, details } = summarizeReason(entry.overnightItems.map((item) => item.description));
-      const latest = Math.max(...entry.overnightItems.map((item) => item.updatedAt ?? 0));
+      const sortedItems = [...entry.overnightItems].sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
+      const latest = Math.max(...sortedItems.map((item) => item.updatedAt ?? 0));
+      const primary = sortedItems[0];
+      const extraItems = sortedItems.slice(1).map((item) => ({
+        reason: clipped(item.description),
+        when: item.updatedAt ? `${formatClock(item.updatedAt)} (overnight)` : 'Overnight',
+        status: 'Resolved'
+      }));
       return {
         id: `${entry.patientId}-overnight`,
         header: entry.header,
-        reason: summary,
-        reasonDetails: details,
+        reason: clipped(primary.description),
         when: latest > 0 ? `${formatClock(latest)} (overnight)` : 'Overnight',
-        status: entry.overnightItems.length > 1 ? `${entry.overnightItems.length} changes resolved` : 'Resolved'
+        status: entry.overnightItems.length > 1 ? `${entry.overnightItems.length} changes resolved` : 'Resolved',
+        extraItems
       };
     });
 
@@ -170,15 +168,20 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
     .filter((entry) => entry.dueItems.length > 0)
     .sort((a, b) => Math.min(...a.dueItems.map((item) => item.dueAt)) - Math.min(...b.dueItems.map((item) => item.dueAt)))
     .map<SnapshotEntry>((entry) => {
-      const { summary, details } = summarizeReason(entry.dueItems.map((item) => item.description));
-      const earliestDue = Math.min(...entry.dueItems.map((item) => item.dueAt));
+      const sortedDueItems = [...entry.dueItems].sort((a, b) => a.dueAt - b.dueAt);
+      const primary = sortedDueItems[0];
+      const extraItems = sortedDueItems.slice(1).map((item) => ({
+        reason: clipped(item.description),
+        when: formatWhenWithRelative(item.dueAt, now),
+        status: 'Due item'
+      }));
       return {
         id: `${entry.patientId}-due`,
         header: entry.header,
-        reason: summary,
-        reasonDetails: details,
-        when: formatWhenWithRelative(earliestDue, now),
-        status: entry.dueItems.length > 1 ? `${entry.dueItems.length} due items` : '1 due item'
+        reason: clipped(primary.description),
+        when: formatWhenWithRelative(primary.dueAt, now),
+        status: entry.dueItems.length > 1 ? `${entry.dueItems.length} due items` : '1 due item',
+        extraItems
       };
     });
 
@@ -192,9 +195,9 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
       id: `${entry.patientId}-review`,
       header: entry.header,
       reason: 'Actions awaiting review',
-      reasonDetails: [],
       when: 'Now',
-      status: `${entry.reviewCount} pending actions`
+      status: `${entry.reviewCount} pending actions`,
+      extraItems: []
     }));
 
   const cards: SnapshotCard[] = [
@@ -254,12 +257,27 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
                     <span className="snapshot-entry-label">Status</span>
                     <span>{entry.status}</span>
                   </p>
-                  {entry.reasonDetails.length > 0 && (
+                  {entry.extraItems.length > 0 && (
                     <details className="snapshot-entry-details">
-                      <summary>View details</summary>
-                      {entry.reasonDetails.map((detail, index) => (
-                        <p key={`${entry.id}-detail-${index}`}>{detail}</p>
-                      ))}
+                      <summary>Other reasons: {entry.extraItems.length} (view all)</summary>
+                      <div className="snapshot-extra-list">
+                        {entry.extraItems.map((item, index) => (
+                          <article key={`${entry.id}-extra-${index}`} className="snapshot-extra-item">
+                            <p className="snapshot-entry-line">
+                              <span className="snapshot-entry-label">Reason</span>
+                              <span>{item.reason}</span>
+                            </p>
+                            <p className="snapshot-entry-line">
+                              <span className="snapshot-entry-label">When</span>
+                              <span>{item.when}</span>
+                            </p>
+                            <p className="snapshot-entry-line">
+                              <span className="snapshot-entry-label">Status</span>
+                              <span>{item.status}</span>
+                            </p>
+                          </article>
+                        ))}
+                      </div>
                     </details>
                   )}
                 </article>
