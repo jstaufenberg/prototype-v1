@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CM Prototype Wireframe v3</title>
+  <style>
+    :root {
+      --rose: #E11D48;
+      --amber: #D97706;
+      --teal: #0D9488;
+      --green: #059669;
+      --page: #F8FAFC;
+      --card: #FFFFFF;
+      --ink: #0F172A;
+      --muted: #64748B;
+      --line: #CBD5E1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+      background: var(--page);
+      color: var(--ink);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      margin: 0 0 16px;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      font-size: 12px;
+      background: var(--card);
+    }
+
+    .pill.rose { border-color: var(--rose); color: var(--rose); }
+    .pill.amber { border-color: var(--amber); color: var(--amber); }
+    .pill.teal { border-color: var(--teal); color: var(--teal); }
+
+    .screen {
+      background: var(--card);
+      border: 2px solid var(--ink);
+      margin-bottom: 16px;
+      padding: 14px;
+    }
+
+    .screen h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+
+    .screen-meta {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .row {
+      border: 1px solid var(--line);
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+
+    .status {
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .status.delayed { color: var(--rose); }
+    .status.attention { color: var(--amber); }
+    .status.pending, .status.track { color: var(--teal); }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    button {
+      border: 1px solid var(--ink);
+      background: #fff;
+      padding: 8px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button.primary {
+      border-color: var(--teal);
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .evidence {
+      margin-top: 6px;
+      border-left: 3px solid var(--line);
+      padding-left: 8px;
+      font-size: 13px;
+    }
+
+    .drawer {
+      margin-top: 8px;
+      border: 1px dashed var(--line);
+      padding: 8px;
+      font-size: 13px;
+      background: #F8FAFC;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Case Manager Prototype Wireframe (v3)</h1>
+    <p class="subtitle">Blocker-first, trust-centered, background-capable. No product branding.</p>
+
+    <div class="legend">
+      <span class="pill rose">Delayed</span>
+      <span class="pill amber">Attention</span>
+      <span class="pill teal">Pending / On track</span>
+      <span class="pill">Primary CTA: Have agent ...</span>
+      <span class="pill">Evidence: metadata only</span>
+    </div>
+
+    <section class="screen">
+      <h2>S0 Shift-start snapshot</h2>
+      <p class="screen-meta">Job: orient in under 10 seconds. Max 3 cards x 3 rows. As of 06:52 AM.</p>
+      <div class="row">Overnight: Kim authorization approved; Chen placement confirmed; New admission in 5C-09.</div>
+      <div class="row">Due today: Adams insurance appeal due 5:00 PM.</div>
+      <div class="row">Needs review: 2 referrals no response &gt; 24h.</div>
+      <div class="actions">
+        <button class="primary">Go to worklist</button>
+        <button>Review flagged (3)</button>
+      </div>
+    </section>
+
+    <section class="screen">
+      <h2>S1 Worklist</h2>
+      <p class="screen-meta">Job: triage only. Row action is only Open patient plan.</p>
+      <div class="actions">
+        <button class="pill rose">3 Delayed</button>
+        <button class="pill amber">3 Attention</button>
+        <button class="pill teal">4 Pending</button>
+        <button class="pill">8 On Track</button>
+        <button>Refresh</button>
+      </div>
+      <div class="row">
+        <div class="status delayed">● DELAYED</div>
+        Martha Chen · 4B-12 · LOS 7/5d<br />
+        Waiting on SNF bed · Auth expiring soon<br />
+        <span class="muted">1 of 8 — longest wait, auth risk</span>
+        <div class="actions"><button class="primary">Open patient plan</button></div>
+      </div>
+      <div class="row">
+        <div class="status track">● ON TRACK</div>
+        Sarah Lopez · 5D-14 · LOS 2/3d<br />
+        Agent monitoring — no action needed
+        <div class="actions"><button class="primary">Open patient plan</button></div>
+      </div>
+    </section>
+
+    <section class="screen">
+      <h2>S2 Patient detail</h2>
+      <p class="screen-meta">Job: decide + delegate. One primary recommendation visible.</p>
+      <div class="row">
+        <strong>Active blocker: Waiting on SNF bed (3 days)</strong><br />
+        Due by Feb 17
+        <div class="evidence">Evidence: 3 sources · Last updated 06:45 AM · View evidence</div>
+        <div class="drawer">
+          Discharge note (EHR) · Dr. Kim · 06:41 AM<br />
+          PT note (EHR) · J. Patel, DPT · 06:20 AM<br />
+          Facility email response · Sunrise Intake · 06:45 AM
+        </div>
+      </div>
+
+      <div class="row">
+        <strong>Recommended action</strong><br />
+        Confirm placement at Sunrise Manor and coordinate family call.
+        <div class="actions">
+          <button class="primary">Have agent call family now</button>
+          <button>Snooze placement reminder to tomorrow 08:00</button>
+          <button>Dismiss placement suggestion</button>
+        </div>
+        <div class="evidence">Execution mode: One-time | Keep monitoring in background</div>
+        <div class="muted">Background preset: every 12h until response or 72h max; notify on change/failure.</div>
+      </div>
+
+      <div class="row"><span class="muted">Other possible actions (1) ▸</span></div>
+
+      <div class="actions">
+        <button>+ Add task</button>
+        <button>Log external action</button>
+      </div>
+    </section>
+
+    <section class="screen">
+      <h2>S3 Confirm modal</h2>
+      <p class="screen-meta">Job: explicit handoff before execution.</p>
+      <div class="row">
+        Action: Call Aetna to follow up authorization for Martha Chen.<br />
+        Why: pending 72h with no response.<br />
+        Contacting: Aetna Provider Services · Ref AUTH-2026-04819.<br />
+        <span class="muted">After this run, agent will continue every 12h until stop condition.</span>
+        <div class="actions">
+          <button class="primary">Confirm and run</button>
+          <button>Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen">
+      <h2>S4 Referral package + tracking</h2>
+      <p class="screen-meta">Job: packet quality and per-target tracking.</p>
+      <div class="row">
+        Referral packet preview: required fields validated before send.<br />
+        <span class="muted">Missing fields disable send.</span>
+        <div class="actions"><button class="primary">Have agent send to 3 facilities</button></div>
+      </div>
+      <div class="row">
+        Willowbrook · No response · Sent 09:45 AM · Follow-up due 06:00 PM<br />
+        <span class="muted">Auto follow-up: enabled (12h cadence, 72h max)</span>
+        <div class="actions">
+          <button class="primary">Have agent resend via email</button>
+          <button>Have agent call Willowbrook now</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen">
+      <h2>S5 Failure recovery</h2>
+      <p class="screen-meta">Job: no silent failure.</p>
+      <div class="row">
+        Fax to Willowbrook failed after 3 attempts (line busy).<br />
+        Recommended next step: resend via email.
+        <div class="actions">
+          <button class="primary">Have agent resend via email</button>
+          <button>Pause background loop</button>
+          <button>Dismiss for now</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen">
+      <h2>S6 Handoff continuity</h2>
+      <p class="screen-meta">Not a separate UI. S1/S2 shown for next CM with handoff metadata.</p>
+      <div class="row">
+        Last session ended 04:45 PM.<br />
+        Background runs since last shift: 3<br />
+        Changes requiring review: 1
+      </div>
+    </section>
+  </div>
+</body>
+</html>

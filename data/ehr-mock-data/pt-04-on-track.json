@@ -1,0 +1,354 @@
+{
+  "meta": {
+    "patient_id": "PT-04",
+    "schema_version": "v1",
+    "scenario_name": "On Track - Control case with no action needed",
+    "as_of_local": "2026-02-14T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Thomas Moore",
+    "dob": "1955-11-09",
+    "mrn": "MRN-1184422",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "Chest pain observation, ACS ruled out",
+    "attending_physician": "Dr. Sofia Okafor",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "2S Observation",
+      "bed": "2S-04C"
+    },
+    "disposition_target": "Home",
+    "insurance": {
+      "payer_id": "PAY-MEDICARE-A",
+      "payer_name": "Medicare Traditional (Part A)",
+      "plan_type": "Traditional Medicare",
+      "member_id": "MED-2201198",
+      "auth_required_for": [],
+      "auth_reference": null,
+      "auth_status": "NOT_NEEDED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-002",
+        "name": "Dr. Sofia Okafor"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": [
+      {
+        "event_id": "EV-0401",
+        "timestamp_local": "2026-02-13T20:12:00",
+        "event_type": "admission",
+        "title": "Observation admission from ED",
+        "details": "Admitted for chest pain workup."
+      },
+      {
+        "event_id": "EV-0402",
+        "timestamp_local": "2026-02-14T05:50:00",
+        "event_type": "result",
+        "title": "Workup completed",
+        "details": "Troponins negative x2, stress test and echo normal."
+      },
+      {
+        "event_id": "EV-0403",
+        "timestamp_local": "2026-02-14T08:15:00",
+        "event_type": "plan",
+        "title": "Discharge home today",
+        "details": "No CM coordination blockers identified."
+      }
+    ]
+  },
+  "clinical_source_text": {
+    "notes": [
+      {
+        "source_id": "SRC-0401",
+        "timestamp_local": "2026-02-13T21:00:00",
+        "author": "Dr. Sofia Okafor",
+        "note_type": "Observation H&P",
+        "text": "70M chest pain, hemodynamically stable, ECG without ischemic changes. Plan serial troponin and stress test."
+      },
+      {
+        "source_id": "SRC-0402",
+        "timestamp_local": "2026-02-14T08:10:00",
+        "author": "Dr. Sofia Okafor",
+        "note_type": "Progress Note",
+        "text": "Trop x2 negative, stress test negative, echo unremarkable. Discharge home today with PCP follow-up."
+      }
+    ]
+  },
+  "milestones": {
+    "items": [
+      {
+        "milestone_id": "M-0400",
+        "label": "ED arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Initial ED triage completed.",
+        "last_updated_local": "2026-02-13T19:55:00",
+        "source_refs": [
+          "EV-0401"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0401",
+        "label": "Inpatient/observation bed arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Admitted to observation bed.",
+        "last_updated_local": "2026-02-13T20:12:00",
+        "source_refs": [
+          "EV-0401"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0402",
+        "label": "Discharge order signed",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "SURFACE_WHEN_BLOCKED",
+        "status": "DONE",
+        "status_reason": "Discharge home approved.",
+        "last_updated_local": "2026-02-14T08:15:00",
+        "source_refs": [
+          "EV-0403",
+          "SRC-0402"
+        ],
+        "changes_next_action": false
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-0401",
+        "type": "CARDIAC_WORKUP_PENDING",
+        "severity": "YELLOW",
+        "status": "RESOLVED",
+        "description": "Observation workup pending completion.",
+        "owner": "Clinical Team",
+        "due_by_local": "2026-02-14T08:00:00",
+        "display_mode": "COLLAPSED_BY_DEFAULT",
+        "summary_line": "Resolved: no further CM action required.",
+        "next_action_id": null,
+        "surfaced_at_local": "2026-02-13T20:20:00",
+        "resolved_at_local": "2026-02-14T08:15:00",
+        "lifecycle_events": [
+          {
+            "timestamp_local": "2026-02-13T20:20:00",
+            "event_type": "SURFACED",
+            "note": "Awaiting observation workup results."
+          },
+          {
+            "timestamp_local": "2026-02-14T08:15:00",
+            "event_type": "RESOLVED",
+            "note": "Workup negative, discharge home plan confirmed."
+          }
+        ],
+        "nested_steps": [],
+        "source_refs": [
+          "EV-0402",
+          "EV-0403"
+        ],
+        "related_milestones": [
+          "M-0402"
+        ],
+        "evidence_summary": {
+          "source_count": 2,
+          "source_types": [
+            "adt_event",
+            "discharge_note"
+          ],
+          "last_evidence_update_local": "2026-02-14T08:15:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": [
+      {
+        "insight_id": "I-0401",
+        "category": "System Restraint",
+        "title": "No active CM blockers",
+        "value": "Patient is discharge-ready with no coordination dependencies.",
+        "confidence_label": "High",
+        "source_refs": [
+          "EV-0403",
+          "SRC-0402"
+        ],
+        "source_snippets": [
+          "Discharge home today",
+          "No CM coordination blockers identified"
+        ],
+        "ui_surface": "Worklist row + patient summary",
+        "evidence_refs": [
+          "E-0401",
+          "E-0402"
+        ]
+      }
+    ]
+  },
+  "proposed_actions": {
+    "items": []
+  },
+  "execution_log": {
+    "entries": [
+      {
+        "log_id": "LOG-0401",
+        "timestamp_local": "2026-02-14T08:15:00",
+        "event": "Blocker resolved",
+        "actor": "Agent",
+        "result": "Cardiac workup blocker closed automatically.",
+        "related_action_id": null,
+        "ui_impact": "Patient moved to On Track with no action card."
+      }
+    ]
+  },
+  "worklist_view_state": {
+    "bucket_status": "On Track",
+    "rank_position": 4,
+    "rank_reasons": [
+      "No active blocker"
+    ],
+    "los_day": 1,
+    "status_chips": [
+      "Discharge Today"
+    ],
+    "sub_tags": [
+      "No active blockers"
+    ],
+    "last_agent_update": "Workup complete; no action needed",
+    "next_recommended_action_id": null
+  },
+  "demo_playback": [
+    {
+      "step": 1,
+      "screen": "Worklist",
+      "what_cm_sees": "Thomas appears On Track with no active blocker chips.",
+      "cm_action": "Open patient plan",
+      "other_visible_options": []
+    },
+    {
+      "step": 2,
+      "screen": "Patient detail",
+      "what_cm_sees": "Recently resolved blocker listed; no action cards rendered.",
+      "cm_action": "Return to queue",
+      "other_visible_options": []
+    }
+  ],
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "On-track control state",
+      "timestamp_local": "2026-02-14T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0401",
+          "status": "RESOLVED"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "On Track",
+        "rank_position": 4,
+        "rank_reasons": [
+          "No active blocker"
+        ]
+      },
+      "action_statuses": []
+    },
+    {
+      "state_id": "T1",
+      "label": "No-op verification",
+      "timestamp_local": "2026-02-14T09:05:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0401",
+          "status": "RESOLVED"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "On Track",
+        "rank_position": 4,
+        "rank_reasons": [
+          "No active blocker"
+        ]
+      },
+      "action_statuses": []
+    },
+    {
+      "state_id": "T2",
+      "label": "Discharge complete",
+      "timestamp_local": "2026-02-14T10:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0401",
+          "status": "RESOLVED"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "On Track",
+        "rank_position": 4,
+        "rank_reasons": [
+          "No active blocker"
+        ]
+      },
+      "action_statuses": []
+    }
+  ],
+  "reference_data_links": {
+    "facilities": "reference-facilities.json",
+    "payers": "reference-payers.json",
+    "staff": "reference-staff.json",
+    "channels": "reference-channels.json"
+  },
+  "evidence_items": {
+    "items": [
+      {
+        "evidence_id": "E-0401",
+        "source_type": "adt_event",
+        "source_label": "Workup completion event",
+        "author_or_system": "Observation results feed",
+        "timestamp_local": "2026-02-14T05:50:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0401"
+          ],
+          "action_ids": [],
+          "insight_ids": [
+            "I-0401"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0402",
+        "source_type": "discharge_note",
+        "source_label": "Progress note and discharge plan",
+        "author_or_system": "Dr. Sofia Okafor",
+        "timestamp_local": "2026-02-14T08:10:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0401"
+          ],
+          "action_ids": [],
+          "insight_ids": [
+            "I-0401"
+          ]
+        }
+      }
+    ]
+  }
+}

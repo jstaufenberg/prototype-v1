@@ -1,0 +1,662 @@
+{
+  "meta": {
+    "patient_id": "PT-03",
+    "schema_version": "v1",
+    "scenario_name": "Pending - Not-ready path with dismiss, snooze, and task capture",
+    "as_of_local": "2026-02-14T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Dorothy Martinez",
+    "dob": "1954-01-27",
+    "mrn": "MRN-2245108",
+    "sex": "F",
+    "language": "English",
+    "primary_diagnosis": "Ischemic stroke with residual weakness and mild aphasia",
+    "attending_physician": "Dr. Miriam Okonkwo",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "5E Neuro",
+      "bed": "5E-07A"
+    },
+    "disposition_target": "IRF",
+    "insurance": {
+      "payer_id": "PAY-AETNA",
+      "payer_name": "Aetna PPO",
+      "plan_type": "Commercial PPO",
+      "member_id": "AET-7711204",
+      "auth_required_for": [
+        "IRF placement"
+      ],
+      "auth_reference": "AT-556002",
+      "auth_status": "NOT_STARTED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-002",
+        "name": "Dr. Sofia Okafor"
+      },
+      "neurology": {
+        "staff_id": "ST-005",
+        "name": "Dr. Miriam Okonkwo"
+      },
+      "evening_case_manager": {
+        "staff_id": "ST-006",
+        "name": "J. Lin, RN"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": [
+      {
+        "event_id": "EV-0301",
+        "timestamp_local": "2026-02-10T13:25:00",
+        "event_type": "admission",
+        "title": "ED to neuro admission",
+        "details": "Admitted for left MCA stroke with right-sided weakness."
+      },
+      {
+        "event_id": "EV-0302",
+        "timestamp_local": "2026-02-11T11:00:00",
+        "event_type": "consult",
+        "title": "Neuro rehab recommendation",
+        "details": "Neurology and PT/OT recommend IRF placement after sign-off."
+      },
+      {
+        "event_id": "EV-0303",
+        "timestamp_local": "2026-02-14T08:20:00",
+        "event_type": "rounds",
+        "title": "Attending requests one more day",
+        "details": "Dr. Okonkwo wants one more day of monitoring before discharge sign-off."
+      }
+    ]
+  },
+  "clinical_source_text": {
+    "notes": [
+      {
+        "source_id": "SRC-0301",
+        "timestamp_local": "2026-02-10T14:15:00",
+        "author": "Dr. Miriam Okonkwo",
+        "note_type": "Neurology Consult",
+        "text": "Mild aphasia persists, RUE/RLE weakness improving but not baseline. Needs intensive rehab setting. Not comfortable signing discharge today; reassess after additional overnight monitoring."
+      },
+      {
+        "source_id": "SRC-0302",
+        "timestamp_local": "2026-02-13T17:05:00",
+        "author": "A. Rivera, RN CM",
+        "note_type": "Case Management Progress",
+        "text": "Family undecided between closer IRF vs higher-rated facility farther away. Daughter Maria asked for side-by-side options before committing."
+      }
+    ]
+  },
+  "milestones": {
+    "items": [
+      {
+        "milestone_id": "M-0300",
+        "label": "ED arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Initial stroke stabilization in ED complete.",
+        "last_updated_local": "2026-02-10T13:10:00",
+        "source_refs": [
+          "EV-0301"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0301",
+        "label": "Inpatient bed arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Transferred to neuro floor.",
+        "last_updated_local": "2026-02-10T13:25:00",
+        "source_refs": [
+          "EV-0301"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0302",
+        "label": "Disposition target identified",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "SURFACE_WHEN_BLOCKED",
+        "status": "DONE",
+        "status_reason": "IRF recommended by neuro and therapy teams.",
+        "last_updated_local": "2026-02-11T11:00:00",
+        "source_refs": [
+          "EV-0302"
+        ],
+        "changes_next_action": false
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-0301",
+        "type": "MD_SIGNOFF_PENDING",
+        "severity": "ORANGE",
+        "status": "ACTIVE",
+        "description": "Attending discharge sign-off deferred until tomorrow reassessment.",
+        "owner": "Attending",
+        "due_by_local": "2026-02-15T09:00:00",
+        "display_mode": "COLLAPSED_BY_DEFAULT",
+        "summary_line": "Next step: wait for sign-off; optionally snooze reminder.",
+        "next_action_id": "A-0301",
+        "surfaced_at_local": "2026-02-14T08:20:00",
+        "resolved_at_local": null,
+        "lifecycle_events": [
+          {
+            "timestamp_local": "2026-02-14T08:20:00",
+            "event_type": "SURFACED",
+            "note": "Sign-off deferred during rounds."
+          }
+        ],
+        "nested_steps": [],
+        "source_refs": [
+          "EV-0303",
+          "SRC-0301"
+        ],
+        "related_milestones": [
+          "M-0302"
+        ],
+        "evidence_summary": {
+          "source_count": 2,
+          "source_types": [
+            "adt_event",
+            "discharge_note"
+          ],
+          "last_evidence_update_local": "2026-02-14T08:20:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-0302",
+        "type": "FAMILY_DECISION_PENDING",
+        "severity": "ORANGE",
+        "status": "ACTIVE",
+        "description": "Family has not selected destination IRF.",
+        "owner": "Family",
+        "due_by_local": "2026-02-14T17:00:00",
+        "display_mode": "COLLAPSED_BY_DEFAULT",
+        "summary_line": "Next step: Have agent create family follow-up task for today.",
+        "next_action_id": "A-0302",
+        "surfaced_at_local": "2026-02-13T17:05:00",
+        "resolved_at_local": null,
+        "lifecycle_events": [
+          {
+            "timestamp_local": "2026-02-13T17:05:00",
+            "event_type": "SURFACED",
+            "note": "Family decision still pending."
+          }
+        ],
+        "nested_steps": [
+          {
+            "step_id": "NS-0301",
+            "label": "Create family outreach task",
+            "step_kind": "PREREQUISITE",
+            "execution_mode": "CM_PERMISSION_REQUIRED",
+            "status": "NOT_STARTED",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T09:00:00"
+          },
+          {
+            "step_id": "NS-0302",
+            "label": "Track family response",
+            "step_kind": "TRACKING",
+            "execution_mode": "AGENT_BACKGROUND",
+            "status": "NOT_STARTED",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T09:00:00"
+          },
+          {
+            "step_id": "NS-0303",
+            "label": "Confirm selected IRF",
+            "step_kind": "DECISION",
+            "execution_mode": "CM_DECISION",
+            "status": "NOT_STARTED",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T09:00:00"
+          }
+        ],
+        "source_refs": [
+          "SRC-0302"
+        ],
+        "related_milestones": [
+          "M-0302"
+        ],
+        "evidence_summary": {
+          "source_count": 1,
+          "source_types": [
+            "cm_manual"
+          ],
+          "last_evidence_update_local": "2026-02-13T17:05:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": [
+      {
+        "insight_id": "I-0301",
+        "category": "Readiness Constraint",
+        "title": "Attending sign-off not expected until tomorrow",
+        "value": "Current recommendation is monitor overnight and reassess in AM rounds.",
+        "confidence_label": "High",
+        "source_refs": [
+          "EV-0303",
+          "SRC-0301"
+        ],
+        "source_snippets": [
+          "Not comfortable signing discharge today",
+          "one more day of monitoring"
+        ],
+        "ui_surface": "MD sign-off blocker",
+        "evidence_refs": [
+          "E-0301",
+          "E-0302"
+        ]
+      },
+      {
+        "insight_id": "I-0302",
+        "category": "Family Coordination",
+        "title": "Family choice still unresolved",
+        "value": "Daughter requested side-by-side IRF options before committing.",
+        "confidence_label": "High",
+        "source_refs": [
+          "SRC-0302"
+        ],
+        "source_snippets": [
+          "Family undecided",
+          "asked for side-by-side options"
+        ],
+        "ui_surface": "Family decision blocker",
+        "evidence_refs": [
+          "E-0303"
+        ]
+      }
+    ]
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-0301",
+        "title": "Escalate physician sign-off now",
+        "reason": "Current clinical guidance is to wait until tomorrow rounds.",
+        "status": "PROPOSED",
+        "priority": "MEDIUM",
+        "cta_primary": "Have agent page physician now",
+        "cta_secondary": "Snooze MD sign-off reminder to tomorrow 09:00",
+        "permission_microcopy": "You direct. Agent pages physician and logs outcome.",
+        "ui_surface": "Patient Detail > MD sign-off blocker",
+        "dependencies": [
+          "B-0301:ACTIVE"
+        ],
+        "target_entities": [
+          {
+            "type": "staff",
+            "staff_id": "ST-005",
+            "name": "Dr. Miriam Okonkwo",
+            "channel": "page"
+          }
+        ],
+        "execution_mode_default": "ONE_TIME",
+        "background_policy": {
+          "enabled": false,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      },
+      {
+        "action_id": "A-0302",
+        "title": "Capture family outreach task for today",
+        "reason": "Family decision is the main blocker for placement initiation.",
+        "status": "PROPOSED",
+        "priority": "HIGH",
+        "cta_primary": "Have agent create family follow-up task",
+        "cta_secondary": "Dismiss family follow-up suggestion",
+        "permission_microcopy": "You approve. Agent creates task, sets due time, and surfaces it in handoff.",
+        "ui_surface": "Patient Detail > Family decision blocker",
+        "dependencies": [
+          "B-0302:ACTIVE"
+        ],
+        "target_entities": [
+          {
+            "type": "family_contact",
+            "name": "Maria Martinez (daughter)",
+            "channel": "phone"
+          }
+        ],
+        "execution_mode_default": "ONE_TIME",
+        "background_policy": {
+          "enabled": false,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      },
+      {
+        "action_id": "A-0303",
+        "title": "Pause referral send until blockers clear",
+        "reason": "Referral should wait until both physician sign-off and family choice are available.",
+        "status": "PROPOSED",
+        "priority": "LOW",
+        "cta_primary": "Have agent pause referral send for now",
+        "cta_secondary": "Dismiss referral pause suggestion",
+        "permission_microcopy": "You decide. Agent records dismissal reason and can resurface later.",
+        "ui_surface": "Patient Detail > Placement preview card",
+        "dependencies": [
+          "B-0301:ACTIVE",
+          "B-0302:ACTIVE"
+        ],
+        "target_entities": [],
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Physician sign-off complete",
+            "Family choice recorded",
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": [
+      {
+        "log_id": "LOG-0301",
+        "timestamp_local": "2026-02-14T09:08:00",
+        "event": "Action snoozed",
+        "actor": "CM",
+        "result": "Physician escalation reminder snoozed to tomorrow 09:00.",
+        "related_action_id": "A-0301",
+        "ui_impact": "MD sign-off blocker summary updated with snooze badge."
+      },
+      {
+        "log_id": "LOG-0302",
+        "timestamp_local": "2026-02-14T09:10:00",
+        "event": "Task created",
+        "actor": "Agent",
+        "result": "Family follow-up task created for 14:00.",
+        "related_action_id": "A-0302",
+        "ui_impact": "Task chip appears in blocker detail and handoff list."
+      },
+      {
+        "log_id": "LOG-0303",
+        "timestamp_local": "2026-02-14T09:12:00",
+        "event": "Suggestion dismissed",
+        "actor": "CM",
+        "result": "Referral send suggestion dismissed as not ready.",
+        "related_action_id": "A-0303",
+        "ui_impact": "Dismissal reason logged in workstream."
+      }
+    ]
+  },
+  "worklist_view_state": {
+    "bucket_status": "Pending",
+    "rank_position": 3,
+    "rank_reasons": [
+      "Blocked"
+    ],
+    "los_day": 5,
+    "status_chips": [
+      "Awaiting MD Sign-off",
+      "Family Decision Pending"
+    ],
+    "sub_tags": [
+      "IRF recommended",
+      "Task due 14:00"
+    ],
+    "last_agent_update": "Family follow-up task created",
+    "next_recommended_action_id": "A-0302"
+  },
+  "demo_playback": [
+    {
+      "step": 1,
+      "screen": "Worklist",
+      "what_cm_sees": "Dorothy appears in Pending with two non-urgent blockers.",
+      "cm_action": "Open patient plan",
+      "other_visible_options": []
+    },
+    {
+      "step": 2,
+      "screen": "MD sign-off blocker",
+      "what_cm_sees": "Reminder card indicates physician requested reassessment tomorrow.",
+      "cm_action": "Click 'Snooze this reminder to tomorrow 09:00'",
+      "other_visible_options": [
+        "Have agent page physician now"
+      ]
+    },
+    {
+      "step": 3,
+      "screen": "Family decision blocker",
+      "what_cm_sees": "No destination selected yet; family contact context available.",
+      "cm_action": "Click 'Have agent create family follow-up task'",
+      "other_visible_options": [
+        "Skip for now"
+      ]
+    },
+    {
+      "step": 4,
+      "screen": "Placement preview",
+      "what_cm_sees": "Referral send suggestion appears but prerequisites are not met.",
+      "cm_action": "Click 'Dismiss referral send suggestion'",
+      "other_visible_options": [
+        "Keep suggestion"
+      ]
+    },
+    {
+      "step": 5,
+      "screen": "Handoff view",
+      "what_cm_sees": "Task and snoozed reminder persist for evening CM.",
+      "cm_action": "End shift",
+      "other_visible_options": []
+    }
+  ],
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Initial pending state",
+      "timestamp_local": "2026-02-14T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0301",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0302",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Pending",
+        "rank_position": 3,
+        "rank_reasons": [
+          "Blocked"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0301",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-0302",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-0303",
+          "status": "PROPOSED"
+        }
+      ]
+    },
+    {
+      "state_id": "T1",
+      "label": "After snooze + task create",
+      "timestamp_local": "2026-02-14T09:10:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0301",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0302",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Pending",
+        "rank_position": 3,
+        "rank_reasons": [
+          "Blocked"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0301",
+          "status": "SNOOZED"
+        },
+        {
+          "action_id": "A-0302",
+          "status": "APPROVED"
+        },
+        {
+          "action_id": "A-0303",
+          "status": "PROPOSED"
+        }
+      ]
+    },
+    {
+      "state_id": "T2",
+      "label": "After referral dismissal",
+      "timestamp_local": "2026-02-14T09:12:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0301",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0302",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Pending",
+        "rank_position": 3,
+        "rank_reasons": [
+          "Blocked"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0301",
+          "status": "SNOOZED"
+        },
+        {
+          "action_id": "A-0302",
+          "status": "EXECUTED"
+        },
+        {
+          "action_id": "A-0303",
+          "status": "DISMISSED"
+        }
+      ]
+    }
+  ],
+  "reference_data_links": {
+    "facilities": "reference-facilities.json",
+    "payers": "reference-payers.json",
+    "staff": "reference-staff.json",
+    "channels": "reference-channels.json"
+  },
+  "evidence_items": {
+    "items": [
+      {
+        "evidence_id": "E-0301",
+        "source_type": "adt_event",
+        "source_label": "Rounds deferral event",
+        "author_or_system": "Rounds capture feed",
+        "timestamp_local": "2026-02-14T08:20:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0301"
+          ],
+          "action_ids": [
+            "A-0301"
+          ],
+          "insight_ids": [
+            "I-0301"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0302",
+        "source_type": "discharge_note",
+        "source_label": "Neurology consult note",
+        "author_or_system": "Dr. Miriam Okonkwo",
+        "timestamp_local": "2026-02-10T14:15:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0301"
+          ],
+          "action_ids": [
+            "A-0301"
+          ],
+          "insight_ids": [
+            "I-0301"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0303",
+        "source_type": "cm_manual",
+        "source_label": "Case management family coordination note",
+        "author_or_system": "A. Rivera, RN CM",
+        "timestamp_local": "2026-02-13T17:05:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0302"
+          ],
+          "action_ids": [
+            "A-0302",
+            "A-0303"
+          ],
+          "insight_ids": [
+            "I-0302"
+          ]
+        }
+      }
+    ]
+  }
+}

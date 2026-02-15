@@ -1,0 +1,10 @@
+{
+  "schema_version": "v1",
+  "channels": [
+    {"channel": "phone", "description": "Agent-assisted call workflow"},
+    {"channel": "fax", "description": "Digital fax send with delivery tracking"},
+    {"channel": "email", "description": "Secure email outreach"},
+    {"channel": "portal", "description": "Payer portal status retrieval"},
+    {"channel": "page", "description": "Clinical paging with context payload"}
+  ]
+}

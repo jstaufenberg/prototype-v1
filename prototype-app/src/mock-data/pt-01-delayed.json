@@ -1,0 +1,787 @@
+{
+  "meta": {
+    "patient_id": "PT-01",
+    "schema_version": "v1",
+    "scenario_name": "Delayed - Auth + placement with outreach failure recovery",
+    "as_of_local": "2026-02-14T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Martha Chen",
+    "dob": "1947-03-14",
+    "mrn": "MRN-3378120",
+    "sex": "F",
+    "language": "English",
+    "primary_diagnosis": "Acute CHF exacerbation with functional decline",
+    "attending_physician": "Dr. Sofia Okafor",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "3N Medicine",
+      "bed": "3N-22A"
+    },
+    "disposition_target": "SNF",
+    "insurance": {
+      "payer_id": "PAY-UHC-MA",
+      "payer_name": "UnitedHealthcare Medicare Advantage",
+      "plan_type": "Medicare Advantage",
+      "member_id": "UHC-4409127",
+      "auth_required_for": [
+        "SNF placement"
+      ],
+      "auth_reference": "U-991102",
+      "auth_status": "PENDING",
+      "auth_deadline_local": "2026-02-14T15:00:00"
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-002",
+        "name": "Dr. Sofia Okafor"
+      },
+      "physical_therapy": {
+        "staff_id": "ST-004",
+        "name": "K. Patel, DPT"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": [
+      {
+        "event_id": "EV-0101",
+        "timestamp_local": "2026-02-11T06:42:00",
+        "event_type": "admission",
+        "title": "ED to inpatient admission",
+        "details": "Admitted for CHF exacerbation with volume overload and weakness."
+      },
+      {
+        "event_id": "EV-0102",
+        "timestamp_local": "2026-02-12T11:20:00",
+        "event_type": "progress",
+        "title": "Clinical improvement",
+        "details": "Diuresis effective; medically close to discharge."
+      },
+      {
+        "event_id": "EV-0103",
+        "timestamp_local": "2026-02-13T16:15:00",
+        "event_type": "referral",
+        "title": "Initial referrals sent",
+        "details": "Referrals sent to Sunrise, Willowbrook, Maplewood."
+      },
+      {
+        "event_id": "EV-0104",
+        "timestamp_local": "2026-02-14T07:04:00",
+        "event_type": "utilization_review",
+        "title": "Auth follow-up needed",
+        "details": "UHC auth still pending; deadline at 15:00."
+      }
+    ]
+  },
+  "clinical_source_text": {
+    "notes": [
+      {
+        "source_id": "SRC-0101",
+        "timestamp_local": "2026-02-11T07:10:00",
+        "author": "Dr. Sofia Okafor",
+        "note_type": "Admission H&P",
+        "text": "79F w CHF + CKD2, came in dyspneic + edema. Better after IV diuresis. Family says baseline independent but now weak, likely needs short rehab before safe home return."
+      },
+      {
+        "source_id": "SRC-0102",
+        "timestamp_local": "2026-02-13T10:40:00",
+        "author": "K. Patel, DPT",
+        "note_type": "PT Progress",
+        "text": "Ambulates 35 ft w RW and min assist. Not safe for independent transfer home. Recommend SNF rehab."
+      },
+      {
+        "source_id": "SRC-0103",
+        "timestamp_local": "2026-02-14T07:02:00",
+        "author": "A. Rivera, RN CM",
+        "note_type": "Case Management Progress",
+        "text": "UHC auth ref U-991102 pending. Sunrise accepted clinically but bed not confirmed. Willowbrook no response overnight. Maplewood fax failed (busy)."
+      }
+    ]
+  },
+  "milestones": {
+    "items": [
+      {
+        "milestone_id": "M-0100",
+        "label": "ED arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Patient triaged in ED before admission.",
+        "last_updated_local": "2026-02-11T06:30:00",
+        "source_refs": [
+          "EV-0101"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0101",
+        "label": "Inpatient bed arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Transferred from ED to 3N Medicine.",
+        "last_updated_local": "2026-02-11T06:42:00",
+        "source_refs": [
+          "EV-0101"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0102",
+        "label": "Disposition target identified",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "SURFACE_WHEN_BLOCKED",
+        "status": "DONE",
+        "status_reason": "SNF target agreed based on PT findings.",
+        "last_updated_local": "2026-02-13T10:40:00",
+        "source_refs": [
+          "SRC-0102"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0103",
+        "label": "Medically close to discharge",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "SURFACE_WHEN_BLOCKED",
+        "status": "DONE",
+        "status_reason": "Medical management stabilized.",
+        "last_updated_local": "2026-02-12T11:20:00",
+        "source_refs": [
+          "EV-0102"
+        ],
+        "changes_next_action": false
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-0101",
+        "type": "AUTH_PENDING_DEADLINE",
+        "severity": "RED",
+        "status": "ACTIVE",
+        "description": "UHC SNF auth pending; deadline today 15:00.",
+        "owner": "Payer",
+        "due_by_local": "2026-02-14T15:00:00",
+        "display_mode": "COLLAPSED_BY_DEFAULT",
+        "summary_line": "Next step: Have agent call UHC auth line now.",
+        "next_action_id": "A-0101",
+        "surfaced_at_local": "2026-02-14T07:04:00",
+        "resolved_at_local": null,
+        "lifecycle_events": [
+          {
+            "timestamp_local": "2026-02-14T07:04:00",
+            "event_type": "SURFACED",
+            "note": "Auth still pending at shift start."
+          },
+          {
+            "timestamp_local": "2026-02-14T09:10:00",
+            "event_type": "UPDATED",
+            "note": "Agent prepared payer call with ref and clinical summary context."
+          }
+        ],
+        "nested_steps": [],
+        "source_refs": [
+          "EV-0104",
+          "SRC-0103"
+        ],
+        "related_milestones": [
+          "M-0103"
+        ],
+        "evidence_summary": {
+          "source_count": 2,
+          "source_types": [
+            "adt_event",
+            "cm_manual",
+            "payer_portal"
+          ],
+          "last_evidence_update_local": "2026-02-14T09:10:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-0102",
+        "type": "PLACEMENT_PENDING_RESPONSE",
+        "severity": "RED",
+        "status": "ACTIVE",
+        "description": "Placement not finalized: one facility accepted pending bed, one no response, one failed transmission.",
+        "owner": "Case Management",
+        "due_by_local": "2026-02-14T13:00:00",
+        "display_mode": "COLLAPSED_BY_DEFAULT",
+        "summary_line": "Next step: Have agent recover failed outreach and follow up non-responders.",
+        "next_action_id": "A-0102",
+        "surfaced_at_local": "2026-02-14T07:05:00",
+        "resolved_at_local": null,
+        "lifecycle_events": [
+          {
+            "timestamp_local": "2026-02-13T16:15:00",
+            "event_type": "SURFACED",
+            "note": "Initial referral batch sent."
+          },
+          {
+            "timestamp_local": "2026-02-14T07:05:00",
+            "event_type": "UPDATED",
+            "note": "Maplewood fax failure detected; Willowbrook still no response."
+          }
+        ],
+        "nested_steps": [
+          {
+            "step_id": "NS-0101",
+            "label": "Referral packet auto-drafted",
+            "step_kind": "PREREQUISITE",
+            "execution_mode": "AGENT_AUTOMATIC",
+            "status": "DONE",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-13T16:10:00"
+          },
+          {
+            "step_id": "NS-0102",
+            "label": "Send referral packet to selected facilities",
+            "step_kind": "EXECUTION",
+            "execution_mode": "CM_PERMISSION_REQUIRED",
+            "status": "DONE",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-13T16:15:00"
+          },
+          {
+            "step_id": "NS-0103",
+            "label": "Track facility responses",
+            "step_kind": "TRACKING",
+            "execution_mode": "AGENT_BACKGROUND",
+            "status": "PENDING",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T07:05:00"
+          },
+          {
+            "step_id": "NS-0104",
+            "label": "Select accepting facility",
+            "step_kind": "DECISION",
+            "execution_mode": "CM_DECISION",
+            "status": "NOT_STARTED",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T07:05:00"
+          }
+        ],
+        "source_refs": [
+          "EV-0103",
+          "SRC-0103"
+        ],
+        "related_milestones": [
+          "M-0102"
+        ],
+        "evidence_summary": {
+          "source_count": 4,
+          "source_types": [
+            "pt_note",
+            "adt_event",
+            "cm_manual",
+            "facility_email"
+          ],
+          "last_evidence_update_local": "2026-02-14T07:05:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": [
+      {
+        "insight_id": "I-0101",
+        "category": "Urgency Signal",
+        "title": "Auth decision deadline in 6 hours",
+        "value": "UHC auth ref U-991102 must be resolved by 15:00.",
+        "confidence_label": "High",
+        "source_refs": [
+          "EV-0104",
+          "SRC-0103"
+        ],
+        "source_snippets": [
+          "UHC auth ref U-991102 pending",
+          "deadline today 15:00"
+        ],
+        "ui_surface": "Shift-start snapshot + Auth blocker",
+        "evidence_refs": [
+          "E-0101",
+          "E-0102"
+        ]
+      },
+      {
+        "insight_id": "I-0102",
+        "category": "Delivery Failure",
+        "title": "Maplewood outreach failed",
+        "value": "Fax channel failed with busy signal; requires channel switch.",
+        "confidence_label": "High",
+        "source_refs": [
+          "SRC-0103"
+        ],
+        "source_snippets": [
+          "Maplewood fax failed (busy)"
+        ],
+        "ui_surface": "Placement blocker detail",
+        "evidence_refs": [
+          "E-0102",
+          "E-0105"
+        ]
+      },
+      {
+        "insight_id": "I-0103",
+        "category": "Duplicate Outreach Warning",
+        "title": "Willowbrook contacted twice in last 12h",
+        "value": "Avoid duplicate outreach unless no-response escalation is intentional.",
+        "confidence_label": "Moderate",
+        "source_refs": [
+          "SRC-0103"
+        ],
+        "source_snippets": [
+          "Willowbrook no response overnight"
+        ],
+        "ui_surface": "Placement blocker follow-up action",
+        "evidence_refs": [
+          "E-0102",
+          "E-0104"
+        ]
+      }
+    ]
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-0101",
+        "title": "Get SNF auth decision before deadline",
+        "reason": "Prevent avoidable day delay from missed auth window.",
+        "status": "PROPOSED",
+        "priority": "HIGH",
+        "cta_primary": "Have agent call UHC now",
+        "cta_secondary": "Snooze auth follow-up to 11:00",
+        "permission_microcopy": "You approve. Agent executes and logs outcome.",
+        "ui_surface": "Patient Detail > Auth blocker card",
+        "dependencies": [
+          "B-0101:ACTIVE"
+        ],
+        "target_entities": [
+          {
+            "type": "payer",
+            "payer_id": "PAY-UHC-MA",
+            "name": "UnitedHealthcare Medicare Advantage",
+            "contact": "1-800-555-0131",
+            "reference": "U-991102"
+          }
+        ],
+        "execution_mode_default": "ONE_TIME",
+        "background_policy": {
+          "enabled": false,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      },
+      {
+        "action_id": "A-0102",
+        "title": "Recover failed facility outreach",
+        "reason": "One key facility outreach failed and needs immediate channel switch.",
+        "status": "PROPOSED",
+        "priority": "HIGH",
+        "cta_primary": "Have agent resend to Maplewood via email",
+        "cta_secondary": "Dismiss resend suggestion",
+        "permission_microcopy": "You approve. Agent switches channel and tracks delivery.",
+        "ui_surface": "Patient Detail > Placement blocker -> Delivery failure row",
+        "dependencies": [
+          "B-0102:ACTIVE"
+        ],
+        "target_entities": [
+          {
+            "type": "facility",
+            "facility_id": "FAC-004",
+            "name": "Maplewood Rehab",
+            "channel": "email"
+          }
+        ],
+        "execution_mode_default": "ONE_TIME",
+        "background_policy": {
+          "enabled": false,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      },
+      {
+        "action_id": "A-0103",
+        "title": "Keep backup options active",
+        "reason": "No response from Willowbrook; keep optional path warm in case Sunrise bed falls through.",
+        "status": "PROPOSED",
+        "priority": "MEDIUM",
+        "cta_primary": "Have agent follow up with Willowbrook",
+        "cta_secondary": "Dismiss backup follow-up suggestion",
+        "permission_microcopy": "You approve. Agent sends follow-up and updates response tracking.",
+        "ui_surface": "Patient Detail > Placement blocker -> Follow-up actions",
+        "dependencies": [
+          "B-0102.nested_steps.NS-0103:PENDING"
+        ],
+        "target_entities": [
+          {
+            "type": "facility",
+            "facility_id": "FAC-002",
+            "name": "Willowbrook Post-Acute",
+            "channel": "email"
+          }
+        ],
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Acceptance received",
+            "Decline received",
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": [
+      {
+        "log_id": "LOG-0101",
+        "timestamp_local": "2026-02-14T07:05:00",
+        "event": "Delivery failure detected",
+        "actor": "Agent",
+        "result": "Maplewood fax transmission failed (busy).",
+        "related_action_id": "A-0102",
+        "ui_impact": "Delivery failure row shown in placement blocker."
+      },
+      {
+        "log_id": "LOG-0102",
+        "timestamp_local": "2026-02-14T09:11:00",
+        "event": "Action approved",
+        "actor": "CM",
+        "result": "CM approved UHC auth follow-up.",
+        "related_action_id": "A-0101",
+        "ui_impact": "Auth blocker summary updated with call in progress."
+      },
+      {
+        "log_id": "LOG-0103",
+        "timestamp_local": "2026-02-14T09:19:00",
+        "event": "Channel switch executed",
+        "actor": "Agent",
+        "result": "Resent Maplewood outreach via email.",
+        "related_action_id": "A-0102",
+        "ui_impact": "Placement blocker tracking row moved to Sent."
+      }
+    ]
+  },
+  "worklist_view_state": {
+    "bucket_status": "Delayed",
+    "rank_position": 1,
+    "rank_reasons": [
+      "Blocked",
+      "Time pressure",
+      "Extended LOS risk"
+    ],
+    "los_day": 5,
+    "status_chips": [
+      "Auth Pending",
+      "Placement Pending"
+    ],
+    "sub_tags": [
+      "Maplewood delivery failed",
+      "Willowbrook no response"
+    ],
+    "last_agent_update": "Auth deadline + outreach failure surfaced",
+    "next_recommended_action_id": "A-0101"
+  },
+  "demo_playback": [
+    {
+      "step": 1,
+      "screen": "Shift-start snapshot",
+      "what_cm_sees": "Martha appears in Delayed: auth deadline + failed facility outreach.",
+      "cm_action": "Open patient plan",
+      "other_visible_options": []
+    },
+    {
+      "step": 2,
+      "screen": "Patient detail",
+      "what_cm_sees": "Two active blockers: Auth deadline and Placement pending responses.",
+      "cm_action": "Click 'Have agent call UHC now'",
+      "other_visible_options": [
+        "Snooze until 11:00"
+      ]
+    },
+    {
+      "step": 3,
+      "screen": "Auth confirmation",
+      "what_cm_sees": "UHC number + auth ref + deadline badge.",
+      "cm_action": "Confirm and run",
+      "other_visible_options": [
+        "Mark no answer"
+      ]
+    },
+    {
+      "step": 4,
+      "screen": "Placement blocker detail",
+      "what_cm_sees": "Failure row for Maplewood fax and no-response row for Willowbrook.",
+      "cm_action": "Click 'Have agent resend to Maplewood via email'",
+      "other_visible_options": [
+        "Retry fax instead"
+      ]
+    },
+    {
+      "step": 5,
+      "screen": "Placement blocker detail",
+      "what_cm_sees": "Duplicate outreach warning for Willowbrook shown.",
+      "cm_action": "Click 'Have agent follow up with Willowbrook'",
+      "other_visible_options": [
+        "Skip for now"
+      ]
+    },
+    {
+      "step": 6,
+      "screen": "Worklist refresh",
+      "what_cm_sees": "Rank position lowers as delivery recovers and auth follow-up completes.",
+      "cm_action": "Return to queue",
+      "other_visible_options": []
+    }
+  ],
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Initial delayed state",
+      "timestamp_local": "2026-02-14T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0101",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0102",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Delayed",
+        "rank_position": 1,
+        "rank_reasons": [
+          "Blocked",
+          "Time pressure",
+          "Extended LOS risk"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0101",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-0102",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-0103",
+          "status": "PROPOSED"
+        }
+      ]
+    },
+    {
+      "state_id": "T1",
+      "label": "After auth outreach + channel switch",
+      "timestamp_local": "2026-02-14T09:20:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0101",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0102",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Delayed",
+        "rank_position": 1,
+        "rank_reasons": [
+          "Blocked",
+          "Time pressure"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0101",
+          "status": "APPROVED"
+        },
+        {
+          "action_id": "A-0102",
+          "status": "EXECUTED"
+        },
+        {
+          "action_id": "A-0103",
+          "status": "PROPOSED"
+        }
+      ]
+    },
+    {
+      "state_id": "T2",
+      "label": "After backup follow-up",
+      "timestamp_local": "2026-02-14T09:40:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0101",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0102",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Pending",
+        "rank_position": 2,
+        "rank_reasons": [
+          "Blocked"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0101",
+          "status": "EXECUTED"
+        },
+        {
+          "action_id": "A-0102",
+          "status": "EXECUTED"
+        },
+        {
+          "action_id": "A-0103",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ],
+  "reference_data_links": {
+    "facilities": "reference-facilities.json",
+    "payers": "reference-payers.json",
+    "staff": "reference-staff.json",
+    "channels": "reference-channels.json"
+  },
+  "evidence_items": {
+    "items": [
+      {
+        "evidence_id": "E-0101",
+        "source_type": "adt_event",
+        "source_label": "Auth follow-up needed event",
+        "author_or_system": "Utilization Review Feed",
+        "timestamp_local": "2026-02-14T07:04:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0101"
+          ],
+          "action_ids": [
+            "A-0101"
+          ],
+          "insight_ids": [
+            "I-0101"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0102",
+        "source_type": "cm_manual",
+        "source_label": "Case management progress note",
+        "author_or_system": "A. Rivera, RN CM",
+        "timestamp_local": "2026-02-14T07:02:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0101",
+            "B-0102"
+          ],
+          "action_ids": [
+            "A-0101",
+            "A-0102"
+          ],
+          "insight_ids": [
+            "I-0101",
+            "I-0102",
+            "I-0103"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0103",
+        "source_type": "pt_note",
+        "source_label": "PT progress note",
+        "author_or_system": "K. Patel, DPT",
+        "timestamp_local": "2026-02-13T10:40:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0102"
+          ],
+          "action_ids": [
+            "A-0102"
+          ],
+          "insight_ids": []
+        }
+      },
+      {
+        "evidence_id": "E-0104",
+        "source_type": "adt_event",
+        "source_label": "Initial referral send event",
+        "author_or_system": "Referral queue service",
+        "timestamp_local": "2026-02-13T16:15:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0102"
+          ],
+          "action_ids": [
+            "A-0103"
+          ],
+          "insight_ids": [
+            "I-0103"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0105",
+        "source_type": "facility_email",
+        "source_label": "Facility delivery response metadata",
+        "author_or_system": "Sunrise Manor Intake",
+        "timestamp_local": "2026-02-14T06:45:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0102"
+          ],
+          "action_ids": [
+            "A-0102"
+          ],
+          "insight_ids": [
+            "I-0102"
+          ]
+        }
+      }
+    ]
+  }
+}

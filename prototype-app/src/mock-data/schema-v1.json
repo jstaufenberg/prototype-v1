@@ -1,0 +1,225 @@
+{
+  "schema_version": "v1",
+  "description": "CM prototype mock EHR schema for deterministic, blocker-centric demo data",
+  "status_enums": {
+    "bucket_status": ["Delayed", "At Risk", "Pending", "On Track"],
+    "milestone_status": ["DONE", "PENDING", "NOT_STARTED", "NOT_NEEDED"],
+    "milestone_tier": ["SCAFFOLD", "CM_CRITICAL"],
+    "display_emphasis": ["MUTED", "PROMINENT"],
+    "milestone_visibility": ["INTERNAL_ONLY", "SURFACE_WHEN_BLOCKED"],
+    "blocker_status": ["ACTIVE", "RESOLVED"],
+    "blocker_event_type": ["SURFACED", "UPDATED", "RESOLVED"],
+    "blocker_display_mode": ["COLLAPSED_BY_DEFAULT", "EXPANDED"],
+    "nested_step_kind": ["PREREQUISITE", "EXECUTION", "TRACKING", "DECISION"],
+    "nested_step_execution_mode": ["AGENT_AUTOMATIC", "CM_PERMISSION_REQUIRED", "AGENT_BACKGROUND", "CM_DECISION"],
+    "nested_step_visibility": ["BLOCKER_DETAIL_ONLY"],
+    "action_status": ["PROPOSED", "APPROVED", "DISMISSED", "SNOOZED", "EXECUTED", "FAILED"],
+    "severity": ["RED", "ORANGE", "YELLOW"],
+    "confidence_label": ["High", "Moderate", "Low"],
+    "priority_level": ["LOW", "MEDIUM", "HIGH"],
+    "rank_reason": ["Blocked", "Time pressure", "Extended LOS risk", "No active blocker"],
+    "channel_type": ["phone", "fax", "email", "portal", "page"],
+    "execution_mode_default": ["ONE_TIME", "BACKGROUND"],
+    "evidence_source_type": [
+      "discharge_note",
+      "pt_note",
+      "adt_event",
+      "payer_portal",
+      "facility_email",
+      "cm_manual"
+    ]
+  },
+  "required_sections": [
+    "meta",
+    "patient_profile",
+    "encounter_timeline",
+    "clinical_source_text",
+    "milestones",
+    "blockers",
+    "parsed_insights",
+    "proposed_actions",
+    "execution_log",
+    "evidence_items",
+    "worklist_view_state",
+    "demo_playback",
+    "demo_state_snapshots",
+    "reference_data_links"
+  ],
+  "section_specs": {
+    "meta": {
+      "required_fields": ["patient_id", "schema_version", "scenario_name", "as_of_local", "timezone"],
+      "notes": "Top-level identity and deterministic time anchor."
+    },
+    "patient_profile": {
+      "required_fields": [
+        "patient_name",
+        "dob",
+        "mrn",
+        "sex",
+        "primary_diagnosis",
+        "attending_physician",
+        "current_location",
+        "insurance",
+        "disposition_target"
+      ],
+      "notes": "CM context surface for safe actioning."
+    },
+    "encounter_timeline": {
+      "required_fields": ["events"],
+      "event_required_fields": ["event_id", "timestamp_local", "event_type", "title", "details"],
+      "notes": "Chronological context and provenance spine."
+    },
+    "clinical_source_text": {
+      "required_fields": ["notes"],
+      "note_required_fields": ["source_id", "timestamp_local", "author", "note_type", "text"],
+      "notes": "Messy, human-like source notes used to justify parsed insights."
+    },
+    "milestones": {
+      "required_fields": ["items"],
+      "milestone_required_fields": [
+        "milestone_id",
+        "label",
+        "tier",
+        "display_emphasis",
+        "visibility",
+        "status",
+        "status_reason",
+        "last_updated_local",
+        "source_refs",
+        "changes_next_action"
+      ],
+      "notes": "Background patient journey context. Keep muted in UI; only surface directly when tied to blocker state."
+    },
+    "blockers": {
+      "required_fields": ["items"],
+      "blocker_required_fields": [
+        "blocker_id",
+        "type",
+        "severity",
+        "status",
+        "description",
+        "owner",
+        "due_by_local",
+        "display_mode",
+        "summary_line",
+        "next_action_id",
+        "surfaced_at_local",
+        "resolved_at_local",
+        "lifecycle_events",
+        "nested_steps",
+        "evidence_summary",
+        "source_refs",
+        "related_milestones"
+      ],
+      "evidence_summary_required_fields": [
+        "source_count",
+        "source_types",
+        "last_evidence_update_local",
+        "view_evidence_label"
+      ],
+      "nested_step_required_fields": [
+        "step_id",
+        "label",
+        "step_kind",
+        "execution_mode",
+        "status",
+        "visibility",
+        "last_updated_local"
+      ],
+      "notes": "Primary operating surface. Show active and recently resolved blockers; nested steps stay inside each blocker."
+    },
+    "parsed_insights": {
+      "required_fields": ["items"],
+      "insight_required_fields": [
+        "insight_id",
+        "category",
+        "title",
+        "value",
+        "confidence_label",
+        "evidence_refs",
+        "source_refs",
+        "source_snippets",
+        "ui_surface"
+      ],
+      "notes": "Explainable intelligence layer from source notes to actionable context. Keep source_snippets for compatibility, but do not render snippets in prototype UI."
+    },
+    "proposed_actions": {
+      "required_fields": ["items"],
+      "action_required_fields": [
+        "action_id",
+        "title",
+        "reason",
+        "status",
+        "priority",
+        "cta_primary",
+        "cta_secondary",
+        "execution_mode_default",
+        "background_policy",
+        "permission_microcopy",
+        "ui_surface",
+        "dependencies",
+        "target_entities"
+      ],
+      "background_policy_required_fields": [
+        "enabled",
+        "cadence_hours",
+        "max_duration_hours",
+        "stop_conditions",
+        "notify_on"
+      ],
+      "notes": "JTBD outcome titles plus explicit delegation language ('Have agent ...')."
+    },
+    "execution_log": {
+      "required_fields": ["entries"],
+      "entry_required_fields": [
+        "log_id",
+        "timestamp_local",
+        "event",
+        "actor",
+        "result",
+        "related_action_id",
+        "ui_impact"
+      ],
+      "notes": "Deterministic event stream for playback and auditability."
+    },
+    "evidence_items": {
+      "required_fields": ["items"],
+      "item_required_fields": [
+        "evidence_id",
+        "source_type",
+        "source_label",
+        "author_or_system",
+        "timestamp_local",
+        "linked_to"
+      ],
+      "linked_to_required_fields": ["blocker_ids", "action_ids", "insight_ids"],
+      "notes": "Compact provenance metadata for evidence drawer; no raw snippets required in UI."
+    },
+    "worklist_view_state": {
+      "required_fields": [
+        "bucket_status",
+        "rank_position",
+        "rank_reasons",
+        "los_day",
+        "status_chips",
+        "sub_tags",
+        "last_agent_update",
+        "next_recommended_action_id"
+      ],
+      "notes": "High-signal triage row data only."
+    },
+    "demo_playback": {
+      "required_fields": ["step", "screen", "what_cm_sees", "cm_action", "other_visible_options"],
+      "notes": "Click-by-click walkthrough script."
+    },
+    "demo_state_snapshots": {
+      "required_fields": ["state_id", "label", "timestamp_local", "blocker_statuses", "worklist_state", "action_statuses"],
+      "worklist_state_required_fields": ["bucket_status", "rank_position"],
+      "notes": "Deterministic T0/T1/T2 states for repeatable demos; ranking is manual, not calculated."
+    },
+    "reference_data_links": {
+      "required_fields": ["facilities", "payers", "staff", "channels"],
+      "notes": "Pointers to shared lookup/reference files."
+    }
+  }
+}

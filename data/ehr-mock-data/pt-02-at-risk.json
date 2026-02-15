@@ -1,0 +1,900 @@
+{
+  "meta": {
+    "patient_id": "PT-02",
+    "schema_version": "v1",
+    "scenario_name": "At Risk - Respiratory placement + auth deadline",
+    "as_of_local": "2026-02-14T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Patricia Davis",
+    "dob": "1950-08-21",
+    "mrn": "MRN-4459012",
+    "sex": "F",
+    "language": "English",
+    "primary_diagnosis": "Acute COPD exacerbation with prior hypercarbic respiratory failure",
+    "attending_physician": "Dr. Sofia Okafor",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "4W Pulmonary",
+      "bed": "4W-18B"
+    },
+    "disposition_target": "SNF",
+    "insurance": {
+      "payer_id": "PAY-BCBS",
+      "payer_name": "Blue Cross Blue Shield PPO",
+      "plan_type": "Commercial PPO",
+      "member_id": "BCBS-99381277",
+      "auth_required_for": [
+        "SNF placement"
+      ],
+      "auth_reference": "A-778219",
+      "auth_status": "PENDING",
+      "auth_deadline_local": "2026-02-14T17:00:00"
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-002",
+        "name": "Dr. Sofia Okafor"
+      },
+      "pulmonology": {
+        "staff_id": "ST-003",
+        "name": "Dr. Daniel Hsu"
+      },
+      "physical_therapy": {
+        "staff_id": "ST-004",
+        "name": "K. Patel, DPT"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": [
+      {
+        "event_id": "EV-0201",
+        "timestamp_local": "2026-02-10T22:11:00",
+        "event_type": "admission",
+        "title": "ED to inpatient admission",
+        "details": "Admitted for severe COPD exacerbation with acute hypercarbia; started on BiPAP."
+      },
+      {
+        "event_id": "EV-0202",
+        "timestamp_local": "2026-02-11T09:30:00",
+        "event_type": "consult",
+        "title": "Pulmonology consulted",
+        "details": "Recommended step-down from BiPAP as tolerated; likely SNF level rehab due deconditioning."
+      },
+      {
+        "event_id": "EV-0203",
+        "timestamp_local": "2026-02-12T14:20:00",
+        "event_type": "progress",
+        "title": "Respiratory improvement",
+        "details": "Weaned from BiPAP to 4L NC; remains oxygen-dependent."
+      },
+      {
+        "event_id": "EV-0204",
+        "timestamp_local": "2026-02-13T10:05:00",
+        "event_type": "therapy",
+        "title": "PT evaluation complete",
+        "details": "Ambulated 60 ft with walker; recommends SNF rehab before safe discharge home."
+      },
+      {
+        "event_id": "EV-0205",
+        "timestamp_local": "2026-02-14T07:10:00",
+        "event_type": "utilization_review",
+        "title": "Auth check",
+        "details": "BCBS auth still pending; same-day response needed to avoid delay."
+      }
+    ]
+  },
+  "clinical_source_text": {
+    "notes": [
+      {
+        "source_id": "SRC-0201",
+        "timestamp_local": "2026-02-10T23:03:00",
+        "author": "Dr. Sofia Okafor",
+        "note_type": "Admission H&P",
+        "text": "78F? correction 75F with COPD GOLD III, OSA on home BiPAP, HTN. Came in w/ worsening SOB x3 days, accessory muscle use, pCO2 elevated in ED. Started BiPAP in ED then transferred up. High risk deconditioning if prolonged stay. Family says she lives alone, may not manage safely right away."
+      },
+      {
+        "source_id": "SRC-0202",
+        "timestamp_local": "2026-02-12T09:11:00",
+        "author": "Dr. Daniel Hsu",
+        "note_type": "Pulmonology Consult",
+        "text": "Resp status improved but still O2 dependent (currently 4L NC). BiPAP needed first 48h; might still need nocturnal BiPAP support depending on overnight sats. For post-acute setting: recommend facility able to manage oxygen titration and respiratory therapy follow-up."
+      },
+      {
+        "source_id": "SRC-0203",
+        "timestamp_local": "2026-02-13T10:22:00",
+        "author": "K. Patel, DPT",
+        "note_type": "PT Evaluation",
+        "text": "Pt ambulated ~60 ft using RW, contact-guard assist. Deconditioned vs baseline. Not safe for independent home discharge today. Recommend short-term SNF rehab."
+      },
+      {
+        "source_id": "SRC-0204",
+        "timestamp_local": "2026-02-14T07:05:00",
+        "author": "A. Rivera, RN CM",
+        "note_type": "Case Management Progress",
+        "text": "Placement planning in progress. Need SNF options that can handle respiratory needs + oxygen management. BCBS auth ref A-778219 still pending as of 07:00."
+      }
+    ]
+  },
+  "milestones": {
+    "items": [
+      {
+        "milestone_id": "M-0200",
+        "label": "ED arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Patient triaged and stabilized in ED before admit.",
+        "last_updated_local": "2026-02-10T21:48:00",
+        "source_refs": [
+          "EV-0201"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0201",
+        "label": "Inpatient bed arrival",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Transferred from ED to 4W Pulmonary.",
+        "last_updated_local": "2026-02-10T22:11:00",
+        "source_refs": [
+          "EV-0201"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0201A",
+        "label": "First attending assessment",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Attending documented initial assessment and trajectory.",
+        "last_updated_local": "2026-02-10T23:03:00",
+        "source_refs": [
+          "SRC-0201"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0202",
+        "label": "Disposition target identified",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "DONE",
+        "status_reason": "Care team aligned on SNF target disposition.",
+        "last_updated_local": "2026-02-13T10:22:00",
+        "source_refs": [
+          "SRC-0203",
+          "SRC-0204"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0203",
+        "label": "Medically approaching discharge",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "SURFACE_WHEN_BLOCKED",
+        "status": "DONE",
+        "status_reason": "Clinical trajectory improved; no ICU-level support needed.",
+        "last_updated_local": "2026-02-13T16:10:00",
+        "source_refs": [
+          "SRC-0202",
+          "EV-0203"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0211",
+        "label": "Discharge order signed",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "NOT_STARTED",
+        "status_reason": "Expected after auth and accepting facility are confirmed.",
+        "last_updated_local": "2026-02-14T08:06:00",
+        "source_refs": [
+          "EV-0205",
+          "SRC-0204"
+        ],
+        "changes_next_action": false
+      },
+      {
+        "milestone_id": "M-0212",
+        "label": "Physical departure",
+        "tier": "SCAFFOLD",
+        "display_emphasis": "MUTED",
+        "visibility": "INTERNAL_ONLY",
+        "status": "NOT_STARTED",
+        "status_reason": "Final endpoint after order and transport completion.",
+        "last_updated_local": "2026-02-14T08:06:00",
+        "source_refs": [
+          "M-0211"
+        ],
+        "changes_next_action": false
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-0201",
+        "type": "AUTH_PENDING_DEADLINE",
+        "severity": "RED",
+        "status": "ACTIVE",
+        "description": "SNF prior auth pending; deadline today 17:00.",
+        "owner": "Payer",
+        "due_by_local": "2026-02-14T17:00:00",
+        "display_mode": "COLLAPSED_BY_DEFAULT",
+        "summary_line": "Next step: Have agent call BCBS auth line now.",
+        "next_action_id": "A-0201",
+        "surfaced_at_local": "2026-02-14T07:10:00",
+        "resolved_at_local": null,
+        "lifecycle_events": [
+          {
+            "timestamp_local": "2026-02-14T07:10:00",
+            "event_type": "SURFACED",
+            "note": "Auth still pending at shift start; same-day action required."
+          },
+          {
+            "timestamp_local": "2026-02-14T08:10:00",
+            "event_type": "UPDATED",
+            "note": "Permission card generated for agent-executed auth follow-up."
+          }
+        ],
+        "nested_steps": [],
+        "source_refs": [
+          "EV-0205",
+          "SRC-0204"
+        ],
+        "related_milestones": [
+          "M-0203"
+        ],
+        "evidence_summary": {
+          "source_count": 3,
+          "source_types": [
+            "adt_event",
+            "cm_manual",
+            "payer_portal"
+          ],
+          "last_evidence_update_local": "2026-02-14T08:10:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-0202",
+        "type": "PLACEMENT_CAPABILITY_CONSTRAINT",
+        "severity": "ORANGE",
+        "status": "ACTIVE",
+        "description": "Receiving facility must support respiratory therapy and oxygen management.",
+        "owner": "Case Management",
+        "due_by_local": "2026-02-14T12:00:00",
+        "display_mode": "COLLAPSED_BY_DEFAULT",
+        "summary_line": "Next step: review packet then Have agent send to facilities.",
+        "next_action_id": "A-0202",
+        "surfaced_at_local": "2026-02-14T07:12:00",
+        "resolved_at_local": null,
+        "lifecycle_events": [
+          {
+            "timestamp_local": "2026-02-14T07:12:00",
+            "event_type": "SURFACED",
+            "note": "Parsed requirement indicates respiratory-capable SNF is mandatory."
+          },
+          {
+            "timestamp_local": "2026-02-14T08:05:00",
+            "event_type": "UPDATED",
+            "note": "Agent auto-drafted referral packet; awaiting CM review and send permission."
+          }
+        ],
+        "nested_steps": [
+          {
+            "step_id": "NS-0201",
+            "label": "Referral packet auto-drafted",
+            "step_kind": "PREREQUISITE",
+            "execution_mode": "AGENT_AUTOMATIC",
+            "status": "DONE",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T08:05:00"
+          },
+          {
+            "step_id": "NS-0202",
+            "label": "Send referral packet to selected facilities",
+            "step_kind": "EXECUTION",
+            "execution_mode": "CM_PERMISSION_REQUIRED",
+            "status": "NOT_STARTED",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T08:05:00"
+          },
+          {
+            "step_id": "NS-0203",
+            "label": "Track facility responses",
+            "step_kind": "TRACKING",
+            "execution_mode": "AGENT_BACKGROUND",
+            "status": "NOT_STARTED",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T08:05:00"
+          },
+          {
+            "step_id": "NS-0204",
+            "label": "Select accepting facility",
+            "step_kind": "DECISION",
+            "execution_mode": "CM_DECISION",
+            "status": "NOT_STARTED",
+            "visibility": "BLOCKER_DETAIL_ONLY",
+            "last_updated_local": "2026-02-14T08:05:00"
+          }
+        ],
+        "source_refs": [
+          "SRC-0202",
+          "SRC-0204"
+        ],
+        "related_milestones": [
+          "M-0202"
+        ],
+        "evidence_summary": {
+          "source_count": 3,
+          "source_types": [
+            "pt_note",
+            "cm_manual",
+            "facility_email"
+          ],
+          "last_evidence_update_local": "2026-02-14T08:05:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": [
+      {
+        "insight_id": "I-0201",
+        "category": "Discharge Requirement",
+        "title": "Respiratory-capable SNF required",
+        "value": "Target facilities must handle oxygen titration and respiratory therapy; nocturnal BiPAP may be needed.",
+        "confidence_label": "High",
+        "source_refs": [
+          "SRC-0202",
+          "SRC-0204"
+        ],
+        "source_snippets": [
+          "recommend facility able to manage oxygen titration and respiratory therapy follow-up",
+          "Need SNF options that can handle respiratory needs + oxygen management"
+        ],
+        "ui_surface": "Patient Detail > Insights panel + Worklist sub-tag",
+        "evidence_refs": [
+          "E-0202",
+          "E-0203"
+        ]
+      },
+      {
+        "insight_id": "I-0202",
+        "category": "Urgency Signal",
+        "title": "Auth decision deadline today",
+        "value": "BCBS auth ref A-778219 requires same-day follow-up before 17:00.",
+        "confidence_label": "High",
+        "source_refs": [
+          "EV-0205",
+          "SRC-0204"
+        ],
+        "source_snippets": [
+          "BCBS auth still pending; same-day response needed",
+          "auth ref A-778219 still pending as of 07:00"
+        ],
+        "ui_surface": "Shift-start snapshot + Patient Detail alert",
+        "evidence_refs": [
+          "E-0201",
+          "E-0203"
+        ]
+      },
+      {
+        "insight_id": "I-0203",
+        "category": "Capability Mismatch Warning",
+        "title": "One candidate facility may not meet respiratory requirement",
+        "value": "Maplewood Rehab listed in network file with no respiratory therapy marker.",
+        "confidence_label": "Moderate",
+        "source_refs": [
+          "SRC-0202"
+        ],
+        "source_snippets": [
+          "might still need nocturnal BiPAP support",
+          "facility capability data missing respiratory service flag for Maplewood"
+        ],
+        "ui_surface": "Referral send dialog warning",
+        "evidence_refs": [
+          "E-0202",
+          "E-0204"
+        ]
+      }
+    ]
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-0201",
+        "title": "Get SNF auth decision before deadline",
+        "reason": "Auth is pending with deadline today 17:00; prevent avoidable discharge delay.",
+        "status": "PROPOSED",
+        "priority": "HIGH",
+        "cta_primary": "Have agent call BCBS now",
+        "cta_secondary": "Snooze auth follow-up to 14:00",
+        "permission_microcopy": "You approve. Agent executes and logs outcome.",
+        "ui_surface": "Patient Detail > Auth blocker card",
+        "dependencies": [
+          "B-0201:ACTIVE"
+        ],
+        "target_entities": [
+          {
+            "type": "payer",
+            "payer_id": "PAY-BCBS",
+            "name": "Blue Cross Blue Shield PPO",
+            "contact": "1-800-555-0267",
+            "reference": "A-778219"
+          }
+        ],
+        "execution_mode_default": "ONE_TIME",
+        "background_policy": {
+          "enabled": false,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      },
+      {
+        "action_id": "A-0202",
+        "title": "Start SNF placement outreach with respiratory requirements",
+        "reason": "Placement can start in parallel while auth is pending; respiratory requirement must be visible in packet.",
+        "status": "PROPOSED",
+        "priority": "HIGH",
+        "cta_primary": "Have agent send to 4 facilities",
+        "cta_secondary": "Dismiss referral send suggestion",
+        "permission_microcopy": "You approve. Agent sends and tracks each facility separately.",
+        "ui_surface": "Patient Detail > Placement blocker -> Referral flow",
+        "dependencies": [
+          "B-0202:ACTIVE"
+        ],
+        "target_entities": [
+          {
+            "type": "facility",
+            "facility_id": "FAC-001",
+            "name": "Sunrise Manor",
+            "channel": "fax"
+          },
+          {
+            "type": "facility",
+            "facility_id": "FAC-002",
+            "name": "Willowbrook Post-Acute",
+            "channel": "email"
+          },
+          {
+            "type": "facility",
+            "facility_id": "FAC-003",
+            "name": "Oakwood Skilled Nursing",
+            "channel": "fax"
+          },
+          {
+            "type": "facility",
+            "facility_id": "FAC-004",
+            "name": "Maplewood Rehab",
+            "channel": "fax",
+            "warning": "Capability mismatch: respiratory therapy not confirmed"
+          }
+        ],
+        "execution_mode_default": "ONE_TIME",
+        "background_policy": {
+          "enabled": false,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      },
+      {
+        "action_id": "A-0203",
+        "title": "Prevent stalled referrals",
+        "reason": "Standard 24h follow-up improves response reliability after send.",
+        "status": "PROPOSED",
+        "priority": "MEDIUM",
+        "cta_primary": "Have agent schedule 24h follow-up",
+        "cta_secondary": "Dismiss follow-up scheduling suggestion",
+        "permission_microcopy": "You approve. Agent schedules follow-up and updates tracking state.",
+        "ui_surface": "Patient Detail > Placement blocker -> Tracking panel",
+        "dependencies": [
+          "B-0202.nested_steps.NS-0202:NOT_STARTED"
+        ],
+        "target_entities": [
+          {
+            "type": "rule",
+            "name": "No response after 24h",
+            "action": "Create follow-up call task"
+          }
+        ],
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 12,
+          "max_duration_hours": 72,
+          "stop_conditions": [
+            "Acceptance received",
+            "Decline received",
+            "Manual stop"
+          ],
+          "notify_on": [
+            "failure",
+            "status_change"
+          ]
+        }
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": [
+      {
+        "log_id": "LOG-0201",
+        "timestamp_local": "2026-02-14T07:12:00",
+        "event": "Parsed insight generated",
+        "actor": "Agent",
+        "result": "Respiratory-capable SNF requirement extracted from notes.",
+        "related_action_id": null,
+        "ui_impact": "Shows sub-tag under Placement Needed."
+      },
+      {
+        "log_id": "LOG-0202",
+        "timestamp_local": "2026-02-14T07:13:00",
+        "event": "Urgency rule fired",
+        "actor": "Agent",
+        "result": "Auth deadline alert created for today 17:00.",
+        "related_action_id": "A-0201",
+        "ui_impact": "Patient appears in At Risk with auth-expiring chip."
+      },
+      {
+        "log_id": "LOG-0203",
+        "timestamp_local": "2026-02-14T08:05:00",
+        "event": "Action proposed",
+        "actor": "Agent",
+        "result": "Review and send referral packet to four candidate facilities.",
+        "related_action_id": "A-0202",
+        "ui_impact": "Action card shown in patient detail."
+      }
+    ]
+  },
+  "worklist_view_state": {
+    "bucket_status": "At Risk",
+    "rank_position": 2,
+    "rank_reasons": [
+      "Blocked",
+      "Time pressure",
+      "Extended LOS risk"
+    ],
+    "los_day": 4,
+    "status_chips": [
+      "Auth Expiring Today",
+      "Placement Needed"
+    ],
+    "sub_tags": [
+      "Respiratory-capable SNF required"
+    ],
+    "last_agent_update": "Auth deadline alert + packet draft ready",
+    "next_recommended_action_id": "A-0201"
+  },
+  "demo_playback": [
+    {
+      "step": 1,
+      "screen": "Shift-start snapshot",
+      "what_cm_sees": "Patricia flagged: auth decision due today 17:00; placement required.",
+      "cm_action": "Open patient plan",
+      "other_visible_options": []
+    },
+    {
+      "step": 2,
+      "screen": "Worklist",
+      "what_cm_sees": "At Risk row with chips Auth Expiring Today + Placement Needed and sub-tag Respiratory-capable SNF required.",
+      "cm_action": "Open patient plan",
+      "other_visible_options": []
+    },
+    {
+      "step": 3,
+      "screen": "Patient detail",
+      "what_cm_sees": "Active blockers list with two cards: Auth deadline and Placement requirement.",
+      "cm_action": "Click 'Have agent call BCBS now'",
+      "other_visible_options": [
+        "Snooze until 14:00"
+      ]
+    },
+    {
+      "step": 4,
+      "screen": "Action confirmation",
+      "what_cm_sees": "Payer number + auth ref A-778219 + deadline badge.",
+      "cm_action": "Confirm call outcome: 'Escalated, decision expected in 2h'",
+      "other_visible_options": [
+        "Mark no answer",
+        "Retry later"
+      ]
+    },
+    {
+      "step": 5,
+      "screen": "Patient detail",
+      "what_cm_sees": "Placement blocker card is collapsed with summary line. On expand, nested referral steps appear with Maplewood capability warning.",
+      "cm_action": "Click 'Edit package first'",
+      "other_visible_options": [
+        "Have agent send to 4 facilities"
+      ]
+    },
+    {
+      "step": 6,
+      "screen": "Referral tracking view",
+      "what_cm_sees": "Draft packet with clinical summary.",
+      "cm_action": "Add line: 'Required: oxygen titration support and respiratory therapy follow-up; possible nocturnal BiPAP.'",
+      "other_visible_options": [
+        "Cancel edit",
+        "Restore draft"
+      ]
+    },
+    {
+      "step": 7,
+      "screen": "Referral send dialog",
+      "what_cm_sees": "4 facilities listed with channel; Maplewood warning shown.",
+      "cm_action": "Click 'Have agent send now'",
+      "other_visible_options": [
+        "Remove Maplewood",
+        "Back to package"
+      ]
+    },
+    {
+      "step": 8,
+      "screen": "Tracking",
+      "what_cm_sees": "Placement blocker stays active while nested tracking statuses initialize (Queued -> Sent).",
+      "cm_action": "Click 'Have agent schedule 24h follow-up'",
+      "other_visible_options": [
+        "Skip for now"
+      ]
+    },
+    {
+      "step": 9,
+      "screen": "Worklist refresh",
+      "what_cm_sees": "Patient rank drops if auth returns approved and at least one facility responds.",
+      "cm_action": "Return to queue",
+      "other_visible_options": []
+    }
+  ],
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Shift start",
+      "timestamp_local": "2026-02-14T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0201",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0202",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "At Risk",
+        "rank_position": 2,
+        "rank_reasons": [
+          "Blocked",
+          "Time pressure",
+          "Extended LOS risk"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0201",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-0202",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-0203",
+          "status": "PROPOSED"
+        }
+      ]
+    },
+    {
+      "state_id": "T1",
+      "label": "After auth outreach approved",
+      "timestamp_local": "2026-02-14T09:15:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0201",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0202",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "At Risk",
+        "rank_position": 2,
+        "rank_reasons": [
+          "Blocked",
+          "Time pressure"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0201",
+          "status": "APPROVED"
+        },
+        {
+          "action_id": "A-0202",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-0203",
+          "status": "PROPOSED"
+        }
+      ]
+    },
+    {
+      "state_id": "T2",
+      "label": "After referral send + follow-up rule",
+      "timestamp_local": "2026-02-14T09:35:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-0201",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-0202",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Pending",
+        "rank_position": 3,
+        "rank_reasons": [
+          "Blocked"
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-0201",
+          "status": "EXECUTED"
+        },
+        {
+          "action_id": "A-0202",
+          "status": "EXECUTED"
+        },
+        {
+          "action_id": "A-0203",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ],
+  "reference_data_links": {
+    "facilities": "reference-facilities.json",
+    "payers": "reference-payers.json",
+    "staff": "reference-staff.json",
+    "channels": "reference-channels.json"
+  },
+  "evidence_items": {
+    "items": [
+      {
+        "evidence_id": "E-0201",
+        "source_type": "adt_event",
+        "source_label": "Auth check event",
+        "author_or_system": "Utilization Review Feed",
+        "timestamp_local": "2026-02-14T07:10:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0201"
+          ],
+          "action_ids": [
+            "A-0201"
+          ],
+          "insight_ids": [
+            "I-0202"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0202",
+        "source_type": "pt_note",
+        "source_label": "Pulmonology/PT respiratory requirement notes",
+        "author_or_system": "Dr. Daniel Hsu + K. Patel, DPT",
+        "timestamp_local": "2026-02-13T10:22:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0202"
+          ],
+          "action_ids": [
+            "A-0202"
+          ],
+          "insight_ids": [
+            "I-0201",
+            "I-0203"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0203",
+        "source_type": "cm_manual",
+        "source_label": "Case management progress note",
+        "author_or_system": "A. Rivera, RN CM",
+        "timestamp_local": "2026-02-14T07:05:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0201",
+            "B-0202"
+          ],
+          "action_ids": [
+            "A-0201",
+            "A-0202"
+          ],
+          "insight_ids": [
+            "I-0201",
+            "I-0202"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0204",
+        "source_type": "facility_email",
+        "source_label": "Facility capability metadata response",
+        "author_or_system": "Maplewood Intake",
+        "timestamp_local": "2026-02-14T08:03:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0202"
+          ],
+          "action_ids": [
+            "A-0202",
+            "A-0203"
+          ],
+          "insight_ids": [
+            "I-0203"
+          ]
+        }
+      },
+      {
+        "evidence_id": "E-0205",
+        "source_type": "payer_portal",
+        "source_label": "BCBS portal auth status",
+        "author_or_system": "BCBS Provider Portal",
+        "timestamp_local": "2026-02-14T07:00:00",
+        "linked_to": {
+          "blocker_ids": [
+            "B-0201"
+          ],
+          "action_ids": [
+            "A-0201"
+          ],
+          "insight_ids": [
+            "I-0202"
+          ]
+        }
+      }
+    ]
+  }
+}

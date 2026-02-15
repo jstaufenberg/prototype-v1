@@ -1,0 +1,41 @@
+{
+  "schema_version": "v1",
+  "payers": [
+    {
+      "payer_id": "PAY-BCBS",
+      "name": "Blue Cross Blue Shield PPO",
+      "default_channels": ["phone", "fax", "portal"],
+      "auth_phone": "1-800-555-0267"
+    },
+    {
+      "payer_id": "PAY-UHC-MA",
+      "name": "UnitedHealthcare Medicare Advantage",
+      "default_channels": ["phone", "portal", "fax"],
+      "auth_phone": "1-800-555-0131"
+    },
+    {
+      "payer_id": "PAY-AETNA",
+      "name": "Aetna PPO",
+      "default_channels": ["phone", "portal", "fax"],
+      "auth_phone": "1-800-555-0178"
+    },
+    {
+      "payer_id": "PAY-MEDICARE-A",
+      "name": "Medicare Traditional (Part A)",
+      "default_channels": ["portal"],
+      "auth_phone": null
+    },
+    {
+      "payer_id": "PAY-CIGNA",
+      "name": "Cigna Commercial",
+      "default_channels": ["phone", "portal", "fax"],
+      "auth_phone": "1-800-555-0210"
+    },
+    {
+      "payer_id": "PAY-HUMANA-MA",
+      "name": "Humana Medicare Advantage",
+      "default_channels": ["phone", "portal", "fax"],
+      "auth_phone": "1-800-555-0242"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": "v1",
+  "facilities": [
+    {
+      "facility_id": "FAC-001",
+      "name": "Sunrise Manor",
+      "type": "SNF",
+      "in_network_payers": ["PAY-BCBS", "PAY-UHC-MA", "PAY-AETNA", "PAY-MEDICARE-A"],
+      "capabilities": {
+        "respiratory_therapy": true,
+        "oxygen_titration": true,
+        "bipap_support": true,
+        "iv_antibiotics": true
+      },
+      "contacts": [
+        {"contact_id": "FAC-001-C1", "channel": "fax", "value": "312-555-1101"},
+        {"contact_id": "FAC-001-C2", "channel": "phone", "value": "312-555-1102"}
+      ]
+    },
+    {
+      "facility_id": "FAC-002",
+      "name": "Willowbrook Post-Acute",
+      "type": "SNF",
+      "in_network_payers": ["PAY-UHC-MA", "PAY-BCBS", "PAY-AETNA"],
+      "capabilities": {
+        "respiratory_therapy": true,
+        "oxygen_titration": true,
+        "bipap_support": false,
+        "iv_antibiotics": true
+      },
+      "contacts": [
+        {"contact_id": "FAC-002-C1", "channel": "email", "value": "intake@willowbrookpa.org"},
+        {"contact_id": "FAC-002-C2", "channel": "phone", "value": "312-555-2202"}
+      ]
+    },
+    {
+      "facility_id": "FAC-003",
+      "name": "Oakwood Skilled Nursing",
+      "type": "SNF",
+      "in_network_payers": ["PAY-BCBS", "PAY-AETNA", "PAY-MEDICARE-A"],
+      "capabilities": {
+        "respiratory_therapy": true,
+        "oxygen_titration": true,
+        "bipap_support": true,
+        "iv_antibiotics": false
+      },
+      "contacts": [
+        {"contact_id": "FAC-003-C1", "channel": "fax", "value": "312-555-3301"},
+        {"contact_id": "FAC-003-C2", "channel": "phone", "value": "312-555-3302"}
+      ]
+    },
+    {
+      "facility_id": "FAC-004",
+      "name": "Maplewood Rehab",
+      "type": "SNF",
+      "in_network_payers": ["PAY-UHC-MA", "PAY-BCBS", "PAY-MEDICARE-A"],
+      "capabilities": {
+        "respiratory_therapy": false,
+        "oxygen_titration": true,
+        "bipap_support": false,
+        "iv_antibiotics": true
+      },
+      "contacts": [
+        {"contact_id": "FAC-004-C1", "channel": "fax", "value": "312-555-4401"},
+        {"contact_id": "FAC-004-C2", "channel": "email", "value": "admissions@maplewoodrehab.com"}
+      ]
+    },
+    {
+      "facility_id": "FAC-005",
+      "name": "Riverside Recovery",
+      "type": "SNF",
+      "in_network_payers": ["PAY-HUMANA-MA", "PAY-BCBS", "PAY-MEDICARE-A"],
+      "capabilities": {
+        "respiratory_therapy": true,
+        "oxygen_titration": true,
+        "bipap_support": true,
+        "iv_antibiotics": true
+      },
+      "contacts": [
+        {"contact_id": "FAC-005-C1", "channel": "fax", "value": "312-555-5501"},
+        {"contact_id": "FAC-005-C2", "channel": "phone", "value": "312-555-5502"}
+      ]
+    }
+  ]
+}

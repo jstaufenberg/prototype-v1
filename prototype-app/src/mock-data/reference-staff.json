@@ -1,0 +1,11 @@
+{
+  "schema_version": "v1",
+  "staff": [
+    {"staff_id": "ST-001", "name": "A. Rivera, RN", "role": "Case Manager", "pager": "555-4101"},
+    {"staff_id": "ST-002", "name": "Dr. Sofia Okafor", "role": "Hospitalist", "pager": "555-4102"},
+    {"staff_id": "ST-003", "name": "Dr. Daniel Hsu", "role": "Pulmonology", "pager": "555-4103"},
+    {"staff_id": "ST-004", "name": "K. Patel, DPT", "role": "Physical Therapy", "pager": "555-4104"},
+    {"staff_id": "ST-005", "name": "Dr. Miriam Okonkwo", "role": "Neurology", "pager": "555-4105"},
+    {"staff_id": "ST-006", "name": "J. Lin, RN", "role": "Evening Case Manager", "pager": "555-4106"}
+  ]
+}
