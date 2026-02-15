@@ -68,7 +68,7 @@ export default function FailureRecoveryModal({
           <p>{recoveryAction.reason}</p>
         </div>
 
-        <div className="modal-buttons" style={{ flexWrap: 'wrap' }}>
+        <div className="modal-buttons modal-footer-sticky" style={{ flexWrap: 'wrap' }}>
           <button className="primary-action" onClick={onRecoveryAction}>
             {recoveryAction.cta_primary}
           </button>

@@ -1,7 +1,9 @@
 import type { PatientRecord } from '../types/mockData';
+import StickyActionBar from './StickyActionBar';
 
 interface ShiftStartSnapshotProps {
   patients: PatientRecord[];
+  lastActiveAt?: string | null;
   onGoToWorklist: () => void;
 }
 
@@ -86,7 +88,16 @@ function makeHeader(name: string, age: number | null, sex: string | null | undef
   return `${name} · ${demographicToken(age, sex)} · ${room}`;
 }
 
-export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftStartSnapshotProps) {
+function additionalReasonLabel(count: number): string {
+  if (count === 1) return '1 additional reason — View all';
+  return `${count} additional reasons — View all`;
+}
+
+export default function ShiftStartSnapshot({
+  patients,
+  lastActiveAt,
+  onGoToWorklist
+}: ShiftStartSnapshotProps) {
   const aggregates = new Map<string, PatientAggregate>();
   const now = Date.now();
 
@@ -152,14 +163,14 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
       const extraItems = sortedItems.slice(1).map((item) => ({
         reason: clipped(item.description),
         when: item.updatedAt ? `${formatClock(item.updatedAt)} (overnight)` : 'Overnight',
-        status: 'Resolved'
+        status: 'Closed'
       }));
       return {
         id: `${entry.patientId}-overnight`,
         header: entry.header,
         reason: clipped(primary.description),
         when: latest > 0 ? `${formatClock(latest)} (overnight)` : 'Overnight',
-        status: entry.overnightItems.length > 1 ? `${entry.overnightItems.length} changes resolved` : 'Resolved',
+        status: entry.overnightItems.length > 1 ? `${entry.overnightItems.length} changes closed` : 'Closed',
         extraItems
       };
     });
@@ -173,14 +184,14 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
       const extraItems = sortedDueItems.slice(1).map((item) => ({
         reason: clipped(item.description),
         when: formatWhenWithRelative(item.dueAt, now),
-        status: 'Due item'
+        status: 'Open item'
       }));
       return {
         id: `${entry.patientId}-due`,
         header: entry.header,
         reason: clipped(primary.description),
         when: formatWhenWithRelative(primary.dueAt, now),
-        status: entry.dueItems.length > 1 ? `${entry.dueItems.length} due items` : '1 due item',
+        status: entry.dueItems.length > 1 ? `${entry.dueItems.length} open items` : '1 open item',
         extraItems
       };
     });
@@ -196,25 +207,25 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
       header: entry.header,
       reason: 'Actions awaiting review',
       when: 'Now',
-      status: `${entry.reviewCount} pending actions`,
+      status: entry.reviewCount === 1 ? '1 open item' : `${entry.reviewCount} open items`,
       extraItems: []
     }));
 
   const cards: SnapshotCard[] = [
     {
-      title: 'Overnight changes',
+      title: 'Since you were away',
       items: overnightEntries,
       itemCount: values.reduce((sum, entry) => sum + entry.overnightItems.length, 0),
       patientCount: overnightEntries.length
     },
     {
-      title: 'Due today',
+      title: 'Needs action today',
       items: dueEntries,
       itemCount: values.reduce((sum, entry) => sum + entry.dueItems.length, 0),
       patientCount: dueEntries.length
     },
     {
-      title: 'Needs review',
+      title: 'Awaiting your review',
       items: reviewEntries,
       itemCount: values.reduce((sum, entry) => sum + entry.reviewCount, 0),
       patientCount: reviewEntries.length
@@ -223,15 +234,27 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
 
   const flaggedCount = reviewEntries.length;
 
-  const timestamp = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const timestamp = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const parsedLastActive = lastActiveAt ? new Date(lastActiveAt).getTime() : NaN;
+  const gapHours = Number.isNaN(parsedLastActive) ? Infinity : (now - parsedLastActive) / 3600000;
+  const contextPrefix = gapHours >= 8 ? 'Since your last shift' : 'Since your last check-in';
+  const contextLine = `${contextPrefix} · Data current as of ${timestamp}`;
 
   return (
     <section className="snapshot-screen">
-      <h2>Shift-start snapshot</h2>
-      <p className="freshness">As of {timestamp}</p>
+      <h2>What changed while you were away</h2>
+      <p className="freshness">{contextLine}</p>
+      <StickyActionBar
+        primaryAction={<button className="primary-action" onClick={onGoToWorklist}>Go to worklist</button>}
+        secondaryActions={
+          flaggedCount > 0 ? <button onClick={onGoToWorklist}>Review flagged ({flaggedCount})</button> : undefined
+        }
+        stickyOffset={8}
+        compact
+      />
 
       {cards.length === 0 && (
-        <p className="snapshot-empty">All quiet. No overnight changes, nothing due, nothing to review.</p>
+        <p className="snapshot-empty">All quiet. No recent changes, no actions due, nothing awaiting review.</p>
       )}
 
       <div className="snapshot-cards">
@@ -246,33 +269,33 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
                 <article key={entry.id} className="snapshot-entry">
                   <p className="snapshot-entry-name">{entry.header}</p>
                   <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">Reason</span>
+                    <span className="snapshot-entry-label">Why this matters</span>
                     <span>{entry.reason}</span>
                   </p>
                   <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">When</span>
+                    <span className="snapshot-entry-label">Action by</span>
                     <span>{entry.when}</span>
                   </p>
                   <p className="snapshot-entry-line">
-                    <span className="snapshot-entry-label">Status</span>
+                    <span className="snapshot-entry-label">Current state</span>
                     <span>{entry.status}</span>
                   </p>
                   {entry.extraItems.length > 0 && (
                     <details className="snapshot-entry-details">
-                      <summary>Other reasons: {entry.extraItems.length} (view all)</summary>
+                      <summary>{additionalReasonLabel(entry.extraItems.length)}</summary>
                       <div className="snapshot-extra-list">
                         {entry.extraItems.map((item, index) => (
                           <article key={`${entry.id}-extra-${index}`} className="snapshot-extra-item">
                             <p className="snapshot-entry-line">
-                              <span className="snapshot-entry-label">Reason</span>
+                              <span className="snapshot-entry-label">Why this matters</span>
                               <span>{item.reason}</span>
                             </p>
                             <p className="snapshot-entry-line">
-                              <span className="snapshot-entry-label">When</span>
+                              <span className="snapshot-entry-label">Action by</span>
                               <span>{item.when}</span>
                             </p>
                             <p className="snapshot-entry-line">
-                              <span className="snapshot-entry-label">Status</span>
+                              <span className="snapshot-entry-label">Current state</span>
                               <span>{item.status}</span>
                             </p>
                           </article>
@@ -285,13 +308,6 @@ export default function ShiftStartSnapshot({ patients, onGoToWorklist }: ShiftSt
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="snapshot-buttons">
-        <button className="primary-action" onClick={onGoToWorklist}>Go to worklist</button>
-        {flaggedCount > 0 && (
-          <button onClick={onGoToWorklist}>Review flagged ({flaggedCount})</button>
-        )}
       </div>
     </section>
   );

@@ -12,8 +12,8 @@ export default function HandoffBanner({
   return (
     <div className="handoff-banner">
       <div>
-        <span>Background runs since last shift: {backgroundRunCount}</span>
-        <span>Changes requiring review: {changesRequiringReview}</span>
+        <span>Agent updates since prior handoff: {backgroundRunCount}</span>
+        <span>Changes requiring your review: {changesRequiringReview}</span>
       </div>
       <button className="secondary" style={{ fontSize: 12, padding: '3px 6px' }} onClick={onDismiss}>
         Dismiss

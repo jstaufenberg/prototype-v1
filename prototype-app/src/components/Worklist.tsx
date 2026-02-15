@@ -1,10 +1,11 @@
 import type { PatientRecord } from '../types/mockData';
+import StickyActionBar from './StickyActionBar';
 
 interface WorklistProps {
   patients: PatientRecord[];
   activePatientId: string | null;
   stateByPatientId: Record<string, string>;
-  onSelectPatient: (patientId: string) => void;
+  onSelectPatient: (patientId: string | null) => void;
   showHandoff?: boolean;
 }
 
@@ -75,7 +76,7 @@ function mapSubTags(statusChips: string[], subTags: string[]) {
 
   const leftovers = subTags.filter((_, idx) => !used.has(idx));
   if (leftovers.length > 0) {
-    if (grouped.length === 0) grouped.push({ chip: 'Needs review', tags: leftovers });
+    if (grouped.length === 0) grouped.push({ chip: 'Needs attention', tags: leftovers });
     else grouped[0].tags.push(...leftovers);
   }
 
@@ -100,11 +101,19 @@ export default function Worklist({
   });
 
   const currentTimestamp = (() => {
-    if (!activePatientId) return null;
-    const activePatient = patients.find((p) => p.meta.patient_id === activePatientId);
-    if (!activePatient) return null;
-    const snapshot = getSnapshot(activePatient, stateByPatientId[activePatient.meta.patient_id]);
-    return snapshot?.timestamp_local ?? null;
+    if (activePatientId) {
+      const activePatient = patients.find((p) => p.meta.patient_id === activePatientId);
+      if (activePatient) {
+        const activeSnapshot = getSnapshot(activePatient, stateByPatientId[activePatient.meta.patient_id]);
+        if (activeSnapshot?.timestamp_local) return activeSnapshot.timestamp_local;
+      }
+    }
+
+    const timestamps = patients
+      .map((patient) => getSnapshot(patient, stateByPatientId[patient.meta.patient_id])?.timestamp_local)
+      .filter((value): value is string => Boolean(value))
+      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    return timestamps[0] ?? null;
   })();
 
   return (
@@ -112,14 +121,34 @@ export default function Worklist({
       {showHandoff && (
         <div className="handoff-banner">
           <div>
-            <span>Background runs since last shift: 3</span>
-            <span>Changes requiring review: 2</span>
+            <span>Agent updates since prior handoff: 3</span>
+            <span>Changes requiring your review: 2</span>
           </div>
-          <span className="subtle">Handoff mode</span>
+          <span className="subtle">Handoff view</span>
         </div>
       )}
       <h2>Worklist</h2>
-      {currentTimestamp && <p className="freshness">As of {formatWorklistTime(currentTimestamp)}</p>}
+      <StickyActionBar
+        primaryAction={
+          <button
+            className="primary-action"
+            disabled={!activePatientId}
+            onClick={() => activePatientId && onSelectPatient(activePatientId)}
+          >
+            Open selected patient plan
+          </button>
+        }
+        secondaryActions={
+          activePatientId ? (
+            <button className="secondary" onClick={() => onSelectPatient(null)}>
+              Clear selection
+            </button>
+          ) : undefined
+        }
+        contextText={currentTimestamp ? `Data current as of ${formatWorklistTime(currentTimestamp)}` : undefined}
+        stickyOffset={8}
+        compact
+      />
       <ul className="worklist" aria-label="Patient worklist">
         {sorted.map((patient) => {
           const stateId = stateByPatientId[patient.meta.patient_id];
@@ -167,7 +196,9 @@ export default function Worklist({
                   <span>LOS Day {patient.worklist_view_state.los_day}</span>
                 </div>
               </div>
-              <button onClick={() => onSelectPatient(patient.meta.patient_id)}>Open patient plan</button>
+              <button className="row-select-button" onClick={() => onSelectPatient(patient.meta.patient_id)}>
+                Select patient
+              </button>
             </li>
           );
         })}

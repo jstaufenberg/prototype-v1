@@ -36,7 +36,10 @@ function defaultExecutionModes() {
 
 export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('worklist');
-  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(patients[0].meta.patient_id);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [lastActiveAt, setLastActiveAt] = useState<string | null>(() =>
+    new Date(Date.now() - 9 * 60 * 60 * 1000).toISOString()
+  );
   const [stateByPatientId, setStateByPatientId] = useState<Record<string, string>>(defaultStateByPatientId);
   const [actionStatusById, setActionStatusById] = useState<Record<string, ActionStatus>>({});
   const [blockerStatusById, setBlockerStatusById] = useState<Record<string, BlockerStatus>>({});
@@ -114,12 +117,16 @@ export default function App() {
     return (
       <main>
         <header>
-          <h1>Case Manager Prototype</h1>
-          <p>Blocker-centric mock UI with evidence metadata and background-capable agent actions.</p>
+          <h1>Case Management Workspace</h1>
+          <p>Prioritized discharge blockers, evidence context, and recommended actions.</p>
         </header>
         <ShiftStartSnapshot
           patients={patients}
-          onGoToWorklist={() => setViewMode('worklist')}
+          lastActiveAt={lastActiveAt}
+          onGoToWorklist={() => {
+            setLastActiveAt(new Date().toISOString());
+            setViewMode('worklist');
+          }}
         />
       </main>
     );
@@ -128,24 +135,27 @@ export default function App() {
   return (
     <main>
       <header>
-        <h1>Case Manager Prototype</h1>
-        <p>Blocker-centric mock UI with evidence metadata and background-capable agent actions.</p>
+        <h1>Case Management Workspace</h1>
+        <p>Prioritized discharge blockers, evidence context, and recommended actions.</p>
       </header>
 
-      <div className="demo-controls">
-        <button onClick={() => setViewMode('shift-start')}>Show shift-start (S0)</button>
-        <label>
-          <input
-            type="checkbox"
-            checked={showHandoff}
-            onChange={(e) => setShowHandoff(e.target.checked)}
-          />
-          Handoff mode (S6)
-        </label>
-        {failureRecoveryAction && (
-          <button onClick={() => setShowFailureModal(true)}>Show failure recovery (S5)</button>
-        )}
-      </div>
+      <details className="internal-tools">
+        <summary>Internal demo tools</summary>
+        <div className="internal-tools-content">
+          <button onClick={() => setViewMode('shift-start')}>Show activity summary</button>
+          <label>
+            <input
+              type="checkbox"
+              checked={showHandoff}
+              onChange={(e) => setShowHandoff(e.target.checked)}
+            />
+            Handoff overlay
+          </label>
+          {failureRecoveryAction && (
+            <button onClick={() => setShowFailureModal(true)}>Show failure recovery modal</button>
+          )}
+        </div>
+      </details>
 
       <div className="layout">
         <Worklist

@@ -46,11 +46,69 @@ header p {
   background: var(--panel);
   border: 2px solid var(--border);
   padding: 14px;
+  position: relative;
 }
 
 .subtle {
   color: var(--muted);
   font-size: 13px;
+}
+
+.panel-top-actions {
+  margin: 10px 0 12px;
+}
+
+.sticky-action-sentinel {
+  height: 1px;
+}
+
+.sticky-action-bar {
+  position: sticky;
+  z-index: 40;
+  background: #fff;
+  border: 1px solid #bfbfbf;
+  padding: 8px;
+}
+
+.sticky-action-bar.is-stuck {
+  border-color: #9d9d9d;
+  box-shadow: 0 1px 0 #d0d0d0;
+}
+
+.sticky-action-bar.compact {
+  padding: 6px 8px;
+}
+
+.sticky-action-context {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.sticky-action-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sticky-action-primary,
+.sticky-action-secondary {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sticky-action-primary {
+  flex: 1 1 auto;
+}
+
+.inline-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .worklist {
@@ -420,6 +478,8 @@ button.secondary:hover {
   background: #fff;
   border: 2px solid var(--border);
   padding: 16px;
+  max-height: 86vh;
+  overflow: auto;
 }
 
 .modal h3 {
@@ -431,6 +491,14 @@ button.secondary:hover {
   gap: 8px;
   justify-content: flex-end;
   margin-top: 16px;
+}
+
+.modal-footer-sticky {
+  position: sticky;
+  bottom: 0;
+  padding-top: 10px;
+  background: #fff;
+  border-top: 1px solid #d3d3d3;
 }
 
 /* Status badges */
@@ -537,6 +605,10 @@ button.secondary:hover {
   margin-top: 12px;
 }
 
+.snapshot-screen .sticky-action-bar {
+  margin: 10px 0 12px;
+}
+
 .snapshot-card {
   background: var(--panel);
   border: 2px solid var(--border);
@@ -582,7 +654,7 @@ button.secondary:hover {
 .snapshot-entry-line {
   margin: 4px 0 0 24px;
   display: grid;
-  grid-template-columns: 64px 1fr;
+  grid-template-columns: 120px 1fr;
   gap: 8px;
   font-size: 14px;
 }
@@ -619,12 +691,6 @@ button.secondary:hover {
 .snapshot-extra-item .snapshot-entry-line {
   margin-left: 10px;
   font-size: 13px;
-}
-
-.snapshot-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: 16px;
 }
 
 .snapshot-empty {
@@ -708,21 +774,40 @@ button.secondary:hover {
   border: 1px solid #ddd;
 }
 
-/* Demo controls bar */
-.demo-controls {
+/* Internal demo tools */
+.internal-tools {
+  margin-top: 8px;
+  border: 1px solid #bcbcbc;
+  background: #fff;
+  padding: 8px 10px;
+}
+
+.internal-tools > summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.internal-tools-content {
+  margin-top: 8px;
   display: flex;
   gap: 10px;
   align-items: center;
-  margin-top: 8px;
   flex-wrap: wrap;
 }
 
-.demo-controls label {
+.internal-tools-content label {
   font-size: 13px;
   display: flex;
   align-items: center;
   gap: 4px;
   cursor: pointer;
+}
+
+.row-select-button {
+  color: #3d3d3d;
+  border-color: #8d8d8d;
 }
 
 @media (max-width: 1024px) {
@@ -743,5 +828,15 @@ button.secondary:hover {
 
   .meta-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sticky-action-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sticky-action-primary button,
+  .sticky-action-secondary button {
+    width: 100%;
   }
 }

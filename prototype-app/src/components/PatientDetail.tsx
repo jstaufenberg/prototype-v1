@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import ReferralTracking from './ReferralTracking';
+import StickyActionBar from './StickyActionBar';
 import type {
   ActionStatus,
   BlockerStatus,
@@ -95,6 +97,10 @@ export default function PatientDetail({
 
   const primaryAction = proposedActions[0] ?? null;
   const secondaryActions = proposedActions.slice(1);
+  const primaryActionMode = primaryAction
+    ? executionModeByAction[primaryAction.action_id] ?? primaryAction.execution_mode_default
+    : 'ONE_TIME';
+  const hasRecommendedAction = Boolean(primaryAction);
 
   const currentSnapshot = patient.demo_state_snapshots.find((s) => s.state_id === currentStateId);
 
@@ -103,10 +109,10 @@ export default function PatientDetail({
       {showHandoff && (
         <div className="handoff-banner">
           <div>
-            <span>Background runs since last shift: 3</span>
-            <span>Changes requiring review: 2</span>
+            <span>Agent updates since prior handoff: 3</span>
+            <span>Changes requiring your review: 2</span>
           </div>
-          <span className="subtle">Handoff mode</span>
+          <span className="subtle">Handoff view</span>
         </div>
       )}
 
@@ -129,7 +135,7 @@ export default function PatientDetail({
       </div>
 
       <div className="state-strip">
-        <label htmlFor="state-select">Demo state</label>
+        <label htmlFor="state-select">State view</label>
         <select
           id="state-select"
           value={currentStateId}
@@ -142,6 +148,36 @@ export default function PatientDetail({
           ))}
         </select>
         <span className="subtle">{currentSnapshot?.timestamp_local}</span>
+      </div>
+      <div className="panel-top-actions">
+        <StickyActionBar
+          stickyOffset={0}
+          compact
+          contextText="Recommended next action"
+          primaryAction={
+            hasRecommendedAction ? (
+              <button
+                className="primary-action"
+                onClick={() => onPrimaryAction(primaryAction, primaryActionMode)}
+              >
+                {primaryAction.cta_primary}
+              </button>
+            ) : undefined
+          }
+          secondaryActions={
+            hasRecommendedAction ? (
+              <div className="inline-actions">
+                {primaryAction.cta_secondary && (
+                  <button className="secondary" onClick={() => onSecondaryAction(primaryAction)}>
+                    {primaryAction.cta_secondary}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <span className="subtle">No action needed now.</span>
+            )
+          }
+        />
       </div>
 
       <h3>Active blockers</h3>
@@ -202,6 +238,23 @@ export default function PatientDetail({
                       ))}
                     </ul>
                   )}
+
+                  <ReferralTracking
+                    blocker={blocker}
+                    backgroundMode={primaryActionMode === 'BACKGROUND'}
+                    primaryActionLabel={primaryAction?.cta_primary}
+                    onPrimaryAction={
+                      hasRecommendedAction
+                        ? () => onPrimaryAction(primaryAction, primaryActionMode)
+                        : undefined
+                    }
+                    secondaryActionLabel={primaryAction?.cta_secondary}
+                    onSecondaryAction={
+                      hasRecommendedAction && primaryAction?.cta_secondary
+                        ? () => onSecondaryAction(primaryAction)
+                        : undefined
+                    }
+                  />
                 </>
               )}
             </li>
@@ -338,20 +391,7 @@ export default function PatientDetail({
                 )}
               </>
             )}
-
-            <div className="action-buttons">
-              <button
-                className="primary-action"
-                onClick={() => onPrimaryAction(primaryAction, executionModeByAction[primaryAction.action_id] ?? primaryAction.execution_mode_default)}
-              >
-                {primaryAction.cta_primary}
-              </button>
-              {primaryAction.cta_secondary && (
-                <button className="secondary" onClick={() => onSecondaryAction(primaryAction)}>
-                  {primaryAction.cta_secondary}
-                </button>
-              )}
-            </div>
+            <p className="subtle">Use the sticky action bar to run or defer this action.</p>
           </li>
         )}
       </ul>

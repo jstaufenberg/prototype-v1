@@ -79,7 +79,7 @@ export default function ActionModal({ action, mode, onClose, onConfirm }: Action
           </>
         )}
 
-        <div className="modal-buttons">
+        <div className="modal-buttons modal-footer-sticky">
           <button className="primary-action" onClick={onConfirm}>Confirm and run</button>
           <button className="secondary" onClick={onClose}>
             Cancel

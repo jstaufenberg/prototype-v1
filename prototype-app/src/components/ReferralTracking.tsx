@@ -1,8 +1,13 @@
 import type { Blocker } from '../types/mockData';
+import StickyActionBar from './StickyActionBar';
 
 interface ReferralTrackingProps {
   blocker: Blocker;
   backgroundMode: boolean;
+  primaryActionLabel?: string;
+  secondaryActionLabel?: string;
+  onPrimaryAction?: () => void;
+  onSecondaryAction?: () => void;
 }
 
 function stepStatusClass(status: string) {
@@ -12,7 +17,14 @@ function stepStatusClass(status: string) {
   return 'referral-status-failed';
 }
 
-export default function ReferralTracking({ blocker, backgroundMode }: ReferralTrackingProps) {
+export default function ReferralTracking({
+  blocker,
+  backgroundMode,
+  primaryActionLabel,
+  secondaryActionLabel,
+  onPrimaryAction,
+  onSecondaryAction
+}: ReferralTrackingProps) {
   const trackingSteps = blocker.nested_steps.filter(
     (step) => step.step_kind === 'TRACKING' || step.step_kind === 'EXECUTION'
   );
@@ -22,6 +34,29 @@ export default function ReferralTracking({ blocker, backgroundMode }: ReferralTr
   return (
     <div className="referral-tracking">
       <h4>Referral tracking</h4>
+      <div className="panel-top-actions">
+        <StickyActionBar
+          stickyOffset={0}
+          compact
+          contextText="Referral actions"
+          primaryAction={
+            <button
+              className="primary-action"
+              onClick={onPrimaryAction}
+              disabled={!onPrimaryAction}
+            >
+              {primaryActionLabel ?? 'Have agent send referral update now'}
+            </button>
+          }
+          secondaryActions={
+            secondaryActionLabel ? (
+              <button className="secondary" onClick={onSecondaryAction} disabled={!onSecondaryAction}>
+                {secondaryActionLabel}
+              </button>
+            ) : undefined
+          }
+        />
+      </div>
       {backgroundMode && (
         <span className="auto-followup-badge">
           Auto follow-up: enabled (12h cadence, 72h max)
@@ -34,13 +69,7 @@ export default function ReferralTracking({ blocker, backgroundMode }: ReferralTr
             {step.status}
           </span>
           <span className="subtle">{step.execution_mode}</span>
-          <div>
-            {step.status === 'PENDING' && (
-              <button className="secondary" style={{ fontSize: 12, padding: '3px 6px' }}>
-                Retry
-              </button>
-            )}
-          </div>
+          <div />
         </div>
       ))}
     </div>
