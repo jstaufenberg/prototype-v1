@@ -26,21 +26,102 @@ main {
   padding: 20px;
 }
 
-header h1 {
+/* ── Top Banner ── */
+.top-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  background: #1b1b1b;
+  color: #fff;
+  font-size: 13px;
+}
+
+.top-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-banner-mark {
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+}
+
+.top-banner-brand {
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  font-size: 12px;
+}
+
+.top-banner-right {
+  color: #999;
+  font-size: 12px;
+}
+
+/* ── App Header (centered) ── */
+.app-header {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.app-header h1 {
   margin: 0;
   font-size: 28px;
 }
 
-header p {
+.app-header p {
   margin-top: 6px;
   color: var(--muted);
 }
 
+/* ── Tab Navigation ── */
+.app-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #d4d4d4;
+  margin-bottom: 16px;
+}
+
+.app-tab {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.app-tab:hover {
+  color: var(--text);
+  background: transparent;
+}
+
+.app-tab-active {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--text);
+}
+
+/* ── Chip Accent ── */
+.chip-accent {
+  background: #059669;
+  color: #fff;
+  border-color: #059669;
+  font-weight: 600;
+}
+
+/* ── Layout ── */
 .layout {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 16px;
-  margin-top: 16px;
+  margin-top: 0;
 }
 
 .panel {
@@ -1341,7 +1422,7 @@ button.secondary:hover {
   margin-bottom: 2px;
 }
 
-/* Shift-start snapshot (S0) */
+/* Shift-start snapshot (S0) — kept for future use */
 .snapshot-screen {
   max-width: 720px;
   margin: 0 auto;
@@ -1519,43 +1600,375 @@ button.secondary:hover {
   border: 1px solid #ddd;
 }
 
-/* Internal demo tools */
-.internal-tools {
-  margin-top: 8px;
-  border: 1px solid #bcbcbc;
-  background: #fff;
-  padding: 8px 10px;
-}
-
-.internal-tools > summary {
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.internal-tools-content {
-  margin-top: 8px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.internal-tools-content label {
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
 .row-select-button {
   color: #3d3d3d;
   border-color: #8d8d8d;
   min-width: 120px;
 }
 
+/* ── Single-Pane View (Agents, Intel, Network, Performance) ── */
+.view-single-pane {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ── Agents View ── */
+.agents-summary {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 14px;
+  border: 1px solid #d4d4d4;
+  background: var(--panel);
+}
+
+.agents-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.agents-stat-number {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.agents-stat-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.agents-stat-running {
+  color: var(--teal);
+}
+
+.agents-stat-failed {
+  color: var(--red);
+}
+
+.agents-patient-group {
+  margin-bottom: 16px;
+}
+
+.agents-patient-name {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.agents-table {
+  display: grid;
+  gap: 8px;
+}
+
+.agents-row {
+  border: 1px solid #d7d7d7;
+  padding: 10px;
+  background: var(--panel);
+}
+
+.agents-row-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.agents-row-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.agents-row-failure {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #8f2c2c;
+}
+
+.agents-row-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.agent-chip-running {
+  background: #e6f6f4;
+  color: var(--teal);
+  border-color: var(--teal);
+  font-weight: 600;
+}
+
+.agent-chip-failed {
+  background: #fdecec;
+  color: var(--red);
+  border-color: var(--red);
+  font-weight: 600;
+}
+
+.agent-chip-paused {
+  background: #f5f5f5;
+  color: #666;
+  border-color: #bbb;
+}
+
+.agent-chip-idle {
+  background: #fafafa;
+  color: #999;
+  border-color: #ddd;
+}
+
+/* ── Intel View ── */
+.intel-section {
+  margin-bottom: 24px;
+}
+
+.intel-section h3 {
+  margin: 0 0 4px;
+}
+
+.intel-capture-actions {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.intel-demo-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0 0 10px;
+}
+
+.intel-capture-list {
+  display: grid;
+  gap: 8px;
+}
+
+.intel-capture-item {
+  border: 1px solid #d7d7d7;
+  padding: 10px;
+  background: var(--panel);
+}
+
+.intel-capture-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.intel-capture-text {
+  margin: 0;
+  font-size: 13px;
+}
+
+.intel-category {
+  margin-bottom: 14px;
+}
+
+.intel-category h4 {
+  margin: 0 0 6px;
+}
+
+.intel-insight-list {
+  display: grid;
+  gap: 8px;
+}
+
+.intel-insight-card {
+  border: 1px solid #d7d7d7;
+  padding: 10px;
+  background: var(--panel);
+}
+
+.intel-insight-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.intel-insight-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.intel-sources-table {
+  border: 1px solid #d4d4d4;
+  background: var(--panel);
+}
+
+.intel-sources-header,
+.intel-sources-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 140px 80px;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.intel-sources-header {
+  font-weight: 600;
+  border-bottom: 1px solid #d4d4d4;
+  background: #f9f9f9;
+}
+
+.intel-sources-row {
+  border-bottom: 1px solid #eee;
+}
+
+.intel-sources-row:last-child {
+  border-bottom: 0;
+}
+
+/* ── Network View ── */
+.network-section {
+  margin-bottom: 24px;
+}
+
+.network-section h3 {
+  margin: 0 0 4px;
+}
+
+.network-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.network-card {
+  border: 1px solid #d4d4d4;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.network-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.network-card-body {
+  margin-top: 6px;
+}
+
+.network-label {
+  margin: 8px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.network-chip-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.network-contact-line {
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+.network-channel {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* ── Performance View ── */
+.perf-section {
+  margin-bottom: 24px;
+}
+
+.perf-section h3 {
+  margin: 0 0 4px;
+}
+
+.perf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.perf-card {
+  border: 1px solid #d4d4d4;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.perf-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.perf-card-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.perf-card-value {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.perf-card-trend {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+
+.perf-trend-positive {
+  color: #2a7a3b;
+}
+
+.perf-trend-negative {
+  color: var(--red);
+}
+
+.perf-trend-neutral {
+  color: var(--muted);
+}
+
+.perf-card-desc {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.perf-data-label {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border: 1px solid #bbb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.perf-data-computed {
+  color: var(--teal);
+  border-color: var(--teal);
+}
+
+.perf-data-illustrative {
+  color: var(--muted);
+  border-color: #bbb;
+}
+
+/* ── Responsive ── */
 @media (max-width: 1024px) {
   .layout {
     grid-template-columns: 1fr;
@@ -1629,5 +2042,30 @@ button.secondary:hover {
   .milestone-drawer-line {
     grid-template-columns: 1fr;
     gap: 2px;
+  }
+
+  .app-tabs {
+    overflow-x: auto;
+  }
+
+  .app-tab {
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .perf-grid,
+  .network-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intel-sources-header,
+  .intel-sources-row {
+    grid-template-columns: 1fr 60px 100px 60px;
+    font-size: 12px;
+  }
+
+  .agents-summary {
+    gap: 16px;
   }
 }

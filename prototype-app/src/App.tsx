@@ -1,13 +1,28 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ActionModal from './components/ActionModal';
+import AgentsView from './components/AgentsView';
 import FailureRecoveryModal from './components/FailureRecoveryModal';
+import IntelView from './components/IntelView';
+import NetworkView from './components/NetworkView';
 import PatientDetail from './components/PatientDetail';
-import ShiftStartSnapshot from './components/ShiftStartSnapshot';
+import PerformanceView from './components/PerformanceView';
+import TopBanner from './components/TopBanner';
 import Worklist from './components/Worklist';
 import { defaultStateByPatientId, patients } from './data/patients';
 import type { ActionStatus, BlockerStatus, ExecutionModeDefault, ProposedAction } from './types/mockData';
 
-type ViewMode = 'shift-start' | 'worklist';
+// ShiftStartSnapshot kept in codebase for future use — not rendered in default flow
+// import ShiftStartSnapshot from './components/ShiftStartSnapshot';
+
+type AppTab = 'my-patients' | 'agents' | 'intel' | 'network' | 'performance';
+
+const TAB_ITEMS: Array<{ id: AppTab; label: string }> = [
+  { id: 'my-patients', label: 'My Patients' },
+  { id: 'agents', label: 'Agents' },
+  { id: 'intel', label: 'Intel' },
+  { id: 'network', label: 'Network' },
+  { id: 'performance', label: 'Performance' },
+];
 
 interface PendingModalAction {
   action: ProposedAction;
@@ -34,12 +49,13 @@ function defaultExecutionModes() {
   return map;
 }
 
+function isDemoMode(): boolean {
+  return new URLSearchParams(window.location.search).get('demo') === '1';
+}
+
 export default function App() {
-  const [viewMode, setViewMode] = useState<ViewMode>('worklist');
+  const [activeTab, setActiveTab] = useState<AppTab>('my-patients');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
-  const [lastActiveAt, setLastActiveAt] = useState<string | null>(() =>
-    new Date(Date.now() - 9 * 60 * 60 * 1000).toISOString()
-  );
   const [stateByPatientId, setStateByPatientId] = useState<Record<string, string>>(defaultStateByPatientId);
   const [actionStatusById, setActionStatusById] = useState<Record<string, ActionStatus>>({});
   const [blockerStatusById, setBlockerStatusById] = useState<Record<string, BlockerStatus>>({});
@@ -80,6 +96,40 @@ export default function App() {
     });
   };
 
+  // Demo mode: keyboard shortcuts and console controls (only when ?demo=1)
+  useEffect(() => {
+    if (!isDemoMode()) return;
+
+    (window as unknown as Record<string, unknown>).__meridianDemo = {
+      applySnapshot,
+      setShowHandoff,
+      setShowFailureModal,
+      stateByPatientId,
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!e.ctrlKey || !e.shiftKey) return;
+      if (e.key === 'H' || e.key === 'h') {
+        e.preventDefault();
+        setShowHandoff((prev) => !prev);
+      }
+      if (e.key === 'F' || e.key === 'f') {
+        e.preventDefault();
+        setShowFailureModal(true);
+      }
+      if ((e.key === '1' || e.key === '2' || e.key === '3') && selectedPatient) {
+        e.preventDefault();
+        applySnapshot(selectedPatient.meta.patient_id, `T${Number(e.key) - 1}`);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      delete (window as unknown as Record<string, unknown>).__meridianDemo;
+    };
+  });
+
   const handlePrimaryAction = (action: ProposedAction, mode: ExecutionModeDefault) => {
     setPendingModalAction({ action, mode });
   };
@@ -112,141 +162,133 @@ export default function App() {
     ) ?? null;
   }, [selectedPatient, actionStatusById]);
 
-  if (viewMode === 'shift-start') {
-    return (
-      <main>
-        <header>
-          <h1>Case Management Workspace</h1>
-          <p>Prioritized discharge blockers, evidence context, and recommended actions.</p>
-        </header>
-        <ShiftStartSnapshot
-          patients={patients}
-          lastActiveAt={lastActiveAt}
-          onGoToWorklist={() => {
-            setLastActiveAt(new Date().toISOString());
-            setViewMode('worklist');
-          }}
-        />
-      </main>
-    );
-  }
-
   return (
-    <main>
-      <header>
-        <h1>Case Management Workspace</h1>
-        <p>Prioritized discharge blockers, evidence context, and recommended actions.</p>
-      </header>
+    <>
+      <TopBanner />
+      <main>
+        <header className="app-header">
+          <h1>Care Transitions</h1>
+          <p>Coordinating safe, timely discharges across your caseload</p>
+        </header>
 
-      <details className="internal-tools">
-        <summary>Internal demo tools</summary>
-        <div className="internal-tools-content">
-          <button onClick={() => setViewMode('shift-start')}>Show activity summary</button>
-          <label>
-            <input
-              type="checkbox"
-              checked={showHandoff}
-              onChange={(e) => setShowHandoff(e.target.checked)}
-            />
-            Handoff overlay
-          </label>
-          {failureRecoveryAction && (
-            <button onClick={() => setShowFailureModal(true)}>Show failure recovery modal</button>
-          )}
-          {selectedPatient && (
-            <label>
-              State view
-              <select
-                value={stateByPatientId[selectedPatient.meta.patient_id]}
-                onChange={(event) => applySnapshot(selectedPatient.meta.patient_id, event.target.value)}
-              >
-                {selectedPatient.demo_state_snapshots.map((snapshot) => (
-                  <option key={snapshot.state_id} value={snapshot.state_id}>
-                    {snapshot.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-        </div>
-      </details>
-
-      <div className="layout">
-        <Worklist
-          patients={patients}
-          activePatientId={selectedPatient?.meta.patient_id ?? null}
-          stateByPatientId={stateByPatientId}
-          actionStatusById={actionStatusById}
-          blockerStatusById={blockerStatusById}
-          executionModeByAction={executionModeByAction}
-          onSelectPatient={setSelectedPatientId}
-          showHandoff={showHandoff}
-        />
-
-        {selectedPatient ? (
-          <PatientDetail
-            patient={selectedPatient}
-            currentStateId={stateByPatientId[selectedPatient.meta.patient_id]}
-            actionStatusOverride={actionStatusById}
-            blockerStatusOverride={blockerStatusById}
-            executionModeByAction={executionModeByAction}
-            onPrimaryAction={handlePrimaryAction}
-            onSecondaryAction={handleSecondaryAction}
-            onExecutionModeChange={(actionId, mode) =>
-              setExecutionModeByAction((prev) => ({ ...prev, [actionId]: mode }))
-            }
-            onClose={() => setSelectedPatientId(null)}
-            showHandoff={showHandoff}
-          />
-        ) : (
-          <section className="panel detail-empty-panel" aria-label="No patient selected">
-            <button className="detail-close" aria-label="Close patient panel" disabled>
-              ×
+        <nav className="app-tabs" role="tablist" aria-label="Workspace sections">
+          {TAB_ITEMS.map((tab) => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              className={`app-tab ${activeTab === tab.id ? 'app-tab-active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
             </button>
-            <h2>No patient selected</h2>
-            <p className="subtle">Select a patient on the left to view plan and actions.</p>
-            <div className="detail-empty-shell">
-              <div className="shell-line shell-title" />
-              <div className="shell-line shell-meta" />
-              <div className="shell-block">
-                <div className="shell-line shell-label" />
-                <div className="shell-line shell-body" />
-                <div className="shell-line shell-body" />
-              </div>
-              <div className="shell-block">
-                <div className="shell-line shell-label" />
-                <div className="shell-line shell-body" />
-                <div className="shell-line shell-body short" />
-              </div>
-            </div>
-          </section>
+          ))}
+        </nav>
+
+        {activeTab === 'my-patients' && (
+          <div className="layout">
+            <Worklist
+              patients={patients}
+              activePatientId={selectedPatient?.meta.patient_id ?? null}
+              stateByPatientId={stateByPatientId}
+              actionStatusById={actionStatusById}
+              blockerStatusById={blockerStatusById}
+              executionModeByAction={executionModeByAction}
+              onSelectPatient={setSelectedPatientId}
+              showHandoff={showHandoff}
+            />
+
+            {selectedPatient ? (
+              <PatientDetail
+                patient={selectedPatient}
+                currentStateId={stateByPatientId[selectedPatient.meta.patient_id]}
+                actionStatusOverride={actionStatusById}
+                blockerStatusOverride={blockerStatusById}
+                executionModeByAction={executionModeByAction}
+                onPrimaryAction={handlePrimaryAction}
+                onSecondaryAction={handleSecondaryAction}
+                onExecutionModeChange={(actionId, mode) =>
+                  setExecutionModeByAction((prev) => ({ ...prev, [actionId]: mode }))
+                }
+                onClose={() => setSelectedPatientId(null)}
+                showHandoff={showHandoff}
+              />
+            ) : (
+              <section className="panel detail-empty-panel" aria-label="No patient selected">
+                <button className="detail-close" aria-label="Close patient panel" disabled>
+                  ×
+                </button>
+                <h2>No patient selected</h2>
+                <p className="subtle">Select a patient on the left to view plan and actions.</p>
+                <div className="detail-empty-shell">
+                  <div className="shell-line shell-title" />
+                  <div className="shell-line shell-meta" />
+                  <div className="shell-block">
+                    <div className="shell-line shell-label" />
+                    <div className="shell-line shell-body" />
+                    <div className="shell-line shell-body" />
+                  </div>
+                  <div className="shell-block">
+                    <div className="shell-line shell-label" />
+                    <div className="shell-line shell-body" />
+                    <div className="shell-line shell-body short" />
+                  </div>
+                </div>
+              </section>
+            )}
+          </div>
         )}
-      </div>
 
-      {pendingModalAction && (
-        <ActionModal
-          action={pendingModalAction.action}
-          mode={pendingModalAction.mode}
-          onClose={() => setPendingModalAction(null)}
-          onConfirm={confirmAction}
-        />
-      )}
+        {activeTab === 'agents' && (
+          <AgentsView
+            patients={patients}
+            actionStatusById={actionStatusById}
+            executionModeByAction={executionModeByAction}
+            blockerStatusById={blockerStatusById}
+          />
+        )}
 
-      {showFailureModal && failureRecoveryAction && (
-        <FailureRecoveryModal
-          failureReason="Fax delivery to Maplewood Rehab failed. Fax number 1-555-555-0194 returned busy signal after 3 retry attempts."
-          recoveryAction={failureRecoveryAction}
-          hasActiveBackgroundLoop={
-            (executionModeByAction[failureRecoveryAction.action_id] ?? failureRecoveryAction.execution_mode_default) === 'BACKGROUND'
-          }
-          onRecoveryAction={() => {
-            handlePrimaryAction(failureRecoveryAction, executionModeByAction[failureRecoveryAction.action_id] ?? failureRecoveryAction.execution_mode_default);
-            setShowFailureModal(false);
-          }}
-          onPauseBackground={() => setShowFailureModal(false)}
-          onDismiss={() => setShowFailureModal(false)}
-        />
-      )}
-    </main>
+        {activeTab === 'intel' && (
+          <IntelView patients={patients} />
+        )}
+
+        {activeTab === 'network' && (
+          <NetworkView />
+        )}
+
+        {activeTab === 'performance' && (
+          <PerformanceView
+            patients={patients}
+            actionStatusById={actionStatusById}
+            blockerStatusById={blockerStatusById}
+          />
+        )}
+
+        {pendingModalAction && (
+          <ActionModal
+            action={pendingModalAction.action}
+            mode={pendingModalAction.mode}
+            onClose={() => setPendingModalAction(null)}
+            onConfirm={confirmAction}
+          />
+        )}
+
+        {showFailureModal && failureRecoveryAction && (
+          <FailureRecoveryModal
+            failureReason="Fax delivery to Maplewood Rehab failed. Fax number 1-555-555-0194 returned busy signal after 3 retry attempts."
+            recoveryAction={failureRecoveryAction}
+            hasActiveBackgroundLoop={
+              (executionModeByAction[failureRecoveryAction.action_id] ?? failureRecoveryAction.execution_mode_default) === 'BACKGROUND'
+            }
+            onRecoveryAction={() => {
+              handlePrimaryAction(failureRecoveryAction, executionModeByAction[failureRecoveryAction.action_id] ?? failureRecoveryAction.execution_mode_default);
+              setShowFailureModal(false);
+            }}
+            onPauseBackground={() => setShowFailureModal(false)}
+            onDismiss={() => setShowFailureModal(false)}
+          />
+        )}
+      </main>
+    </>
   );
 }

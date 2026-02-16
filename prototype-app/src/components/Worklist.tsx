@@ -113,8 +113,8 @@ export default function Worklist({
           <span className="subtle">Handoff view</span>
         </div>
       )}
-      <h2>Worklist</h2>
-      <ul className="worklist" aria-label="Patient worklist">
+      <h2>My Patients</h2>
+      <ul className="worklist" aria-label="My Patients">
         {sorted.map((patient) => {
           const stateId = stateByPatientId[patient.meta.patient_id];
           const snapshot = getSnapshot(patient, stateId);
