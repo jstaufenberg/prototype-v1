@@ -31,7 +31,7 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 20px;
+  padding: 6px 20px;
   background: #1b1b1b;
   color: #fff;
   font-size: 13px;
@@ -79,6 +79,7 @@ main {
 /* ── Tab Navigation ── */
 .app-tabs {
   display: flex;
+  justify-content: center;
   gap: 0;
   border-bottom: 2px solid #d4d4d4;
   margin-bottom: 16px;
@@ -93,6 +94,8 @@ main {
   font-weight: 500;
   color: var(--muted);
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   margin-bottom: -2px;
   transition: color 0.15s, border-color 0.15s;
 }
