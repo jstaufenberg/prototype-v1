@@ -211,7 +211,7 @@ main {
 
 .worklist-card {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .worklist-row.active {
@@ -317,6 +317,86 @@ main {
 
 .worklist-los-line.los-even {
   color: #444;
+}
+
+/* ── Worklist Operational Snapshot Line ── */
+.worklist-ops-line {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.worklist-ops-sep {
+  color: #bbb;
+}
+
+.worklist-los-inline {
+  font-weight: 600;
+}
+
+.worklist-los-inline.los-over {
+  color: #8f2c2c;
+}
+
+.worklist-los-inline.los-under {
+  color: #1f6b5f;
+}
+
+.worklist-los-inline.los-even {
+  color: #444;
+}
+
+.worklist-auth-pending {
+  color: var(--orange);
+  font-weight: 600;
+}
+
+.worklist-auth-approved {
+  color: #2a7a3b;
+  font-weight: 600;
+}
+
+.worklist-auth-denied {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.worklist-auth-na {
+  color: var(--muted);
+}
+
+.worklist-disposition {
+  color: #444;
+  font-weight: 500;
+}
+
+/* ── Worklist Status Section ── */
+.worklist-status-section {
+  display: grid;
+  gap: 4px;
+}
+
+.worklist-status-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.worklist-status-chips {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.worklist-chip-overflow {
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .blocker-stack {

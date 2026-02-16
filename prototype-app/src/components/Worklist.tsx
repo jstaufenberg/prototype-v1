@@ -1,14 +1,12 @@
-import type { ActionStatus, BlockerStatus, ExecutionModeDefault, PatientRecord } from '../types/mockData';
-import { groupChips } from '../utils/chipGrouping';
-import WorklistCardTabs from './WorklistCardTabs';
+import type { PatientRecord } from '../types/mockData';
+
+// WorklistCardTabs kept in codebase — used by patient detail views
+// import WorklistCardTabs from './WorklistCardTabs';
 
 interface WorklistProps {
   patients: PatientRecord[];
   activePatientId: string | null;
   stateByPatientId: Record<string, string>;
-  actionStatusById: Record<string, ActionStatus>;
-  blockerStatusById: Record<string, BlockerStatus>;
-  executionModeByAction: Record<string, ExecutionModeDefault>;
   onSelectPatient: (patientId: string | null) => void;
   showHandoff?: boolean;
 }
@@ -48,16 +46,6 @@ function demographicToken(age: number | null, sex?: string | null): string {
   return `${age}${sex ?? ''}`;
 }
 
-function urgencyLabel(bucket: string, allText: string): string | null {
-  const normalized = allText.toLowerCase();
-  if (bucket === 'On Track' && normalized.includes('discharge')) return 'Discharge today';
-  if (normalized.includes('overdue')) return 'Overdue';
-  if (normalized.includes('deadline today') || normalized.includes('expires today') || normalized.includes('today')) {
-    return 'Due today';
-  }
-  return null;
-}
-
 function losLine(actual: number, expected?: number): { label: string; delta: number | null } {
   if (!expected || expected <= 0) return { label: `LOS ${actual}d`, delta: null };
   const delta = actual - expected;
@@ -75,20 +63,18 @@ function deltaClass(delta: number | null): string {
   return 'los-even';
 }
 
-function formatWorklistTime(value?: string | null): string | null {
-  if (!value) return null;
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+function authLabel(status?: string | null): { text: string; className: string } {
+  if (!status || status === 'NOT_NEEDED') return { text: 'Auth: N/A', className: 'worklist-auth-na' };
+  if (status === 'PENDING') return { text: 'Auth: Pending', className: 'worklist-auth-pending' };
+  if (status === 'APPROVED') return { text: 'Auth: Approved', className: 'worklist-auth-approved' };
+  if (status === 'DENIED') return { text: 'Auth: Denied', className: 'worklist-auth-denied' };
+  return { text: `Auth: ${status}`, className: 'worklist-auth-na' };
 }
 
 export default function Worklist({
   patients,
   activePatientId,
   stateByPatientId,
-  actionStatusById,
-  blockerStatusById,
-  executionModeByAction,
   onSelectPatient,
   showHandoff
 }: WorklistProps) {
@@ -123,18 +109,15 @@ export default function Worklist({
           const age = computeAge(patient.patient_profile.dob);
           const sex = patient.patient_profile.sex ?? null;
           const bed = patient.patient_profile.current_location?.bed ?? 'Unknown';
-          const groupedBlockers = groupChips(
-            patient.worklist_view_state.status_chips,
-            patient.worklist_view_state.sub_tags
-          );
           const los = losLine(
             patient.worklist_view_state.los_day,
             patient.worklist_view_state.expected_los_day
           );
-          const urgency = urgencyLabel(
-            bucket,
-            [...patient.worklist_view_state.status_chips, ...patient.worklist_view_state.sub_tags].join(' ')
-          );
+          const auth = authLabel(patient.patient_profile.insurance?.auth_status);
+          const disposition = patient.patient_profile.disposition_target;
+          const chips = patient.worklist_view_state.status_chips;
+          const visibleChips = chips.slice(0, 2);
+          const extraCount = chips.length - 2;
 
           return (
             <li
@@ -146,10 +129,7 @@ export default function Worklist({
                 <strong className="worklist-patient-line">
                   {patient.patient_profile.patient_name} · {demographicToken(age, sex)} · {bed}
                 </strong>
-                <div className="worklist-badge-stack">
-                  <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
-                  {urgency && <span className="worklist-urgency-badge">{urgency}</span>}
-                </div>
+                <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
               </div>
 
               <p className="worklist-context-line">
@@ -159,20 +139,35 @@ export default function Worklist({
                 </span>
               </p>
 
-              <WorklistCardTabs
-                patient={patient}
-                groupedBlockers={groupedBlockers}
-                losLabel={los.label}
-                losDeltaClass={deltaClass(los.delta)}
-                blockerStatusOverride={blockerStatusById}
-                actionStatusById={actionStatusById}
-                executionModeByAction={executionModeByAction}
-                lastUpdatedLabel={formatWorklistTime(snapshot?.timestamp_local)}
-              />
+              <p className="worklist-ops-line">
+                <span className={`worklist-los-inline ${deltaClass(los.delta)}`}>{los.label}</span>
+                <span className="worklist-ops-sep">&middot;</span>
+                <span className={auth.className}>{auth.text}</span>
+                {disposition && (
+                  <>
+                    <span className="worklist-ops-sep">&middot;</span>
+                    <span className="worklist-disposition">&rarr; {disposition}</span>
+                  </>
+                )}
+              </p>
+
+              {visibleChips.length > 0 && (
+                <div className="worklist-status-section">
+                  <span className="worklist-status-label">STATUS</span>
+                  <div className="worklist-status-chips">
+                    {visibleChips.map((chip) => (
+                      <span key={chip} className="chip">{chip}</span>
+                    ))}
+                    {extraCount > 0 && (
+                      <span className="worklist-chip-overflow">+{extraCount} more</span>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div className="worklist-actions">
                 <button className="row-select-button" onClick={() => onSelectPatient(patient.meta.patient_id)}>
-                  Select patient
+                  View Patient
                 </button>
               </div>
             </li>

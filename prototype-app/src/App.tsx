@@ -18,8 +18,8 @@ type AppTab = 'my-patients' | 'agents' | 'intel' | 'network' | 'performance';
 
 const TAB_ITEMS: Array<{ id: AppTab; label: string }> = [
   { id: 'my-patients', label: 'My Patients' },
-  { id: 'agents', label: 'Agents' },
   { id: 'intel', label: 'Intel' },
+  { id: 'agents', label: 'Agents' },
   { id: 'network', label: 'Network' },
   { id: 'performance', label: 'Performance' },
 ];
@@ -191,9 +191,6 @@ export default function App() {
               patients={patients}
               activePatientId={selectedPatient?.meta.patient_id ?? null}
               stateByPatientId={stateByPatientId}
-              actionStatusById={actionStatusById}
-              blockerStatusById={blockerStatusById}
-              executionModeByAction={executionModeByAction}
               onSelectPatient={setSelectedPatientId}
               showHandoff={showHandoff}
             />
