@@ -1798,10 +1798,12 @@ button.secondary:hover {
   overflow-x: auto;
   overflow-y: hidden;
   border: 1px dashed #d3d3d3;
-  padding: 12px 8px;
+  padding: 8px;
   background: #fff;
   -webkit-overflow-scrolling: touch;
   position: relative;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 16px;
 }
 
 /* Right-edge fade to hint at scrollability */
@@ -1820,20 +1822,33 @@ button.secondary:hover {
 .milestone-timeline {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 10px 16px;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  align-items: stretch;
   min-width: max-content;
+  min-height: 190px;
+  position: relative;
+}
+
+.milestone-timeline::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: #d1d1d1;
+  transform: translateY(-1px);
 }
 
 .milestone-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 120px;
-  max-width: 160px;
+  flex: 0 0 220px;
+  height: 170px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: start;
 }
 
 .milestone-node.is-selected .milestone-node-content {
@@ -1842,29 +1857,34 @@ button.secondary:hover {
 }
 
 .milestone-node-rail {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 28px;
+  width: auto;
+  height: 24px;
+  pointer-events: none;
 }
 
 .milestone-segment {
   position: absolute;
-  top: 12px;
+  top: 11px;
   height: 2px;
   background: #cfcfcf;
 }
 
 .milestone-segment-top {
-  left: 0;
+  left: 6px;
   right: calc(50% + 11px);
 }
 
 .milestone-segment-bottom {
   left: calc(50% + 11px);
-  right: 0;
+  right: 6px;
 }
 
 .milestone-dot {
@@ -1883,47 +1903,71 @@ button.secondary:hover {
 }
 
 .milestone-node-content {
-  width: 100%;
-  text-align: center;
+  width: 186px;
+  text-align: left;
   border: 1px solid #d0d0d0;
   background: #fff;
-  padding: 6px 8px;
-  margin-top: 4px;
+  padding: 8px 10px;
   font-size: 12px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.milestone-node-top .milestone-node-content {
+  top: 8px;
+}
+
+.milestone-node-bottom .milestone-node-content {
+  bottom: 8px;
 }
 
 .milestone-node-content:disabled {
   cursor: default;
+  border-style: dashed;
+  opacity: 0.65;
 }
 
 .milestone-node-head {
+  display: grid;
+  gap: 4px;
+}
+
+.milestone-node-meta {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.milestone-node-date {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .milestone-node-head strong {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.3;
-  text-align: center;
-  word-break: break-word;
+  text-align: left;
+  word-break: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 31px;
 }
 
 .milestone-status-chip {
-  font-size: 11px;
-  padding: 1px 6px;
+  font-size: 10px;
+  padding: 1px 7px;
   border: 1px solid #bdbdbd;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .milestone-node-chips {
   display: none; /* chips shown in drawer when selected */
-}
-
-/* Hide timestamp in compact horizontal nodes */
-.milestone-node-content > .subtle {
-  display: none;
 }
 
 .milestone-node-drawer {
@@ -2997,6 +3041,20 @@ button.secondary:hover {
   color: var(--muted);
 }
 
+/* Sub-tabs within System Status */
+.system-status-view .detail-tabs {
+  margin-top: 0;
+}
+
+/* Agent role summary bar */
+.agents-summary-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* ── Key Findings (Care Plan tab) ── */
 .key-findings-section {
   margin-top: 10px;
@@ -3113,8 +3171,22 @@ button.secondary:hover {
   }
 
   .milestone-node {
-    min-width: 100px;
-    max-width: 130px;
+    flex: 0 0 180px;
+    height: 154px;
+  }
+
+  .milestone-node-content {
+    width: 154px;
+    padding: 7px 8px;
+  }
+
+  .milestone-node-head strong {
+    font-size: 11px;
+    min-height: 29px;
+  }
+
+  .milestone-node-date {
+    font-size: 10px;
   }
 
   .app-tabs {
