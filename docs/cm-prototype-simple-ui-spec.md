@@ -101,16 +101,37 @@ Goal: triage only.
 Per row:
 - identity line: `Name · AgeSex · Bed`
 - compact context line: MRN + primary diagnosis (single-line truncation)
-- LOS line: `LOS {actual}d / Exp {expected}d ({+/-delta}d)` with fallback to `LOS {actual}d`
+- status badge stack in top-right (bucket + optional urgency)
+- tabbed mini-card region (read-only):
+  - `Blockers`
+  - `Timeline`
+  - `Active agents`
+- LOS line in `Blockers` tab: `LOS {actual}d / Exp {expected}d ({+/-delta}d)` with fallback to `LOS {actual}d`
 - status badges in top-right (bucket + optional urgency)
-- plain-language parent chips and subchips
-- default density: max 2 parent chips; max 2 subchips per parent; inline `+N more`
+- `Blockers` tab content:
+  - plain-language parent chips and subchips
+  - default density: max 2 parent chips; max 2 subchips per parent; inline `+N more`
+  - right-side key context rail: disposition target, payer/auth class, last update
+- `Timeline` tab content:
+  - compact chronological stream
+  - latest 6 default, inline `Show all timeline events`
+  - major milestones/decisions are visually emphasized
+- `Active agents` tab content:
+  - read-only monitoring summary per blocker-linked action
+  - mode, state, last run, next run, failure note
+  - no controls in mini-card
 - single row action: `Select patient`
 
 Top controls:
 - bucket chips: Delayed, Attention, Pending, On Track
 - no utility action bar (`Open selected`, `Clear selection`, timestamp strip removed)
 - mini snapshot banner (30–89 min re-entry only)
+
+Mini-card interaction rules:
+- tabs are local to each card
+- default tab is `Blockers`
+- tabs are read-only (no execution actions)
+- `Select patient` remains visible regardless of active tab
 
 ### S2: Patient detail (`F-01`, `F-02`, `F-04`, `F-05`, `F-06`, `F-18`)
 Goal: decide + delegate.

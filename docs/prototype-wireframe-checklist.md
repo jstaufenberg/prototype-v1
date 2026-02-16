@@ -45,7 +45,10 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Queue ordering: Delayed -> Attention -> Pending -> On Track
 - [ ] Per-row identity shows `Name · AgeSex · Bed`
 - [ ] Per-row context shows MRN + primary diagnosis (single-line truncation)
-- [ ] LOS line shows actual/expected/delta with fallback when expected is missing
+- [ ] Each row has 3 tabs: `Blockers`, `Timeline`, `Active agents`
+- [ ] Default active tab is `Blockers`
+- [ ] Tab region is read-only (no run/start/pause controls)
+- [ ] LOS line shows actual/expected/delta with fallback when expected is missing (inside `Blockers`)
 - [ ] Primary row button: `Select patient`
 - [ ] No row-level approve/dismiss buttons
 - [ ] No top utility action bar (`Open selected patient plan`, `Clear selection`, timestamp strip)
@@ -53,6 +56,10 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Subchips render plain-language facts and deterministic order
 - [ ] Max 2 parent chips default, with inline `+N more` expansion
 - [ ] Max 2 subchips per parent default, with inline `+N more` expansion
+- [ ] `Blockers` tab has context rail (disposition, payer/auth class, last update)
+- [ ] `Timeline` tab shows latest 6 by default + inline `Show all timeline events`
+- [ ] Major milestones/decisions are emphasized in `Timeline` tab
+- [ ] `Active agents` tab shows read-only mode/state/last/next/failure
 - [ ] On Track cards show positive confirmations only (no long negative lists)
 
 ### S2 Patient detail

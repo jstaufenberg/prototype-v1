@@ -49,6 +49,9 @@ export interface PatientRecord {
   proposed_actions: {
     items: ProposedAction[];
   };
+  execution_log?: {
+    entries: ExecutionLogEntry[];
+  };
   evidence_items: {
     items: EvidenceItem[];
   };
@@ -154,6 +157,16 @@ export interface EvidenceItem {
     action_ids: string[];
     insight_ids: string[];
   };
+}
+
+export interface ExecutionLogEntry {
+  log_id: string;
+  timestamp_local: string;
+  event: string;
+  actor: string;
+  result: string;
+  related_action_id?: string | null;
+  ui_impact?: string;
 }
 
 export interface DemoSnapshot {

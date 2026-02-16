@@ -176,6 +176,9 @@ export default function App() {
           patients={patients}
           activePatientId={selectedPatient?.meta.patient_id ?? null}
           stateByPatientId={stateByPatientId}
+          actionStatusById={actionStatusById}
+          blockerStatusById={blockerStatusById}
+          executionModeByAction={executionModeByAction}
           onSelectPatient={setSelectedPatientId}
           showHandoff={showHandoff}
         />
