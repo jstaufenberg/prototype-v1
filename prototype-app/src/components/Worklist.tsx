@@ -139,6 +139,9 @@ export default function Worklist({
               <div className="worklist-card-header">
                 <strong className="worklist-patient-line">
                   {patient.patient_profile.patient_name} · {demographicToken(age, sex)} · {bed}
+                  {disposition && (
+                    <span className="worklist-disposition-inline">&rarr; {disposition}</span>
+                  )}
                 </strong>
                 <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
               </div>
@@ -154,12 +157,6 @@ export default function Worklist({
                 <span className={`worklist-los-inline ${deltaClass(los.delta)}`}>{los.label}</span>
                 <span className="worklist-ops-sep">&middot;</span>
                 <span className={auth.className}>{auth.text}</span>
-                {disposition && (
-                  <>
-                    <span className="worklist-ops-sep">&middot;</span>
-                    <span className="worklist-disposition">&rarr; {disposition}</span>
-                  </>
-                )}
               </p>
 
               {agentUpdate && (

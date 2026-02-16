@@ -368,9 +368,10 @@ main {
   color: var(--muted);
 }
 
-.worklist-disposition {
-  color: #444;
-  font-weight: 500;
+.worklist-disposition-inline {
+  font-weight: 600;
+  color: #1f6b5f;
+  margin-left: 4px;
 }
 
 /* ── Worklist Status Section ── */
