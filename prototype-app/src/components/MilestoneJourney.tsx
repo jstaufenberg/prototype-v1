@@ -100,9 +100,9 @@ export default function MilestoneJourney({
                   disabled={!node.isClickable}
                   onClick={() => setSelectedNodeId(node.id)}
                   onKeyDown={(event) => {
-                    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+                    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
                     event.preventDefault();
-                    const direction = event.key === 'ArrowDown' ? 1 : -1;
+                    const direction = event.key === 'ArrowRight' ? 1 : -1;
                     const nextIndex = index + direction;
                     if (nextIndex < 0 || nextIndex >= nodes.length) return;
                     const nextNode = nodes[nextIndex];

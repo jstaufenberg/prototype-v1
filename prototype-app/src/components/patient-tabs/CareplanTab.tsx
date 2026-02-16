@@ -180,12 +180,12 @@ export default function CareplanTab({
             onChange={(event) => setNewBlockerSummary(event.target.value)}
             placeholder="Summary / reason"
           />
-          <div className="inline-actions">
-            <button className="primary-action" onClick={submitNewBlocker}>
-              Save blocker
-            </button>
+          <div className="card-actions-footer">
             <button className="secondary" onClick={() => setShowAddBlockerForm(false)}>
               Cancel
+            </button>
+            <button className="primary-action" onClick={submitNewBlocker}>
+              Save blocker
             </button>
           </div>
         </div>
@@ -205,18 +205,15 @@ export default function CareplanTab({
                 <strong>{blocker.description}</strong>
                 <span className="subtle">{blocker.status}</span>
               </div>
-              <p>{blocker.summary_line}</p>
+              <p className="blocker-summary-text">{blocker.summary_line}</p>
               {formatDueLine(blocker.due_by_local) && (
                 <p className="due-line">{formatDueLine(blocker.due_by_local)}</p>
               )}
               <p className="subtle">
-                Evidence: {blocker.evidence_summary.source_count} sources · Last updated{' '}
-                {blocker.evidence_summary.last_evidence_update_local}
+                {blocker.evidence_summary.source_count} source{blocker.evidence_summary.source_count !== 1 ? 's' : ''} · Updated{' '}
+                {blocker.evidence_summary.last_evidence_update_local.slice(11, 16)}
               </p>
-              <div className="inline-actions">
-                <button className="primary-action" onClick={() => setWorkspaceBlockerId(blocker.blocker_id)}>
-                  Open blocker workspace
-                </button>
+              <div className="card-actions-footer">
                 <button
                   className="secondary"
                   onClick={() =>
@@ -226,7 +223,10 @@ export default function CareplanTab({
                     }))
                   }
                 >
-                  + Add blocker task
+                  + Add task
+                </button>
+                <button className="primary-action" onClick={() => setWorkspaceBlockerId(blocker.blocker_id)}>
+                  Open workspace
                 </button>
               </div>
 

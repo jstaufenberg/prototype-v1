@@ -206,9 +206,9 @@ export default function ContactsTab({ patient }: ContactsTabProps) {
             <input type="text" value={formPhone} onChange={(e) => setFormPhone(e.target.value)} placeholder="Phone" />
             <input type="text" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} placeholder="Email" />
             <input type="text" value={formNotes} onChange={(e) => setFormNotes(e.target.value)} placeholder="Notes" />
-            <div className="inline-actions">
-              <button className="primary-action" onClick={submitContact}>Save contact</button>
+            <div className="card-actions-footer">
               <button className="secondary" onClick={() => setShowAddForm(false)}>Cancel</button>
+              <button className="primary-action" onClick={submitContact}>Save contact</button>
             </div>
           </div>
         ) : (
