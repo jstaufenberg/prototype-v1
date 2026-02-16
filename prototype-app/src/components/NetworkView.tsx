@@ -78,15 +78,18 @@ export default function NetworkView() {
                     <span className="chip">{facility.type}</span>
                   </div>
                   <div className="network-card-body">
-                    <p className="network-capabilities">
+                    <ul className="network-capability-list">
                       {Object.entries(facility.capabilities)
                         .filter(([, supported]) => supported)
-                        .map(([key]) => capabilityLabel(key))
-                        .join(' · ')}
-                    </p>
-                    <p className="network-contact-line">
-                      {facility.contacts.map((c) => `${c.channel} ${c.value}`).join(' · ')}
-                    </p>
+                        .map(([key]) => (
+                          <li key={key}>{capabilityLabel(key)}</li>
+                        ))}
+                    </ul>
+                    {facility.contacts.map((c) => (
+                      <p key={c.contact_id} className="network-contact-line">
+                        {c.channel.charAt(0).toUpperCase() + c.channel.slice(1)} {c.value}
+                      </p>
+                    ))}
                   </div>
                 </div>
               ))}

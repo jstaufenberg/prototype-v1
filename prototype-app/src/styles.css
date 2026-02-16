@@ -111,11 +111,17 @@ main {
   border-bottom-color: var(--text);
 }
 
-/* ── Network capabilities inline list ── */
-.network-capabilities {
+/* ── Network capability tick list ── */
+.network-capability-list {
   margin: 0;
+  padding: 0 0 0 8px;
+  list-style: none;
   font-size: 13px;
   color: #2a7a3b;
+}
+
+.network-capability-list li::before {
+  content: '\2713  ';
 }
 
 /* ── Layout ── */
