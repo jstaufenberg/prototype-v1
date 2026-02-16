@@ -126,7 +126,7 @@ main {
 
 /* ── Network contact list ── */
 .network-contact-list {
-  margin: 0;
+  margin: auto 0 0;
   padding: 0 0 0 20px;
   font-size: 13px;
   color: var(--muted);
@@ -2698,6 +2698,8 @@ button.secondary:hover {
   border: 1px solid #d4d4d4;
   padding: 12px;
   background: var(--panel);
+  display: flex;
+  flex-direction: column;
 }
 
 .network-card-header {
@@ -2710,6 +2712,9 @@ button.secondary:hover {
 
 .network-card-body {
   margin-top: 6px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .network-label {
