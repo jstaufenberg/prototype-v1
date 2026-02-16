@@ -313,26 +313,29 @@ export default function SystemStatusView({
               <span><strong>{agentCounts.idle}</strong> idle</span>
             </div>
 
-            <div className="agent-list">
+            <div className="agent-grid">
               {agents.map((agent, i) => (
-                <div key={i} className={`agent-row ${agent.status === 'Retrying' ? 'agent-row-retrying' : ''}`}>
-                  <div className="agent-row-left">
-                    <strong className="agent-row-name">{agent.name}</strong>
-                    <span className="agent-row-desc">
-                      {agent.description} · {agent.schedule}
-                      {agent.nextRun && ` · Next: ${agent.nextRun}`}
-                      {' · '}{agent.runsToday} {agent.runsToday === 1 ? 'run' : 'runs'} today
+                <div key={i} className={`agent-card ${agent.status === 'Retrying' ? 'agent-card-retrying' : ''}`}>
+                  <div className="agent-card-header">
+                    <strong>{agent.name}</strong>
+                    <span className={`agent-status-chip ${agentStatusClass(agent.status)}`}>
+                      {agent.status}
                     </span>
                   </div>
-                  <span className="agent-row-detail">
-                    {agent.status === 'Retrying'
-                      ? `${agent.detail} · Retry at ${agent.retryTime}`
-                      : agent.detail}
-                  </span>
-                  <span className="agent-row-time">{formatTimeWithDate(agent.lastTime)}</span>
-                  <span className={`agent-status-chip ${agentStatusClass(agent.status)}`}>
-                    {agent.status}
-                  </span>
+                  <p className="agent-card-desc">{agent.description}</p>
+                  <div className="agent-card-action">
+                    <span>
+                      {agent.status === 'Retrying'
+                        ? `${agent.detail} · Retry at ${agent.retryTime}`
+                        : agent.detail}
+                    </span>
+                    <span className="agent-card-time">{formatTimeWithDate(agent.lastTime)}</span>
+                  </div>
+                  <p className="agent-card-schedule">
+                    {agent.schedule}
+                    {agent.nextRun && ` · Next: ${agent.nextRun}`}
+                    {' · '}{agent.runsToday} {agent.runsToday === 1 ? 'run' : 'runs'} today
+                  </p>
                 </div>
               ))}
             </div>
