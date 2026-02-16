@@ -74,22 +74,26 @@ const MOCK_PERIODIC_CHECKS: FeedEntry[] = [
 
 interface AgentItem {
   name: string;
+  description: string;
   status: 'Active' | 'Retrying' | 'Idle';
   detail: string;
   lastTime: string;
   retryTime?: string;
+  schedule: string;
+  nextRun?: string;
+  runsToday: number;
 }
 
 const STATIC_AGENTS: AgentItem[] = [
-  { name: 'Fax Delivery', status: 'Retrying', detail: 'Failed (busy signal)', lastTime: '2026-02-14T07:05:00', retryTime: '08:15' },
-  { name: 'Clinical Notes', status: 'Active', detail: '3 new notes found', lastTime: '2026-02-16T08:42:00' },
-  { name: 'Email Outreach', status: 'Active', detail: 'Resent facility outreach', lastTime: '2026-02-16T09:19:00' },
-  { name: 'Phone Outreach', status: 'Active', detail: 'Auth follow-up call', lastTime: '2026-02-16T09:11:00' },
-  { name: 'Inbox Monitor', status: 'Active', detail: '2 inboxes checked', lastTime: '2026-02-16T08:40:00' },
-  { name: 'Task Scheduler', status: 'Active', detail: 'Family follow-up created', lastTime: '2026-02-16T09:10:00' },
-  { name: 'Huddle Processing', status: 'Active', detail: '2 updates captured', lastTime: '2026-02-16T07:30:00' },
-  { name: 'Deadline Tracking', status: 'Active', detail: 'Auth deadline alert', lastTime: '2026-02-16T07:13:00' },
-  { name: 'Escalation Paging', status: 'Idle', detail: 'Escalation snoozed by CM', lastTime: '2026-02-16T09:08:00' },
+  { name: 'Fax Delivery', description: 'Sends and tracks fax deliveries to facilities', status: 'Retrying', detail: 'Failed (busy signal)', lastTime: '2026-02-14T07:05:00', retryTime: '08:15', schedule: 'On demand', runsToday: 3 },
+  { name: 'Clinical Notes', description: 'Scans EHR for new clinical notes and updates', status: 'Active', detail: '3 new notes found', lastTime: '2026-02-16T08:42:00', schedule: 'Every 30 min', nextRun: '09:12', runsToday: 24 },
+  { name: 'Email Outreach', description: 'Sends and follows up on facility outreach emails', status: 'Active', detail: 'Resent facility outreach', lastTime: '2026-02-16T09:19:00', schedule: 'On demand', runsToday: 6 },
+  { name: 'Phone Outreach', description: 'Tracks phone call follow-ups with payers and facilities', status: 'Active', detail: 'Auth follow-up call', lastTime: '2026-02-16T09:11:00', schedule: 'On demand', runsToday: 4 },
+  { name: 'Inbox Monitor', description: 'Watches CM inboxes for incoming facility replies', status: 'Active', detail: '2 inboxes checked', lastTime: '2026-02-16T08:40:00', schedule: 'Every 15 min', nextRun: '08:55', runsToday: 38 },
+  { name: 'Task Scheduler', description: 'Creates and schedules follow-up tasks', status: 'Active', detail: 'Family follow-up created', lastTime: '2026-02-16T09:10:00', schedule: 'Event-driven', runsToday: 7 },
+  { name: 'Huddle Processing', description: 'Captures updates from team huddle notes', status: 'Active', detail: '2 updates captured', lastTime: '2026-02-16T07:30:00', schedule: 'Daily at 07:00', nextRun: 'Tomorrow 07:00', runsToday: 1 },
+  { name: 'Deadline Tracking', description: 'Monitors authorization and placement deadlines', status: 'Active', detail: 'Auth deadline alert', lastTime: '2026-02-16T07:13:00', schedule: 'Every 60 min', nextRun: '08:13', runsToday: 8 },
+  { name: 'Escalation Paging', description: 'Pages on-call staff when escalation is needed', status: 'Idle', detail: 'Escalation snoozed by CM', lastTime: '2026-02-16T09:08:00', schedule: 'Event-driven', runsToday: 2 },
 ];
 
 /* ── Helpers ── */
@@ -98,6 +102,16 @@ function formatTime(value: string): string {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
   return parsed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function formatTimeWithDate(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  const time = parsed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const date = value.slice(0, 10);
+  if (date === '2026-02-16') return time;
+  const label = parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${label} ${time}`;
 }
 
 function agentStatusClass(status: AgentItem['status']): string {
@@ -183,9 +197,13 @@ export default function SystemStatusView({
     const payerNames = [...new Set(patients.map((p) => p.patient_profile.insurance.payer_name))];
     const authAgent: AgentItem = {
       name: 'Auth Tracking',
+      description: 'Monitors payer portals for authorization decisions',
       status: 'Active',
-      detail: `Monitoring ${payerNames.join(', ')} portals`,
+      detail: `Monitoring ${payerNames.length} payer portals`,
       lastTime: '2026-02-16T08:30:00',
+      schedule: 'Every 60 min',
+      nextRun: '09:30',
+      runsToday: 9,
     };
     // Insert auth tracking after Clinical Notes (index 1)
     const result = [...STATIC_AGENTS];
@@ -295,23 +313,26 @@ export default function SystemStatusView({
               <span><strong>{agentCounts.idle}</strong> idle</span>
             </div>
 
-            <div className="automation-list">
+            <div className="agent-list">
               {agents.map((agent, i) => (
-                <div key={i} className="automation-row">
-                  <div className="automation-row-header">
-                    <strong>{agent.name}</strong>
-                    <span className={`agent-status-chip ${agentStatusClass(agent.status)}`}>
-                      {agent.status}
+                <div key={i} className={`agent-row ${agent.status === 'Retrying' ? 'agent-row-retrying' : ''}`}>
+                  <div className="agent-row-left">
+                    <strong className="agent-row-name">{agent.name}</strong>
+                    <span className="agent-row-desc">
+                      {agent.description} · {agent.schedule}
+                      {agent.nextRun && ` · Next: ${agent.nextRun}`}
+                      {' · '}{agent.runsToday} {agent.runsToday === 1 ? 'run' : 'runs'} today
                     </span>
                   </div>
-                  <div className="automation-row-meta">
-                    <span>
-                      {agent.status === 'Retrying'
-                        ? `${agent.detail} · Next attempt at ${agent.retryTime}`
-                        : agent.detail}
-                    </span>
-                    <span>Last: {formatTime(agent.lastTime)}</span>
-                  </div>
+                  <span className="agent-row-detail">
+                    {agent.status === 'Retrying'
+                      ? `${agent.detail} · Retry at ${agent.retryTime}`
+                      : agent.detail}
+                  </span>
+                  <span className="agent-row-time">{formatTimeWithDate(agent.lastTime)}</span>
+                  <span className={`agent-status-chip ${agentStatusClass(agent.status)}`}>
+                    {agent.status}
+                  </span>
                 </div>
               ))}
             </div>

@@ -3037,6 +3037,61 @@ button.secondary:hover {
   color: var(--muted);
 }
 
+/* Agent flat rows */
+.agent-list {
+  display: grid;
+  gap: 0;
+}
+
+.agent-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.agent-row:last-child {
+  border-bottom: 0;
+}
+
+.agent-row-retrying {
+  border-left: 3px solid var(--orange);
+  padding-left: 9px;
+}
+
+.agent-row-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.agent-row-name {
+  font-weight: 600;
+}
+
+.agent-row-desc {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.agent-row-detail {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-row-time {
+  color: var(--muted);
+  font-size: 12px;
+  font-family: "IBM Plex Mono", "Menlo", monospace;
+  white-space: nowrap;
+}
+
 /* Sub-tabs within System Status */
 .system-status-view .detail-tabs {
   margin-top: 0;
