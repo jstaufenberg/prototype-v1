@@ -34,21 +34,22 @@ Validate three things in live demos:
 - Goal: show ranking, blockers, and evidence provenance are understandable.
 - Primary: `PT-02 @ T0`
 - Click path:
-1. Open Worklist.
-2. Open `PT-02`.
-3. Read blocker labels + rank reason.
-4. Open Patient Detail.
-5. Open `View evidence` for one blocker.
+1. Open Worklist — notice agent activity lines (green dots) on each card showing background work.
+2. Point out blocker count badge and "Next:" action preview on cards for quick triage.
+3. Click `PT-02` card to open patient detail.
+4. Note Next Steps section at top of Care Plan tab, then Blockers, then Key Findings.
+5. Open `View evidence` for one blocker to show provenance.
 - Success signal: reviewer can explain why this patient is prioritized and where the recommendation came from.
 
 ## M2 Urgent Action Delegation
 - Goal: show CM delegates and agent executes.
 - Primary: `PT-02 @ T0 -> T1` via `A-0201`
 - Click path:
-1. Open auth blocker.
-2. Click `Have agent call BCBS now`.
-3. Confirm modal: `Confirm and run`.
-4. Show state update and action log.
+1. From patient detail, review top action card in Next Steps: "Call BCBS auth — deadline today".
+2. Note rationale chain ("Based on: ...") linking action to blocker.
+3. Click `Have agent call BCBS now`.
+4. Confirm modal: `Confirm and run`.
+5. Advance state (Ctrl+Shift+2) — notice agent activity lines change on worklist card.
 - Success signal: clear delegation boundary with explicit execution.
 
 ## M3 Prerequisite Inside Blocker
@@ -65,29 +66,29 @@ Validate three things in live demos:
 - Goal: show no silent failure and clear next step.
 - Primary: `PT-01 @ T0 -> T1` via `A-0102`
 - Click path:
-1. Open placement blocker.
-2. Show failure state.
+1. Click `PT-01` card — notice "Next: Call UHC auth line now" preview and blocker count.
+2. Open placement blocker to show failure state.
 3. Click `Have agent resend to Maplewood via email`.
-4. Confirm and show updated tracking.
+4. Confirm and advance state — agent lines update to show Email Outreach active.
 - Success signal: failure becomes visible and recoverable in one step.
 
 ## M5 Controlled Restraint + Background Mode
 - Goal: prove system supports defer/dismiss plus background loop controls.
 - Primary: `PT-03 @ T0 -> T2`
 - Click path:
-1. Open `PT-03`.
-2. Use snooze/dismiss secondary actions.
+1. Click `PT-03` card — note "Next: Escalate MD sign-off" preview.
+2. In Next Steps, use snooze/dismiss secondary actions.
 3. Set one recommendation to `Keep monitoring in background`.
 4. Show policy: every 12h up to 72h, notify on change/failure.
-5. Demonstrate pause option from failure/review context.
+5. Advance states — watch agent lines change from Task Scheduler/Clinical Notes to Inbox Monitor.
 - Success signal: CM sees control without needing to micromanage every follow-up.
 
 ## M6 No-Op Control
 - Goal: show system restraint and anti-alert-fatigue behavior.
 - Primary: `PT-04 @ T0`
 - Click path:
-1. Open `PT-04`.
-2. Show resolved blocker and no recommended action.
+1. Point out `PT-04` card on worklist — "On Track", no blocker count, no "Next:" line.
+2. Click card to open detail — resolved blocker, empty Next Steps.
 3. Return to queue.
 - Success signal: reviewer sees that no unnecessary action is surfaced.
 
@@ -117,28 +118,30 @@ Validate three things in live demos:
 | What does CM actually do vs agent? | M2 |
 
 ## Ranking explanation (prototype)
-- Ranking is manual: `rank_position` + `rank_reasons`.
+- Ranking is manual: `rank_position` in `worklist_view_state`.
 - No algorithmic score in this phase.
-- Criteria order: blocker -> time pressure -> LOS risk.
+- Criteria order: bucket status (Delayed > At Risk > Pending > On Track) then rank_position within bucket.
 
 ## Presenter guardrails
 ### Do
 - Use delegation language (`Have agent ...`).
-- Keep worklist low-click (`Open patient plan`).
+- Point out agent activity lines (green dots) as proof of background work.
+- Use "Next:" preview to explain quick triage without clicking in.
 - Use evidence drawer when trust questions arise.
+- Note rationale chain on action cards ("Based on: ...").
 - Emphasize non-linear usage.
 
-### Don’t
-- Don’t imply backend automation is live.
-- Don’t imply numeric scoring exists.
-- Don’t force one patient order.
-- Don’t read source snippets in UI (use metadata only).
+### Don't
+- Don't imply backend automation is live.
+- Don't imply numeric scoring exists.
+- Don't force one patient order.
+- Don't read source snippets in UI (use metadata only).
 
 ## Fallback data pointers
 
 ### M1
 - `pt-02-at-risk.json`
-- `.worklist_view_state.rank_position`
+- `.worklist_view_state.rank_position`, `.worklist_view_state.active_agents`
 - `.blockers.items[] | select(.blocker_id=="B-0202").evidence_summary`
 - `.evidence_items.items[]`
 

@@ -17,7 +17,6 @@
     "severity": ["RED", "ORANGE", "YELLOW"],
     "confidence_label": ["High", "Moderate", "Low"],
     "priority_level": ["LOW", "MEDIUM", "HIGH"],
-    "rank_reason": ["Blocked", "Time pressure", "Extended LOS risk", "No active blocker"],
     "channel_type": ["phone", "fax", "email", "portal", "page"],
     "execution_mode_default": ["ONE_TIME", "BACKGROUND"],
     "evidence_source_type": [
@@ -199,14 +198,11 @@
       "required_fields": [
         "bucket_status",
         "rank_position",
-        "rank_reasons",
         "los_day",
-        "status_chips",
-        "sub_tags",
-        "last_agent_update",
-        "next_recommended_action_id"
+        "active_agents"
       ],
-      "notes": "High-signal triage row data only."
+      "active_agents_item_fields": ["agent", "activity"],
+      "notes": "High-signal triage row data. active_agents is an array of { agent, activity } objects shown on worklist cards."
     },
     "demo_playback": {
       "required_fields": ["step", "screen", "what_cm_sees", "cm_action", "other_visible_options"],
@@ -215,7 +211,8 @@
     "demo_state_snapshots": {
       "required_fields": ["state_id", "label", "timestamp_local", "blocker_statuses", "worklist_state", "action_statuses"],
       "worklist_state_required_fields": ["bucket_status", "rank_position"],
-      "notes": "Deterministic T0/T1/T2 states for repeatable demos; ranking is manual, not calculated."
+      "worklist_state_optional_fields": ["active_agents"],
+      "notes": "Deterministic T0/T1/T2 states for repeatable demos; ranking is manual, not calculated. active_agents overrides base worklist_view_state when present."
     },
     "reference_data_links": {
       "required_fields": ["facilities", "payers", "staff", "channels"],

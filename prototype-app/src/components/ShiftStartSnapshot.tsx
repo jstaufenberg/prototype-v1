@@ -123,7 +123,7 @@ export default function ShiftStartSnapshot({
       patientId,
       header: makeHeader(name, age, sex, room),
       bucket,
-      chipGroups: groupChips(patient.worklist_view_state.status_chips, patient.worklist_view_state.sub_tags),
+      chipGroups: groupChips([], []),
       rankPosition: patient.worklist_view_state.rank_position,
       dueItems: [],
       overnightItems: [],

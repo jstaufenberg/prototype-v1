@@ -358,7 +358,7 @@
     "items": [
       {
         "action_id": "A-0101",
-        "title": "Get SNF auth decision before deadline",
+        "title": "Call UHC auth line now",
         "reason": "Prevent avoidable day delay from missed auth window.",
         "status": "PROPOSED",
         "priority": "HIGH",
@@ -478,6 +478,42 @@
         "ui_impact": "Delivery failure row shown in placement blocker."
       },
       {
+        "log_id": "LOG-0104",
+        "timestamp_local": "2026-02-14T07:13:00",
+        "event": "Deadline flagged",
+        "actor": "Agent",
+        "result": "Auth deadline in 8h — UHC decision due by 15:00.",
+        "related_action_id": "A-0101",
+        "ui_impact": "Deadline countdown added to auth blocker."
+      },
+      {
+        "log_id": "LOG-0105",
+        "timestamp_local": "2026-02-14T08:30:00",
+        "event": "Portal check completed",
+        "actor": "Agent",
+        "result": "Checked UHC portal — auth status still pending.",
+        "related_action_id": "A-0101",
+        "ui_impact": "Auth blocker status confirmed as pending."
+      },
+      {
+        "log_id": "LOG-0106",
+        "timestamp_local": "2026-02-14T08:42:00",
+        "event": "Clinical notes scanned",
+        "actor": "Agent",
+        "result": "Scanned 2 new progress notes — no status change for auth or placement.",
+        "related_action_id": null,
+        "ui_impact": "Notes ingested, no new blockers generated."
+      },
+      {
+        "log_id": "LOG-0107",
+        "timestamp_local": "2026-02-14T09:05:00",
+        "event": "Fax retry failed",
+        "actor": "Agent",
+        "result": "Second fax attempt to Maplewood — busy signal again.",
+        "related_action_id": "A-0102",
+        "ui_impact": "Fax failure count updated; channel switch recommended."
+      },
+      {
         "log_id": "LOG-0102",
         "timestamp_local": "2026-02-14T09:11:00",
         "event": "Action approved",
@@ -500,29 +536,22 @@
   "worklist_view_state": {
     "bucket_status": "Delayed",
     "rank_position": 1,
-    "rank_reasons": [
-      "Blocked",
-      "Time pressure",
-      "Extended LOS risk"
-    ],
     "los_day": 5,
     "expected_los_day": 3,
-    "status_chips": [
-      "Authorization pending",
-      "Placement pending"
-    ],
-    "sub_tags": [
-      "Deadline today 15:00",
-      "Fax delivery failed",
-      "No facility response"
-    ],
-    "last_agent_update": "Auth deadline + outreach failure surfaced",
     "active_agents": [
-      { "agent": "Auth Tracking", "activity": "Monitoring UHC Medicare auth" },
-      { "agent": "Deadline Tracking", "activity": "Auth deadline in 2h" },
-      { "agent": "Fax Delivery", "activity": "Retrying fax to Maplewood" }
-    ],
-    "next_recommended_action_id": "A-0101"
+      {
+        "agent": "Auth Tracking",
+        "activity": "Monitoring UHC auth (deadline 15:00)"
+      },
+      {
+        "agent": "Deadline Tracking",
+        "activity": "Auth deadline in 6h"
+      },
+      {
+        "agent": "Fax Delivery",
+        "activity": "Fax to Maplewood failed"
+      }
+    ]
   },
   "demo_playback": [
     {
@@ -594,10 +623,19 @@
       "worklist_state": {
         "bucket_status": "Delayed",
         "rank_position": 1,
-        "rank_reasons": [
-          "Blocked",
-          "Time pressure",
-          "Extended LOS risk"
+        "active_agents": [
+          {
+            "agent": "Auth Tracking",
+            "activity": "Monitoring UHC auth (deadline 15:00)"
+          },
+          {
+            "agent": "Deadline Tracking",
+            "activity": "Auth deadline in 6h"
+          },
+          {
+            "agent": "Fax Delivery",
+            "activity": "Fax to Maplewood failed"
+          }
         ]
       },
       "action_statuses": [
@@ -632,9 +670,19 @@
       "worklist_state": {
         "bucket_status": "Delayed",
         "rank_position": 1,
-        "rank_reasons": [
-          "Blocked",
-          "Time pressure"
+        "active_agents": [
+          {
+            "agent": "Auth Tracking",
+            "activity": "UHC call approved, awaiting result"
+          },
+          {
+            "agent": "Email Outreach",
+            "activity": "Resent Maplewood via email"
+          },
+          {
+            "agent": "Deadline Tracking",
+            "activity": "Auth deadline in 5h 40m"
+          }
         ]
       },
       "action_statuses": [
@@ -669,8 +717,19 @@
       "worklist_state": {
         "bucket_status": "Pending",
         "rank_position": 2,
-        "rank_reasons": [
-          "Blocked"
+        "active_agents": [
+          {
+            "agent": "Auth Tracking",
+            "activity": "UHC auth still pending"
+          },
+          {
+            "agent": "Email Outreach",
+            "activity": "Maplewood email delivered"
+          },
+          {
+            "agent": "Task Scheduler",
+            "activity": "Willowbrook follow-up queued"
+          }
         ]
       },
       "action_statuses": [

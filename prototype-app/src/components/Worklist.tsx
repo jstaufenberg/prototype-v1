@@ -115,7 +115,9 @@ export default function Worklist({
           );
           const auth = authLabel(patient.patient_profile.insurance?.auth_status);
           const disposition = patient.patient_profile.disposition_target;
-          const activeAgents = patient.worklist_view_state.active_agents ?? [];
+          const activeAgents = snapshot?.worklist_state.active_agents
+            ?? patient.worklist_view_state.active_agents
+            ?? [];
           const activeBlockerCount = patient.blockers.items.filter(
             (b) => b.status === 'ACTIVE'
           ).length;

@@ -423,7 +423,7 @@
     "items": [
       {
         "action_id": "A-0201",
-        "title": "Get SNF auth decision before deadline",
+        "title": "Call BCBS auth — deadline today",
         "reason": "Auth is pending with deadline today 17:00; prevent avoidable discharge delay.",
         "status": "PROPOSED",
         "priority": "HIGH",
@@ -570,6 +570,24 @@
         "ui_impact": "Patient appears in At Risk with auth-expiring chip."
       },
       {
+        "log_id": "LOG-0204",
+        "timestamp_local": "2026-02-14T07:30:00",
+        "event": "Clinical notes parsed",
+        "actor": "Agent",
+        "result": "PT evaluation parsed — respiratory therapy requirement confirmed.",
+        "related_action_id": null,
+        "ui_impact": "Placement filter updated to respiratory-capable facilities only."
+      },
+      {
+        "log_id": "LOG-0205",
+        "timestamp_local": "2026-02-14T08:00:00",
+        "event": "Deadline flagged",
+        "actor": "Agent",
+        "result": "BCBS auth deadline flagged at 17:00 today — 9h remaining.",
+        "related_action_id": "A-0201",
+        "ui_impact": "Deadline countdown visible on auth blocker."
+      },
+      {
         "log_id": "LOG-0203",
         "timestamp_local": "2026-02-14T08:05:00",
         "event": "Action proposed",
@@ -577,34 +595,46 @@
         "result": "Review and send referral packet to four candidate facilities.",
         "related_action_id": "A-0202",
         "ui_impact": "Action card shown in patient detail."
+      },
+      {
+        "log_id": "LOG-0206",
+        "timestamp_local": "2026-02-14T08:45:00",
+        "event": "Portal check completed",
+        "actor": "Agent",
+        "result": "Checked BCBS portal — auth status still pending.",
+        "related_action_id": "A-0201",
+        "ui_impact": "Auth blocker status confirmed as pending."
+      },
+      {
+        "log_id": "LOG-0207",
+        "timestamp_local": "2026-02-14T09:10:00",
+        "event": "Referral packets drafted",
+        "actor": "Agent",
+        "result": "Drafted referral packets for 4 respiratory-capable facilities.",
+        "related_action_id": "A-0202",
+        "ui_impact": "Packets ready for CM review in action card."
       }
     ]
   },
   "worklist_view_state": {
     "bucket_status": "At Risk",
     "rank_position": 2,
-    "rank_reasons": [
-      "Blocked",
-      "Time pressure",
-      "Extended LOS risk"
-    ],
     "los_day": 4,
     "expected_los_day": 3,
-    "status_chips": [
-      "Authorization pending",
-      "Placement required"
-    ],
-    "sub_tags": [
-      "Deadline today 17:00",
-      "Respiratory-capable SNF required"
-    ],
-    "last_agent_update": "Auth deadline alert + packet draft ready",
     "active_agents": [
-      { "agent": "Auth Tracking", "activity": "Auth deadline alert sent" },
-      { "agent": "Email Outreach", "activity": "Resent facility outreach" },
-      { "agent": "Clinical Notes", "activity": "New PT eval found" }
-    ],
-    "next_recommended_action_id": "A-0201"
+      {
+        "agent": "Auth Tracking",
+        "activity": "BCBS auth pending (deadline 17:00)"
+      },
+      {
+        "agent": "Clinical Notes",
+        "activity": "New PT eval found"
+      },
+      {
+        "agent": "Deadline Tracking",
+        "activity": "Auth deadline in 8h"
+      }
+    ]
   },
   "demo_playback": [
     {
@@ -704,10 +734,19 @@
       "worklist_state": {
         "bucket_status": "At Risk",
         "rank_position": 2,
-        "rank_reasons": [
-          "Blocked",
-          "Time pressure",
-          "Extended LOS risk"
+        "active_agents": [
+          {
+            "agent": "Auth Tracking",
+            "activity": "BCBS auth pending (deadline 17:00)"
+          },
+          {
+            "agent": "Clinical Notes",
+            "activity": "New PT eval found"
+          },
+          {
+            "agent": "Deadline Tracking",
+            "activity": "Auth deadline in 8h"
+          }
         ]
       },
       "action_statuses": [
@@ -742,9 +781,19 @@
       "worklist_state": {
         "bucket_status": "At Risk",
         "rank_position": 2,
-        "rank_reasons": [
-          "Blocked",
-          "Time pressure"
+        "active_agents": [
+          {
+            "agent": "Auth Tracking",
+            "activity": "BCBS call approved, awaiting"
+          },
+          {
+            "agent": "Email Outreach",
+            "activity": "Preparing referral packets"
+          },
+          {
+            "agent": "Clinical Notes",
+            "activity": "Respiratory requirement confirmed"
+          }
         ]
       },
       "action_statuses": [
@@ -779,8 +828,19 @@
       "worklist_state": {
         "bucket_status": "Pending",
         "rank_position": 3,
-        "rank_reasons": [
-          "Blocked"
+        "active_agents": [
+          {
+            "agent": "Auth Tracking",
+            "activity": "BCBS auth still pending"
+          },
+          {
+            "agent": "Email Outreach",
+            "activity": "Sent to 4 facilities"
+          },
+          {
+            "agent": "Task Scheduler",
+            "activity": "24h follow-up scheduled"
+          }
         ]
       },
       "action_statuses": [

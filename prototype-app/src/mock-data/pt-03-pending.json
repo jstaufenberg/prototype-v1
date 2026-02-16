@@ -292,7 +292,7 @@
     "items": [
       {
         "action_id": "A-0301",
-        "title": "Escalate physician sign-off now",
+        "title": "Escalate MD sign-off",
         "reason": "Current clinical guidance is to wait until tomorrow rounds.",
         "status": "PROPOSED",
         "priority": "MEDIUM",
@@ -395,6 +395,24 @@
   "execution_log": {
     "entries": [
       {
+        "log_id": "LOG-0304",
+        "timestamp_local": "2026-02-14T08:00:00",
+        "event": "Reminder scheduled",
+        "actor": "Agent",
+        "result": "Family follow-up reminder set for 14:00 today.",
+        "related_action_id": "A-0302",
+        "ui_impact": "Task reminder queued in scheduler."
+      },
+      {
+        "log_id": "LOG-0305",
+        "timestamp_local": "2026-02-14T08:30:00",
+        "event": "Clinical notes checked",
+        "actor": "Agent",
+        "result": "Checked for MD discharge sign-off — not yet documented.",
+        "related_action_id": "A-0301",
+        "ui_impact": "MD sign-off blocker remains active."
+      },
+      {
         "log_id": "LOG-0301",
         "timestamp_local": "2026-02-14T09:08:00",
         "event": "Action snoozed",
@@ -426,25 +444,18 @@
   "worklist_view_state": {
     "bucket_status": "Pending",
     "rank_position": 3,
-    "rank_reasons": [
-      "Blocked"
-    ],
     "los_day": 5,
     "expected_los_day": 4,
-    "status_chips": [
-      "Awaiting MD Sign-off",
-      "Family Decision Pending"
-    ],
-    "sub_tags": [
-      "IRF recommendation documented",
-      "Task due 14:00"
-    ],
-    "last_agent_update": "Family follow-up task created",
     "active_agents": [
-      { "agent": "Task Scheduler", "activity": "Family follow-up created" },
-      { "agent": "Clinical Notes", "activity": "Discharge note scanned" }
-    ],
-    "next_recommended_action_id": "A-0302"
+      {
+        "agent": "Task Scheduler",
+        "activity": "Family follow-up due 14:00"
+      },
+      {
+        "agent": "Clinical Notes",
+        "activity": "Discharge note scanned"
+      }
+    ]
   },
   "demo_playback": [
     {
@@ -507,8 +518,15 @@
       "worklist_state": {
         "bucket_status": "Pending",
         "rank_position": 3,
-        "rank_reasons": [
-          "Blocked"
+        "active_agents": [
+          {
+            "agent": "Task Scheduler",
+            "activity": "Family follow-up due 14:00"
+          },
+          {
+            "agent": "Clinical Notes",
+            "activity": "Discharge note scanned"
+          }
         ]
       },
       "action_statuses": [
@@ -543,8 +561,15 @@
       "worklist_state": {
         "bucket_status": "Pending",
         "rank_position": 3,
-        "rank_reasons": [
-          "Blocked"
+        "active_agents": [
+          {
+            "agent": "Task Scheduler",
+            "activity": "Family follow-up created"
+          },
+          {
+            "agent": "Clinical Notes",
+            "activity": "Monitoring for MD sign-off"
+          }
         ]
       },
       "action_statuses": [
@@ -579,8 +604,15 @@
       "worklist_state": {
         "bucket_status": "Pending",
         "rank_position": 3,
-        "rank_reasons": [
-          "Blocked"
+        "active_agents": [
+          {
+            "agent": "Task Scheduler",
+            "activity": "Follow-up task completed"
+          },
+          {
+            "agent": "Inbox Monitor",
+            "activity": "Watching for MD sign-off"
+          }
         ]
       },
       "action_statuses": [

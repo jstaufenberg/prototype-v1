@@ -208,6 +208,15 @@
   "execution_log": {
     "entries": [
       {
+        "log_id": "LOG-0402",
+        "timestamp_local": "2026-02-14T07:45:00",
+        "event": "Clinical notes scanned",
+        "actor": "Agent",
+        "result": "Workup results confirmed — troponins negative, stress test normal.",
+        "related_action_id": null,
+        "ui_impact": "Clinical data ingested, no action needed."
+      },
+      {
         "log_id": "LOG-0401",
         "timestamp_local": "2026-02-14T08:15:00",
         "event": "Blocker resolved",
@@ -221,25 +230,18 @@
   "worklist_view_state": {
     "bucket_status": "On Track",
     "rank_position": 4,
-    "rank_reasons": [
-      "No active blocker"
-    ],
     "los_day": 1,
     "expected_los_day": 1,
-    "status_chips": [
-      "Discharge ready",
-      "Follow-up confirmed"
-    ],
-    "sub_tags": [
-      "Medical workup complete",
-      "Instructions completed"
-    ],
-    "last_agent_update": "Workup complete; no action needed",
     "active_agents": [
-      { "agent": "Clinical Notes", "activity": "Workup complete" },
-      { "agent": "Inbox Monitor", "activity": "No new messages" }
-    ],
-    "next_recommended_action_id": null
+      {
+        "agent": "Clinical Notes",
+        "activity": "Workup complete"
+      },
+      {
+        "agent": "Inbox Monitor",
+        "activity": "No new messages"
+      }
+    ]
   },
   "demo_playback": [
     {
@@ -271,8 +273,15 @@
       "worklist_state": {
         "bucket_status": "On Track",
         "rank_position": 4,
-        "rank_reasons": [
-          "No active blocker"
+        "active_agents": [
+          {
+            "agent": "Clinical Notes",
+            "activity": "Workup complete"
+          },
+          {
+            "agent": "Inbox Monitor",
+            "activity": "No new messages"
+          }
         ]
       },
       "action_statuses": []
@@ -290,8 +299,15 @@
       "worklist_state": {
         "bucket_status": "On Track",
         "rank_position": 4,
-        "rank_reasons": [
-          "No active blocker"
+        "active_agents": [
+          {
+            "agent": "Clinical Notes",
+            "activity": "Workup complete"
+          },
+          {
+            "agent": "Inbox Monitor",
+            "activity": "No new messages"
+          }
         ]
       },
       "action_statuses": []
@@ -309,8 +325,15 @@
       "worklist_state": {
         "bucket_status": "On Track",
         "rank_position": 4,
-        "rank_reasons": [
-          "No active blocker"
+        "active_agents": [
+          {
+            "agent": "Clinical Notes",
+            "activity": "Workup complete"
+          },
+          {
+            "agent": "Inbox Monitor",
+            "activity": "No new messages"
+          }
         ]
       },
       "action_statuses": []

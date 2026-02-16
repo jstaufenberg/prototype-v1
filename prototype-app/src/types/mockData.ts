@@ -32,14 +32,9 @@ export interface PatientRecord {
   worklist_view_state: {
     bucket_status: string;
     rank_position: number;
-    rank_reasons: string[];
     los_day: number;
     expected_los_day?: number;
-    status_chips: string[];
-    sub_tags: string[];
-    last_agent_update: string;
     active_agents: Array<{ agent: string; activity: string }>;
-    next_recommended_action_id?: string | null;
   };
   blockers: {
     items: Blocker[];
@@ -178,7 +173,7 @@ export interface DemoSnapshot {
   worklist_state: {
     bucket_status: string;
     rank_position: number;
-    rank_reasons?: string[];
+    active_agents?: Array<{ agent: string; activity: string }>;
   };
   action_statuses: Array<{ action_id: string; status: ActionStatus }>;
 }
