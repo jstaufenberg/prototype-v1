@@ -2762,6 +2762,311 @@ button.secondary:hover {
   border-color: #bbb;
 }
 
+/* ── System Status View ── */
+.system-status-view {
+  display: grid;
+  gap: 0;
+}
+
+.system-status-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #d4d4d4;
+  background: var(--panel);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.system-status-banner strong {
+  font-size: 15px;
+}
+
+.status-banner-green {
+  border-left: 4px solid #2a7a3b;
+}
+
+.status-banner-amber {
+  border-left: 4px solid var(--orange);
+}
+
+.status-banner-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-chip {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 2px 8px;
+  border: 1px solid #d4d4d4;
+}
+
+.system-section {
+  margin-bottom: 24px;
+}
+
+.system-section h3 {
+  margin: 0 0 4px;
+}
+
+.system-sub-heading {
+  margin: 14px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.ehr-connection-card {
+  border: 1px solid #d4d4d4;
+  padding: 12px;
+  background: var(--panel);
+  margin-top: 10px;
+}
+
+.ehr-connection-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ehr-connection-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot-green { background: #2a7a3b; }
+.status-dot-amber { background: var(--orange); }
+.status-dot-red { background: var(--red); }
+
+.status-dot-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-dot-inline::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot-inline.status-dot-green::before { background: #2a7a3b; }
+.status-dot-inline.status-dot-amber::before { background: var(--orange); }
+.status-dot-inline.status-dot-red::before { background: var(--red); }
+
+.system-table {
+  border: 1px solid #d4d4d4;
+  background: var(--panel);
+}
+
+.system-table-header,
+.system-table-row {
+  display: grid;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  align-items: center;
+}
+
+.system-table-header {
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid #d4d4d4;
+  background: #f9f9f9;
+}
+
+.system-table-row {
+  border-bottom: 1px solid #eee;
+}
+
+.system-table-row:last-child {
+  border-bottom: 0;
+}
+
+/* Data feeds table: 5 columns */
+.system-section:nth-child(2) > .system-table:nth-of-type(1) .system-table-header,
+.system-section:nth-child(2) > .system-table:nth-of-type(1) .system-table-row {
+  grid-template-columns: 140px 1fr 60px 90px 80px;
+}
+
+/* Patient data table: 4 columns */
+.system-section:nth-child(2) > .system-table:nth-of-type(2) .system-table-header,
+.system-section:nth-child(2) > .system-table:nth-of-type(2) .system-table-row {
+  grid-template-columns: 1fr 80px 90px 90px;
+}
+
+/* Payer connections table: 5 columns */
+.system-section:nth-child(3) .system-table .system-table-header,
+.system-section:nth-child(3) .system-table .system-table-row {
+  grid-template-columns: 1fr 100px 80px 90px 1fr;
+}
+
+/* Facility channels table: 6 columns */
+.system-section:nth-child(4) > .system-table:nth-of-type(1) .system-table-header,
+.system-section:nth-child(4) > .system-table:nth-of-type(1) .system-table-row {
+  grid-template-columns: 1fr 80px 60px 80px 80px 60px;
+}
+
+/* Email inbox table: 5 columns */
+.system-section:nth-child(4) > .system-table:nth-of-type(2) .system-table-header,
+.system-section:nth-child(4) > .system-table:nth-of-type(2) .system-table-row {
+  grid-template-columns: 1fr 120px 70px 100px 90px;
+}
+
+.monospace {
+  font-family: "IBM Plex Mono", "Menlo", monospace;
+  font-size: 12px;
+}
+
+.text-red {
+  color: var(--red);
+}
+
+/* Agent Pipeline */
+.agent-pipeline {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+.agent-pipeline-column {
+  min-width: 0;
+}
+
+.agent-pipeline-heading {
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+
+.agent-pipeline-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 40px;
+  color: var(--muted);
+}
+
+.pipeline-arrow-line {
+  width: 2px;
+  height: 20px;
+  background: #ccc;
+}
+
+.pipeline-arrow-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.pipeline-arrow-head {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.agent-pipeline-table {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.agent-pipeline-row {
+  border: 1px solid #d7d7d7;
+  padding: 8px 10px;
+  background: var(--panel);
+}
+
+.agent-pipeline-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.agent-pipeline-row-head strong {
+  font-size: 13px;
+}
+
+.agent-pipeline-row-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.agent-summary-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── Key Findings (Care Plan tab) ── */
+.key-findings-section {
+  margin-top: 10px;
+}
+
+.key-findings-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.key-finding-card {
+  border: 1px solid #d4d4d4;
+  padding: 8px 10px;
+}
+
+.key-finding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.key-finding-value {
+  margin: 3px 0 0;
+  font-size: 13px;
+}
+
+.key-finding-snippet {
+  margin: 4px 0 0;
+  padding: 3px 8px;
+  border-left: 3px solid #d4d4d4;
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .layout {
@@ -2866,5 +3171,29 @@ button.secondary:hover {
 
   .agents-summary {
     gap: 16px;
+  }
+
+  .agent-pipeline {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-pipeline-arrow {
+    flex-direction: row;
+    padding-top: 0;
+    padding: 4px 0;
+  }
+
+  .pipeline-arrow-line {
+    width: 20px;
+    height: 2px;
+  }
+
+  .system-table {
+    overflow-x: auto;
+  }
+
+  .system-table-header,
+  .system-table-row {
+    min-width: 500px;
   }
 }

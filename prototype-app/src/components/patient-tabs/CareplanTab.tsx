@@ -104,6 +104,13 @@ export default function CareplanTab({
     [patient.proposed_actions.items, actionStatusOverride]
   );
 
+  const keyFindings = useMemo(
+    () => patient.parsed_insights.items.filter(
+      (insight) => insight.confidence_label === 'High' || insight.confidence_label === 'Moderate'
+    ),
+    [patient.parsed_insights.items]
+  );
+
   const workspaceBlocker = useMemo(
     () =>
       workspaceBlockerId
@@ -157,6 +164,31 @@ export default function CareplanTab({
         currentStateId={currentStateId}
         onFocusBlocker={focusBlockerInView}
       />
+
+      {/* Key Findings */}
+      {keyFindings.length > 0 && (
+        <div className="key-findings-section">
+          <div className="section-head">
+            <h3>Key Findings ({keyFindings.length})</h3>
+          </div>
+          <ul className="key-findings-list">
+            {keyFindings.map((insight) => (
+              <li key={insight.insight_id} className="key-finding-card">
+                <div className="key-finding-header">
+                  <strong>{insight.title}</strong>
+                  <span className={`confidence-badge ${insight.confidence_label === 'High' ? 'confidence-high' : 'confidence-moderate'}`}>
+                    {insight.confidence_label}
+                  </span>
+                </div>
+                <p className="key-finding-value">{insight.value}</p>
+                {insight.source_snippets && insight.source_snippets.length > 0 && (
+                  <p className="key-finding-snippet">{insight.source_snippets[0]}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Blockers */}
       <div className="section-head">

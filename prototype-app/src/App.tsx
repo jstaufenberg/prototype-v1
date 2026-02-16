@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import ActionModal from './components/ActionModal';
-import AgentsView from './components/AgentsView';
 import FailureRecoveryModal from './components/FailureRecoveryModal';
-import IntelView from './components/IntelView';
 import NetworkView from './components/NetworkView';
+import SystemStatusView from './components/SystemStatusView';
 import PatientDetail from './components/PatientDetail';
 import PerformanceView from './components/PerformanceView';
 import TopBanner from './components/TopBanner';
@@ -14,13 +13,12 @@ import type { ActionStatus, BlockerStatus, ExecutionModeDefault, ProposedAction 
 // ShiftStartSnapshot kept in codebase for future use — not rendered in default flow
 // import ShiftStartSnapshot from './components/ShiftStartSnapshot';
 
-type AppTab = 'my-patients' | 'agents' | 'intel' | 'network' | 'performance';
+type AppTab = 'my-patients' | 'system-status' | 'my-network' | 'performance';
 
 const TAB_ITEMS: Array<{ id: AppTab; label: string }> = [
   { id: 'my-patients', label: 'My Patients' },
-  { id: 'intel', label: 'Intel' },
-  { id: 'agents', label: 'Agents' },
-  { id: 'network', label: 'Network' },
+  { id: 'system-status', label: 'System Status' },
+  { id: 'my-network', label: 'My Network' },
   { id: 'performance', label: 'Performance' },
 ];
 
@@ -236,8 +234,8 @@ export default function App() {
           </div>
         )}
 
-        {activeTab === 'agents' && (
-          <AgentsView
+        {activeTab === 'system-status' && (
+          <SystemStatusView
             patients={patients}
             actionStatusById={actionStatusById}
             executionModeByAction={executionModeByAction}
@@ -245,11 +243,7 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'intel' && (
-          <IntelView patients={patients} />
-        )}
-
-        {activeTab === 'network' && (
+        {activeTab === 'my-network' && (
           <NetworkView />
         )}
 

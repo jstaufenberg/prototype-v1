@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import CareplanTab from './patient-tabs/CareplanTab';
-import InsightsTab from './patient-tabs/InsightsTab';
 import AutomationTab from './patient-tabs/AutomationTab';
 import ContactsTab from './patient-tabs/ContactsTab';
 import MetricsTab from './patient-tabs/MetricsTab';
@@ -12,11 +11,10 @@ import type {
   ProposedAction
 } from '../types/mockData';
 
-type PatientTab = 'care-plan' | 'insights' | 'automation' | 'contacts' | 'metrics';
+type PatientTab = 'care-plan' | 'automation' | 'contacts' | 'metrics';
 
 const PATIENT_TABS: Array<{ id: PatientTab; label: string }> = [
   { id: 'care-plan', label: 'Care Plan' },
-  { id: 'insights', label: 'Insights' },
   { id: 'automation', label: 'Automation' },
   { id: 'contacts', label: 'Contacts' },
   { id: 'metrics', label: 'Metrics' },
@@ -135,10 +133,6 @@ export default function PatientDetail({
             onSecondaryAction={onSecondaryAction}
             onExecutionModeChange={onExecutionModeChange}
           />
-        )}
-
-        {activeTab === 'insights' && (
-          <InsightsTab patient={patient} />
         )}
 
         {activeTab === 'automation' && (
