@@ -2723,12 +2723,38 @@ button.secondary:hover {
 }
 
 /* ── Performance View ── */
-.perf-section {
-  margin-bottom: 24px;
+.performance-view .detail-tabs {
+  margin-top: 0;
 }
 
-.perf-section h3 {
-  margin: 0 0 4px;
+.perf-hero-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.perf-hero-card {
+  border: 1px solid #d4d4d4;
+  padding: 16px;
+  background: var(--panel);
+}
+
+.perf-hero-card .perf-card-value {
+  font-size: 28px;
+}
+
+.perf-hero-card .perf-card-desc {
+  font-size: 13px;
+}
+
+.perf-agent-summary {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-left: 3px solid var(--teal);
 }
 
 .perf-grid {
