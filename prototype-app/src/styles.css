@@ -3094,6 +3094,10 @@ button.secondary:hover {
   margin-top: 0;
 }
 
+.network-view .detail-tabs {
+  margin-top: 0;
+}
+
 
 /* ── Key Findings (Care Plan tab) ── */
 .key-findings-section {
