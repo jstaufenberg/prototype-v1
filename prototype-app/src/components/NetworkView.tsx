@@ -34,8 +34,17 @@ function capabilityLabel(key: string): string {
   return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function payerName(payerId: string): string {
-  return payers.find((p) => p.payer_id === payerId)?.name ?? payerId;
+const PAYER_SHORT_NAMES: Record<string, string> = {
+  'UnitedHealthcare Medicare Advantage': 'UHC Medicare Adv.',
+  'Blue Cross Blue Shield PPO': 'BCBS PPO',
+  'Aetna PPO': 'Aetna PPO',
+  'Humana Medicare Advantage': 'Humana Medicare Adv.',
+  'Medicare Traditional (Part A)': 'Medicare Part A',
+};
+
+function payerShortName(payerId: string): string {
+  const full = payers.find((p) => p.payer_id === payerId)?.name ?? payerId;
+  return PAYER_SHORT_NAMES[full] ?? full;
 }
 
 /* ── Sub-tab definitions ── */
@@ -82,26 +91,23 @@ export default function NetworkView() {
                     <span className="chip">{facility.type}</span>
                   </div>
                   <div className="network-card-body">
-                    <p className="network-label">Capabilities</p>
                     <div className="network-chip-list">
-                      {Object.entries(facility.capabilities).map(([key, supported]) => (
-                        <span key={key} className={`chip ${supported ? 'chip-accent' : ''}`}>
-                          {supported ? '\u2713' : '\u2717'} {capabilityLabel(key)}
-                        </span>
-                      ))}
+                      {Object.entries(facility.capabilities)
+                        .filter(([, supported]) => supported)
+                        .map(([key]) => (
+                          <span key={key} className="chip chip-accent">
+                            {'\u2713'} {capabilityLabel(key)}
+                          </span>
+                        ))}
                     </div>
-                    <p className="network-label">In-Network Payers</p>
                     <div className="network-chip-list">
                       {facility.in_network_payers.map((payerId) => (
-                        <span key={payerId} className="chip">{payerName(payerId)}</span>
+                        <span key={payerId} className="chip">{payerShortName(payerId)}</span>
                       ))}
                     </div>
-                    <p className="network-label">Contact</p>
-                    {facility.contacts.map((contact) => (
-                      <p key={contact.contact_id} className="network-contact-line">
-                        <span className="network-channel">{contact.channel}</span> {contact.value}
-                      </p>
-                    ))}
+                    <p className="network-contact-line">
+                      {facility.contacts.map((c) => `${c.channel} ${c.value}`).join(' · ')}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -119,7 +125,6 @@ export default function NetworkView() {
                   <strong>{payer.name}</strong>
                   <div className="network-card-body">
                     {payer.auth_phone && <p>Auth line: {payer.auth_phone}</p>}
-                    <p className="network-label">Channels</p>
                     <div className="network-chip-list">
                       {payer.default_channels.map((ch) => (
                         <span key={ch} className="chip">{ch}</span>
