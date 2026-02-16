@@ -18,7 +18,7 @@ type AppTab = 'my-patients' | 'system-status' | 'my-network' | 'performance';
 const TAB_ITEMS: Array<{ id: AppTab; label: string }> = [
   { id: 'my-patients', label: 'My Patients' },
   { id: 'my-network', label: 'My Network' },
-  { id: 'system-status', label: 'System Status' },
+  { id: 'system-status', label: 'Oversight' },
   { id: 'performance', label: 'Performance' },
 ];
 

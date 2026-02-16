@@ -2812,42 +2812,6 @@ button.secondary:hover {
   gap: 0;
 }
 
-.system-status-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid #d4d4d4;
-  background: var(--panel);
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.system-status-banner strong {
-  font-size: 15px;
-}
-
-.status-banner-green {
-  border-left: 4px solid #2a7a3b;
-}
-
-.status-banner-amber {
-  border-left: 4px solid var(--orange);
-}
-
-.status-banner-chips {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.status-chip {
-  font-size: 12px;
-  color: var(--muted);
-  padding: 2px 8px;
-  border: 1px solid #d4d4d4;
-}
 
 .system-section {
   margin-bottom: 24px;
@@ -2948,33 +2912,6 @@ button.secondary:hover {
   color: var(--red);
 }
 
-/* Issue Cards */
-.issue-card {
-  border: 1px solid #d4d4d4;
-  border-left: 4px solid var(--red);
-  padding: 10px 12px;
-  background: var(--panel);
-  margin-top: 8px;
-}
-
-.issue-card-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.issue-card-head strong {
-  font-size: 13px;
-}
-
-.issue-card-meta {
-  display: flex;
-  gap: 12px;
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--muted);
-  flex-wrap: wrap;
-}
 
 /* Activity Feed */
 .activity-feed-list {
@@ -3035,9 +2972,68 @@ button.secondary:hover {
   padding-left: 6px;
 }
 
-.activity-feed-summary {
-  margin: 10px 0 0;
+/* Activity date separators & controls */
+.activity-date-separator {
+  padding: 8px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 2px;
+}
+
+.activity-show-all {
+  margin: 8px 0;
   font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.activity-show-all:hover {
+  color: var(--fg);
+}
+
+/* Filter chips */
+.activity-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.activity-filter-chip {
+  font-size: 12px;
+  padding: 3px 10px;
+  border: 1px solid #d4d4d4;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.activity-filter-chip:hover {
+  border-color: #999;
+  color: var(--fg);
+}
+
+.activity-filter-chip-active {
+  background: var(--fg);
+  color: var(--panel);
+  border-color: var(--fg);
+}
+
+/* Agents summary line */
+.agents-summary-line {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -3046,14 +3042,6 @@ button.secondary:hover {
   margin-top: 0;
 }
 
-/* Agent role summary bar */
-.agents-summary-bar {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: var(--muted);
-}
 
 /* ── Key Findings (Care Plan tab) ── */
 .key-findings-section {

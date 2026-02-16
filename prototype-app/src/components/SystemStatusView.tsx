@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import type { ActionStatus, BlockerStatus, ExecutionModeDefault, PatientRecord } from '../types/mockData';
-import { buildWorklistAgentRows, type WorklistAgentRow } from '../utils/worklistAgents';
 
 interface SystemStatusViewProps {
   patients: PatientRecord[];
@@ -11,17 +10,19 @@ interface SystemStatusViewProps {
 
 /* ── Sub-tab definitions ── */
 
-type StatusTab = 'activity-log' | 'capabilities' | 'active-agents';
+type StatusTab = 'activity' | 'agents';
 
 const STATUS_TABS: Array<{ id: StatusTab; label: string }> = [
-  { id: 'activity-log', label: 'Activity Log' },
-  { id: 'capabilities', label: 'Capabilities' },
-  { id: 'active-agents', label: 'Active Agents' },
+  { id: 'activity', label: 'Activity' },
+  { id: 'agents', label: 'Agents' },
 ];
 
 /* ── Activity feed types ── */
 
 type FeedSource = 'EHR' | 'Payer' | 'Facility' | 'Email' | 'Team' | 'System';
+type FeedFilter = 'All' | 'Issues' | FeedSource;
+
+const FILTER_OPTIONS: FeedFilter[] = ['All', 'Issues', 'EHR', 'Payer', 'Facility', 'Email', 'Team'];
 
 interface FeedEntry {
   timestamp: string;
@@ -29,13 +30,6 @@ interface FeedEntry {
   description: string;
   patientName?: string;
   isFailure: boolean;
-}
-
-interface Issue {
-  title: string;
-  detail: string;
-  timestamp: string;
-  patientName?: string;
 }
 
 /* ── Source mapping ── */
@@ -62,58 +56,40 @@ function mapEvidenceToSource(sourceType: string): FeedSource {
   }
 }
 
-/* ── Agent role classification ── */
-
-type AgentRole = 'Authorization' | 'Outreach' | 'Monitoring';
-
-const ROLE_DESCRIPTIONS: Record<AgentRole, string> = {
-  Authorization: 'Tracking payer decisions, deadlines, and escalations',
-  Outreach: 'Managing facility contacts, referral delivery, and family communication',
-  Monitoring: 'Watching for stalls, maintaining backup options, and enforcing guardrails',
-};
-
-const AGENT_ROLES: AgentRole[] = ['Authorization', 'Outreach', 'Monitoring'];
-
-function classifyAgentRole(actionTitle: string): AgentRole {
-  const t = actionTitle.toLowerCase();
-  if (/pause|prevent|stall|keep|track|watch|backup|monitor/.test(t)) return 'Monitoring';
-  if (/auth|sign-off|signoff|decision|deadline|escalat|payer|approv/.test(t)) return 'Authorization';
-  if (/outreach|send|fax|call|family|recover|placement/.test(t)) return 'Outreach';
-  return 'Monitoring';
-}
-
-/* ── Capability cards ── */
-
-interface CapabilityCard {
-  name: string;
-  status: 'Active' | 'Degraded' | 'Down';
-  description: string;
-  lastChecked: string;
-  detail: string;
-}
-
-const STATIC_CAPABILITIES: CapabilityCard[] = [
-  { name: 'Clinical Notes', status: 'Active', description: 'Can pull notes from Epic EHR', lastChecked: '2026-02-16T08:42:00', detail: '3 new notes found' },
-  { name: 'Facility Outreach', status: 'Degraded', description: 'Can email & fax facilities', lastChecked: '2026-02-16T08:05:00', detail: '1 fax delivery failed' },
-  { name: 'Inbox Monitoring', status: 'Active', description: 'Watching 2 CM inboxes for facility replies', lastChecked: '2026-02-16T08:40:00', detail: 'a.rivera, j.lin' },
-  { name: 'Team Coordination', status: 'Active', description: 'Capturing huddle notes & updates', lastChecked: '2026-02-16T07:30:00', detail: '2 patient updates captured' },
-];
-
 /* ── Mock periodic checks ── */
 
 const MOCK_PERIODIC_CHECKS: FeedEntry[] = [
   { timestamp: '2026-02-16T08:42:00', source: 'EHR', description: 'Scanned clinical notes — 3 new notes found', isFailure: false },
   { timestamp: '2026-02-16T08:40:00', source: 'Email', description: 'Checked a.rivera@memorial-mc.org — no new messages', isFailure: false },
   { timestamp: '2026-02-16T08:38:00', source: 'Email', description: 'Checked j.lin@memorial-mc.org — 1 new message from Sunrise Manor', isFailure: false },
-  { timestamp: '2026-02-16T08:30:00', source: 'Payer', description: 'Checked UnitedHealthcare MA portal — auth still pending', patientName: 'Martha Chen', isFailure: false },
+  { timestamp: '2026-02-16T08:30:00', source: 'Payer', description: 'Checked UnitedHealthcare MA portal — auth still pending', isFailure: false },
   { timestamp: '2026-02-16T08:28:00', source: 'Payer', description: 'Checked Aetna Medicare portal — no pending auths', isFailure: false },
-  { timestamp: '2026-02-16T08:20:00', source: 'EHR', description: 'Processed discharge note', patientName: 'Patricia Davis', isFailure: false },
-  { timestamp: '2026-02-16T08:05:00', source: 'Facility', description: 'Sent referral packet to 4 facilities', patientName: 'Patricia Davis', isFailure: false },
+  { timestamp: '2026-02-16T08:20:00', source: 'EHR', description: 'Processed discharge note', isFailure: false },
+  { timestamp: '2026-02-16T08:05:00', source: 'Facility', description: 'Sent referral packet to 4 facilities', isFailure: false },
   { timestamp: '2026-02-16T07:30:00', source: 'Team', description: 'Processed morning huddle — 2 patient updates captured', isFailure: false },
+  { timestamp: '2026-02-14T07:05:00', source: 'Facility', description: 'Fax to Maplewood Rehab failed — busy signal', isFailure: true },
 ];
 
-const MOCK_FACILITY_ISSUES: Issue[] = [
-  { title: 'Fax delivery to Maplewood Rehab failed', detail: 'Busy signal after 3 retry attempts', timestamp: '2026-02-14T07:05:00', patientName: 'Martha Chen' }
+/* ── Agent items ── */
+
+interface AgentItem {
+  name: string;
+  status: 'Active' | 'Retrying' | 'Idle';
+  detail: string;
+  lastTime: string;
+  retryTime?: string;
+}
+
+const STATIC_AGENTS: AgentItem[] = [
+  { name: 'Fax Delivery', status: 'Retrying', detail: 'Failed (busy signal)', lastTime: '2026-02-14T07:05:00', retryTime: '08:15' },
+  { name: 'Clinical Notes', status: 'Active', detail: '3 new notes found', lastTime: '2026-02-16T08:42:00' },
+  { name: 'Email Outreach', status: 'Active', detail: 'Resent facility outreach', lastTime: '2026-02-16T09:19:00' },
+  { name: 'Phone Outreach', status: 'Active', detail: 'Auth follow-up call', lastTime: '2026-02-16T09:11:00' },
+  { name: 'Inbox Monitor', status: 'Active', detail: '2 inboxes checked', lastTime: '2026-02-16T08:40:00' },
+  { name: 'Task Scheduler', status: 'Active', detail: 'Family follow-up created', lastTime: '2026-02-16T09:10:00' },
+  { name: 'Huddle Processing', status: 'Active', detail: '2 updates captured', lastTime: '2026-02-16T07:30:00' },
+  { name: 'Deadline Tracking', status: 'Active', detail: 'Auth deadline alert', lastTime: '2026-02-16T07:13:00' },
+  { name: 'Escalation Paging', status: 'Idle', detail: 'Escalation snoozed by CM', lastTime: '2026-02-16T09:08:00' },
 ];
 
 /* ── Helpers ── */
@@ -124,48 +100,25 @@ function formatTime(value: string): string {
   return parsed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-function statusDotClass(status: 'Active' | 'Degraded' | 'Down'): string {
-  if (status === 'Active') return 'status-dot-green';
-  if (status === 'Degraded') return 'status-dot-amber';
-  return 'status-dot-red';
-}
-
-function agentStateClass(state: WorklistAgentRow['state']): string {
-  if (state === 'Running') return 'agent-running';
-  if (state === 'Failed') return 'agent-failed';
-  if (state === 'Paused') return 'agent-paused';
+function agentStatusClass(status: AgentItem['status']): string {
+  if (status === 'Active') return 'agent-running';
+  if (status === 'Retrying') return 'agent-paused';
   return 'agent-idle';
 }
+
+const TRUNCATE_LIMIT = 12;
 
 /* ── Component ── */
 
 export default function SystemStatusView({
   patients,
-  actionStatusById,
-  executionModeByAction,
-  blockerStatusById
+  actionStatusById: _actionStatusById,
+  executionModeByAction: _executionModeByAction,
+  blockerStatusById: _blockerStatusById,
 }: SystemStatusViewProps) {
-  const [activeStatusTab, setActiveStatusTab] = useState<StatusTab>('activity-log');
-
-  /* Issues */
-  const issues = useMemo(() => {
-    const result: Issue[] = [];
-    for (const patient of patients) {
-      const rows = buildWorklistAgentRows(patient, actionStatusById, executionModeByAction, blockerStatusById);
-      for (const row of rows) {
-        if (row.state === 'Failed') {
-          result.push({
-            title: `${row.name} failed`,
-            detail: row.failureText ?? 'See patient workspace for details',
-            timestamp: row.lastRun ?? '',
-            patientName: patient.patient_profile.patient_name
-          });
-        }
-      }
-    }
-    result.push(...MOCK_FACILITY_ISSUES);
-    return result;
-  }, [patients, actionStatusById, executionModeByAction, blockerStatusById]);
+  const [activeStatusTab, setActiveStatusTab] = useState<StatusTab>('activity');
+  const [activeFilter, setActiveFilter] = useState<FeedFilter>('All');
+  const [showAll, setShowAll] = useState(false);
 
   /* Activity feed */
   const activityFeed = useMemo(() => {
@@ -177,7 +130,7 @@ export default function SystemStatusView({
           source: mapLogToSource(log.event, log.result),
           description: log.result,
           patientName: patient.patient_profile.patient_name,
-          isFailure: /fail/i.test(log.event)
+          isFailure: /fail/i.test(log.event),
         });
       }
     }
@@ -188,7 +141,7 @@ export default function SystemStatusView({
           source: mapEvidenceToSource(ev.source_type),
           description: `Processed ${ev.source_label}`,
           patientName: patient.patient_profile.patient_name,
-          isFailure: false
+          isFailure: false,
         });
       }
     }
@@ -197,82 +150,66 @@ export default function SystemStatusView({
     return entries;
   }, [patients]);
 
-  /* Capability cards — inject dynamic payer names */
-  const capabilities = useMemo(() => {
-    const payerNames = [...new Set(patients.map((p) => p.patient_profile.insurance.payer_name))];
-    const payerCard: CapabilityCard = {
-      name: 'Payer Auth Portals',
-      status: 'Active',
-      description: `Can check auth on ${payerNames.join(', ')} portals`,
-      lastChecked: '2026-02-16T08:30:00',
-      detail: `${payerNames.length} payer${payerNames.length !== 1 ? 's' : ''} connected`,
-    };
-    return [STATIC_CAPABILITIES[0], payerCard, ...STATIC_CAPABILITIES.slice(1)];
-  }, [patients]);
+  /* Filtered feed */
+  const filteredFeed = useMemo(() => {
+    if (activeFilter === 'All') return activityFeed;
+    if (activeFilter === 'Issues') return activityFeed.filter((e) => e.isFailure);
+    return activityFeed.filter((e) => e.source === activeFilter);
+  }, [activityFeed, activeFilter]);
 
-  /* Agent grouping by role */
-  const agentsByRole = useMemo(() => {
-    const groups: Record<AgentRole, Array<{ patientName: string; row: WorklistAgentRow }>> = {
-      Authorization: [],
-      Outreach: [],
-      Monitoring: [],
-    };
-    for (const patient of patients) {
-      const rows = buildWorklistAgentRows(patient, actionStatusById, executionModeByAction, blockerStatusById);
-      for (const row of rows) {
-        const role = classifyAgentRole(row.name);
-        groups[role].push({ patientName: patient.patient_profile.patient_name, row });
+  /* Date-grouped feed */
+  const groupedFeed = useMemo(() => {
+    const groups: Array<{ dateLabel: string; entries: FeedEntry[] }> = [];
+    let currentDate = '';
+    for (const entry of filteredFeed) {
+      const date = entry.timestamp.slice(0, 10);
+      if (date !== currentDate) {
+        currentDate = date;
+        const label =
+          date === '2026-02-16'
+            ? 'Today'
+            : new Date(date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        groups.push({ dateLabel: label, entries: [] });
       }
+      groups[groups.length - 1].entries.push(entry);
     }
     return groups;
-  }, [patients, actionStatusById, executionModeByAction, blockerStatusById]);
+  }, [filteredFeed]);
 
-  const allAgentRows = [...agentsByRole.Authorization, ...agentsByRole.Outreach, ...agentsByRole.Monitoring];
-  const agentCounts = {
-    running: allAgentRows.filter((a) => a.row.state === 'Running').length,
-    paused: allAgentRows.filter((a) => a.row.state === 'Paused').length,
-    failed: allAgentRows.filter((a) => a.row.state === 'Failed').length,
-    idle: allAgentRows.filter((a) => a.row.state === 'Idle').length,
-  };
+  const totalEntries = filteredFeed.length;
 
-  const hasIssues = issues.length > 0;
-  const overallStatus = hasIssues ? 'Degraded' : 'All Systems Operational';
-  const overallClass = hasIssues ? 'status-banner-amber' : 'status-banner-green';
+  /* Agents list — inject dynamic auth tracking payer names */
+  const agents = useMemo(() => {
+    const payerNames = [...new Set(patients.map((p) => p.patient_profile.insurance.payer_name))];
+    const authAgent: AgentItem = {
+      name: 'Auth Tracking',
+      status: 'Active',
+      detail: `Monitoring ${payerNames.join(', ')} portals`,
+      lastTime: '2026-02-16T08:30:00',
+    };
+    // Insert auth tracking after Clinical Notes (index 1)
+    const result = [...STATIC_AGENTS];
+    result.splice(2, 0, authAgent);
+    // Sort: Retrying first, Active, Idle
+    const order: Record<string, number> = { Retrying: 0, Active: 1, Idle: 2 };
+    result.sort((a, b) => order[a.status] - order[b.status]);
+    return result;
+  }, [patients]);
+
+  const agentCounts = useMemo(() => {
+    const counts = { active: 0, retrying: 0, idle: 0 };
+    for (const agent of agents) {
+      if (agent.status === 'Active') counts.active++;
+      else if (agent.status === 'Retrying') counts.retrying++;
+      else counts.idle++;
+    }
+    return counts;
+  }, [agents]);
 
   return (
     <section className="view-single-pane system-status-view">
-      {/* ── Always-visible: Health banner ── */}
-      <div className={`system-status-banner ${overallClass}`}>
-        <strong>{overallStatus}</strong>
-        <div className="status-banner-chips">
-          <span className="status-chip">EHR: Connected</span>
-          <span className="status-chip">Payers: {[...new Set(patients.map((p) => p.patient_profile.insurance.payer_name))].length}/{[...new Set(patients.map((p) => p.patient_profile.insurance.payer_name))].length}</span>
-          <span className="status-chip">Inboxes: 2/2</span>
-        </div>
-      </div>
-
-      {/* ── Always-visible: Issues (conditional) ── */}
-      {hasIssues && (
-        <div className="system-section">
-          <h3>Issues</h3>
-          {issues.map((issue, i) => (
-            <div key={i} className="issue-card">
-              <div className="issue-card-head">
-                <span className="status-dot status-dot-red" />
-                <strong>{issue.title}</strong>
-              </div>
-              <div className="issue-card-meta">
-                <span>{issue.detail}</span>
-                {issue.timestamp && <span>{formatTime(issue.timestamp)}</span>}
-                {issue.patientName && <span>Related: {issue.patientName}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* ── Sub-tab navigation ── */}
-      <nav className="detail-tabs" role="tablist" aria-label="System status sections">
+      <nav className="detail-tabs" role="tablist" aria-label="Oversight sections">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.id}
@@ -288,90 +225,96 @@ export default function SystemStatusView({
 
       {/* ── Tab content ── */}
       <div className="detail-tab-content">
-        {/* Activity Log */}
-        {activeStatusTab === 'activity-log' && (
+        {/* Activity */}
+        {activeStatusTab === 'activity' && (
           <div>
+            {/* Filter chips */}
+            <div className="activity-filter-bar">
+              {FILTER_OPTIONS.map((filter) => (
+                <button
+                  key={filter}
+                  className={`activity-filter-chip ${activeFilter === filter ? 'activity-filter-chip-active' : ''}`}
+                  onClick={() => { setActiveFilter(filter); setShowAll(false); }}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+
+            {/* Date-grouped feed */}
             <div className="activity-feed-list">
-              {activityFeed.map((entry, i) => (
-                <div key={i} className={`activity-feed-entry${entry.isFailure ? ' activity-failure' : ''}`}>
-                  <span className="activity-time">{formatTime(entry.timestamp)}</span>
-                  <span className={`activity-source-chip activity-source-${entry.source.toLowerCase()}`}>
-                    {entry.source}
-                  </span>
-                  <span className="activity-description">
-                    {entry.description}
-                    {entry.patientName && <span className="activity-patient"> — {entry.patientName}</span>}
-                    {entry.isFailure && <span className="activity-warning"> ⚠</span>}
-                  </span>
+              {(() => {
+                let rendered = 0;
+                const limit = showAll ? Infinity : TRUNCATE_LIMIT;
+                return groupedFeed.map((group) => {
+                  if (rendered >= limit) return null;
+                  const entriesToShow = group.entries.slice(0, limit - rendered);
+                  rendered += entriesToShow.length;
+                  return (
+                    <div key={group.dateLabel}>
+                      <div className="activity-date-separator">{group.dateLabel}</div>
+                      {entriesToShow.map((entry, i) => (
+                        <div key={i} className={`activity-feed-entry${entry.isFailure ? ' activity-failure' : ''}`}>
+                          <span className="activity-time">{formatTime(entry.timestamp)}</span>
+                          <span className={`activity-source-chip activity-source-${entry.source.toLowerCase()}`}>
+                            {entry.source}
+                          </span>
+                          <span className="activity-description">
+                            {entry.description}
+                            {entry.patientName && <span className="activity-patient"> — {entry.patientName}</span>}
+                            {entry.isFailure && <span className="activity-warning"> ⚠</span>}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+
+            {!showAll && totalEntries > TRUNCATE_LIMIT && (
+              <button className="activity-show-all" onClick={() => setShowAll(true)}>
+                Show all {totalEntries} entries
+              </button>
+            )}
+
+            {showAll && totalEntries > TRUNCATE_LIMIT && (
+              <button className="activity-show-all" onClick={() => setShowAll(false)}>
+                Show less
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Agents */}
+        {activeStatusTab === 'agents' && (
+          <div>
+            <div className="agents-summary-line">
+              <span><strong>{agentCounts.active}</strong> active</span>
+              {agentCounts.retrying > 0 && <span><strong>{agentCounts.retrying}</strong> retrying</span>}
+              <span><strong>{agentCounts.idle}</strong> idle</span>
+            </div>
+
+            <div className="automation-list">
+              {agents.map((agent, i) => (
+                <div key={i} className="automation-row">
+                  <div className="automation-row-header">
+                    <strong>{agent.name}</strong>
+                    <span className={`agent-status-chip ${agentStatusClass(agent.status)}`}>
+                      {agent.status}
+                    </span>
+                  </div>
+                  <div className="automation-row-meta">
+                    <span>
+                      {agent.status === 'Retrying'
+                        ? `${agent.detail} · Next attempt at ${agent.retryTime}`
+                        : agent.detail}
+                    </span>
+                    <span>Last: {formatTime(agent.lastTime)}</span>
+                  </div>
                 </div>
               ))}
             </div>
-            <p className="activity-feed-summary">{activityFeed.length} checks completed today</p>
-          </div>
-        )}
-
-        {/* Capabilities */}
-        {activeStatusTab === 'capabilities' && (
-          <div className="network-grid">
-            {capabilities.map((cap, i) => (
-              <div key={i} className="network-card">
-                <div className="network-card-header">
-                  <strong>{cap.name}</strong>
-                  <span className={`status-dot ${statusDotClass(cap.status)}`} />
-                </div>
-                <div className="network-card-body">
-                  <p className={`status-dot-inline ${statusDotClass(cap.status)}`}>{cap.status}</p>
-                  <p className="subtle">{cap.description}</p>
-                  <p className="subtle">Last: {formatTime(cap.lastChecked)} · {cap.detail}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Active Agents */}
-        {activeStatusTab === 'active-agents' && (
-          <div>
-            <div className="agents-summary-bar">
-              <span><strong>{agentCounts.running}</strong> Running</span>
-              <span><strong>{agentCounts.paused}</strong> Paused</span>
-              <span><strong>{agentCounts.failed}</strong> Failed</span>
-              <span><strong>{agentCounts.idle}</strong> Idle</span>
-            </div>
-
-            {AGENT_ROLES.map((role) => (
-              <div key={role} className="system-section">
-                <h3>{role} Agents</h3>
-                <p className="subtle">{ROLE_DESCRIPTIONS[role]}</p>
-                {agentsByRole[role].length === 0 ? (
-                  <p className="subtle">No active agents in this role</p>
-                ) : (
-                  <div className="automation-list">
-                    {agentsByRole[role].map((entry, i) => (
-                      <div key={i} className="automation-row">
-                        <div className="automation-row-header">
-                          <div>
-                            <strong>{entry.row.name}</strong>
-                            <span className="subtle" style={{ marginLeft: 8 }}>{entry.patientName}</span>
-                          </div>
-                          <span className={`agent-status-chip ${agentStateClass(entry.row.state)}`}>
-                            {entry.row.state}
-                          </span>
-                        </div>
-                        <div className="automation-row-meta">
-                          <span>Mode: {entry.row.mode}</span>
-                          {entry.row.lastRun && <span>Last: {formatTime(entry.row.lastRun)}</span>}
-                          {entry.row.nextRun && <span>Next: {formatTime(entry.row.nextRun)}</span>}
-                        </div>
-                        {entry.row.failureText && (
-                          <p className="automation-failure">{entry.row.failureText}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
           </div>
         )}
       </div>
