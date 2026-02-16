@@ -108,12 +108,14 @@ export default function NetworkView() {
                 <div key={payer.payer_id} className="network-card">
                   <strong>{payer.name}</strong>
                   <div className="network-card-body">
-                    {payer.auth_phone && <p>Auth line: {payer.auth_phone}</p>}
-                    <div className="network-chip-list">
-                      {payer.default_channels.map((ch) => (
-                        <span key={ch} className="chip">{ch}</span>
-                      ))}
-                    </div>
+                    <p className="network-channels">
+                      {payer.default_channels
+                        .map((ch) => ch.charAt(0).toUpperCase() + ch.slice(1))
+                        .join(' · ')}
+                    </p>
+                    {payer.auth_phone && (
+                      <p className="network-contact-bottom">Auth line: {payer.auth_phone}</p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -129,8 +131,10 @@ export default function NetworkView() {
               {staff.map((member) => (
                 <div key={member.staff_id} className="network-card">
                   <strong>{member.name}</strong>
-                  <p className="subtle">{member.role}</p>
-                  <p>Pager: {member.pager}</p>
+                  <div className="network-card-body">
+                    <p className="subtle">{member.role}</p>
+                    <p className="network-contact-bottom">Pager: {member.pager}</p>
+                  </div>
                 </div>
               ))}
             </div>

@@ -132,6 +132,18 @@ main {
   color: var(--muted);
 }
 
+.network-channels {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.network-contact-bottom {
+  margin: auto 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* ── Layout ── */
 .layout {
   display: grid;
