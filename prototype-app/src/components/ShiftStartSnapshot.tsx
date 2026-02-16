@@ -271,7 +271,7 @@ export default function ShiftStartSnapshot({
         compact
       />
       <p className="chip-legend">
-        Subchips show Requirement, Dependency, Deadline, Status, Failure, and Task details.
+        Chips summarize blockers and key details.
       </p>
 
       {cards.length === 0 && (

@@ -17,7 +17,7 @@ Precedence: if this document conflicts with older roadmap/sprint/planning docs, 
 - `< 30 min away`: open `S1` directly.
 
 ### Interaction model
-- Worklist is triage-only: row action is only `Open patient plan`.
+- Worklist is triage-only: row action is only `Select patient`.
 - Blockers are the single source of truth for rationale and evidence.
 - Patient detail is timeline-first:
   - patient identity
@@ -37,7 +37,7 @@ Precedence: if this document conflicts with older roadmap/sprint/planning docs, 
 
 ### Chip language system
 - Parent chips describe the blocker category (for example: `Auth Pending`, `Placement Needed`).
-- Subchips always use typed labels: `Requirement:`, `Dependency:`, `Deadline:`, `Status:`, `Failure:`, `Task:`, `Risk:`, `Owner:`, `Note:`.
+- Subchips are plain-language, standalone facts (for example: `Respiratory-capable SNF required`, `Deadline today 15:00`).
 - S0 and S1 share the same chip wording and grouping logic.
 - S0 uses subchip preview (`1 visible +N more`) with inline expansion; expanded tags keep equal visual weight.
 - No orphan subchips: every subchip nests under a parent blocker chip.
@@ -85,7 +85,7 @@ Shows:
 - Needs review
 - Page-level `As of [time]`
 - same blocker chips/subchips as S1
-- compact legend: `Subchips show Requirement, Dependency, Deadline, Status, Failure, and Task details.`
+- compact legend: `Chips summarize blockers and key details.`
 
 Buttons:
 - `Go to worklist`
@@ -99,16 +99,17 @@ Hard caps:
 Goal: triage only.
 
 Per row:
-- identity + status label
-- human-readable blocker labels
-- typed subchips with explicit prefixes
-- compact legend matches S0
-- rank line (plain-English reason)
-- single row action: `Open patient plan`
+- identity line: `Name · AgeSex · Bed`
+- compact context line: MRN + primary diagnosis (single-line truncation)
+- LOS line: `LOS {actual}d / Exp {expected}d ({+/-delta}d)` with fallback to `LOS {actual}d`
+- status badges in top-right (bucket + optional urgency)
+- plain-language parent chips and subchips
+- default density: max 2 parent chips; max 2 subchips per parent; inline `+N more`
+- single row action: `Select patient`
 
 Top controls:
 - bucket chips: Delayed, Attention, Pending, On Track
-- page-level freshness + refresh
+- no utility action bar (`Open selected`, `Clear selection`, timestamp strip removed)
 - mini snapshot banner (30–89 min re-entry only)
 
 ### S2: Patient detail (`F-01`, `F-02`, `F-04`, `F-05`, `F-06`, `F-18`)
@@ -223,7 +224,7 @@ From `../data/ehr-mock-data/schema-v1.json`:
 - `demo_state_snapshots[]`
 
 ## 6) Acceptance criteria
-- Worklist row action is only `Open patient plan`.
+- Worklist row action is only `Select patient`.
 - Every primary action CTA starts with `Have agent`.
 - Confirm modal primary button is `Confirm and run`.
 - Each active blocker shows `Evidence: N sources` + `View evidence`.

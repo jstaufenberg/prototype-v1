@@ -34,6 +34,7 @@ export interface PatientRecord {
     rank_position: number;
     rank_reasons: string[];
     los_day: number;
+    expected_los_day?: number;
     status_chips: string[];
     sub_tags: string[];
     last_agent_update: string;

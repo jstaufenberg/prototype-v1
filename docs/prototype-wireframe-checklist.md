@@ -5,7 +5,7 @@ Purpose: implementation checklist for the blocker-centric, trust-centered, backg
 Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the implementation source of truth.
 
 ## 1) Canonical rules
-- Worklist is triage-only; per-row action is only `Open patient plan`.
+- Worklist is triage-only; per-row action is only `Select patient`.
 - Primary CTA uses `Have agent ...` grammar.
 - Blockers are primary UI object and own rationale/evidence context.
 - S2 execution model is blocker-workspace based (no global patient action bar).
@@ -15,7 +15,7 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - Do not render `PT-##` in user-facing UI.
 - Keep `State view` in internal demo tools only.
 - Parent chips and subchips must use the same language model in S0 and S1.
-- Subchips must be typed (`Requirement:`, `Dependency:`, `Deadline:`, `Status:`, `Failure:`, `Task:`, `Risk:`, `Owner:`, `Note:`).
+- Subchips must be plain-language, standalone facts (no typed prefixes).
 
 ## 2) Screen inventory
 - `S0` Shift-start snapshot
@@ -43,12 +43,17 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Re-entry behavior wired (`>=90`, `30–89`, `<30` min)
 - [ ] Status chips: Delayed, Attention, Pending, On Track
 - [ ] Queue ordering: Delayed -> Attention -> Pending -> On Track
-- [ ] Per-row identity + blocker labels + rank reason line
-- [ ] Primary row button: `Open patient plan`
+- [ ] Per-row identity shows `Name · AgeSex · Bed`
+- [ ] Per-row context shows MRN + primary diagnosis (single-line truncation)
+- [ ] LOS line shows actual/expected/delta with fallback when expected is missing
+- [ ] Primary row button: `Select patient`
 - [ ] No row-level approve/dismiss buttons
-- [ ] Page-level freshness + refresh control
-- [ ] Subchips render typed prefixes and deterministic order
-- [ ] Legend text matches S0
+- [ ] No top utility action bar (`Open selected patient plan`, `Clear selection`, timestamp strip)
+- [ ] Parent chips are compact content-width pills (not stretched)
+- [ ] Subchips render plain-language facts and deterministic order
+- [ ] Max 2 parent chips default, with inline `+N more` expansion
+- [ ] Max 2 subchips per parent default, with inline `+N more` expansion
+- [ ] On Track cards show positive confirmations only (no long negative lists)
 
 ### S2 Patient detail
 - [ ] Patient header shows only name, MRN, location, payer, close X
@@ -105,7 +110,7 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 ## 4) Button inventory
 - [ ] `Go to worklist`
 - [ ] `Review flagged (N)`
-- [ ] `Open patient plan`
+- [ ] `Select patient`
 - [ ] `Open blocker workspace`
 - [ ] `Have agent [verb] [target] [when]`
 - [ ] `Snooze [what] to [time]`

@@ -589,11 +589,13 @@
       "Extended LOS risk"
     ],
     "los_day": 4,
+    "expected_los_day": 3,
     "status_chips": [
-      "Auth Expiring Today",
-      "Placement Needed"
+      "Authorization pending",
+      "Placement required"
     ],
     "sub_tags": [
+      "Deadline today 17:00",
       "Respiratory-capable SNF required"
     ],
     "last_agent_update": "Auth deadline alert + packet draft ready",

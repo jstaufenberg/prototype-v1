@@ -122,35 +122,42 @@ header p {
 
 .worklist-row {
   border: 1px solid #d0d0d0;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
+  padding: 10px 12px;
+}
+
+.worklist-card {
+  display: grid;
+  gap: 8px;
 }
 
 .worklist-row.active {
   border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px #d8e4ff;
 }
 
-.row-head {
+.worklist-card-header {
   display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
 }
 
-.patient-id {
-  font-family: "IBM Plex Mono", "Menlo", monospace;
-  font-size: 12px;
-  padding: 1px 5px;
-  border: 1px solid #999;
+.worklist-patient-line {
+  display: block;
+  font-size: 20px;
+  line-height: 1.1;
+  font-weight: 700;
 }
 
 .bucket {
-  font-size: 12px;
-  padding: 1px 6px;
+  font-size: 13px;
+  padding: 2px 8px;
   font-weight: 600;
+}
+
+.bucket-large {
+  font-size: 15px;
+  padding: 3px 10px;
 }
 
 .bucket-delayed {
@@ -173,41 +180,102 @@ header p {
   border: 1px solid #2a7a3b;
 }
 
-.chips,
-.meta {
-  display: flex;
+.worklist-badge-stack {
+  display: grid;
+  justify-items: end;
   gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.worklist-urgency-badge {
+  font-size: 12px;
+  padding: 1px 7px;
+  border: 1px solid #8d8d8d;
+  color: #4d4d4d;
+}
+
+.worklist-context-line {
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.worklist-mrn {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.worklist-diagnosis {
+  font-size: 13px;
+  color: #3e3e3e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.worklist-los-line {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.worklist-los-line.los-over {
+  color: #8f2c2c;
+}
+
+.worklist-los-line.los-under {
+  color: #1f6b5f;
+}
+
+.worklist-los-line.los-even {
+  color: #444;
 }
 
 .blocker-stack {
-  margin-top: 6px;
+  margin-top: 2px;
   display: grid;
-  gap: 6px;
+  gap: 7px;
 }
 
 .blocker-line {
   display: grid;
-  gap: 4px;
+  gap: 5px;
+  justify-items: start;
 }
 
 .subchip-stack {
-  margin-left: 20px;
+  margin-left: 12px;
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .chip,
 .sub-tag {
-  font-size: 12px;
+  font-size: 13px;
   border: 1px solid #aaa;
-  padding: 1px 6px;
+  padding: 2px 8px;
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .sub-tag {
   border-style: dashed;
+}
+
+.worklist-parent-toggle {
+  margin-left: 0;
+}
+
+.worklist-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .chip-legend {
@@ -1292,6 +1360,7 @@ button.secondary:hover {
 .row-select-button {
   color: #3d3d3d;
   border-color: #8d8d8d;
+  min-width: 120px;
 }
 
 @media (max-width: 1024px) {
@@ -1301,9 +1370,21 @@ button.secondary:hover {
 }
 
 @media (max-width: 768px) {
-  .worklist-row {
+  .worklist-card-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .worklist-badge-stack {
+    justify-items: start;
+  }
+
+  .worklist-actions {
+    justify-content: flex-start;
+  }
+
+  .row-select-button {
+    width: 100%;
   }
 
   .referral-row {

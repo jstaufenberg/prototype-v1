@@ -103,11 +103,10 @@ export function classifySubchipType(raw: string, parent?: string): ChipType {
   return 'Note';
 }
 
-export function formatSubchip(raw: string, parent?: string): string {
-  const type = classifySubchipType(raw, parent);
+export function formatSubchip(raw: string, _parent?: string): string {
   const stripped = stripExistingPrefix(raw);
   const body = sentenceCase(stripped || raw);
-  return `${type}: ${body}`;
+  return body;
 }
 
 export function sortSubchipsForDisplay(subchips: string[], parent?: string): string[] {

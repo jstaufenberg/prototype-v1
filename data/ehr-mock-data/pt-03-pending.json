@@ -430,12 +430,13 @@
       "Blocked"
     ],
     "los_day": 5,
+    "expected_los_day": 4,
     "status_chips": [
       "Awaiting MD Sign-off",
       "Family Decision Pending"
     ],
     "sub_tags": [
-      "IRF recommended",
+      "IRF recommendation documented",
       "Task due 14:00"
     ],
     "last_agent_update": "Family follow-up task created",

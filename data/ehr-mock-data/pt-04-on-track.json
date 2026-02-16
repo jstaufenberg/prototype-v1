@@ -225,11 +225,14 @@
       "No active blocker"
     ],
     "los_day": 1,
+    "expected_los_day": 1,
     "status_chips": [
-      "Discharge Today"
+      "Discharge ready",
+      "Follow-up confirmed"
     ],
     "sub_tags": [
-      "No active blockers"
+      "Medical workup complete",
+      "Instructions completed"
     ],
     "last_agent_update": "Workup complete; no action needed",
     "next_recommended_action_id": null
