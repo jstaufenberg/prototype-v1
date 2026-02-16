@@ -8,7 +8,7 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - Worklist is triage-only; per-row action is only `Open patient plan`.
 - Primary CTA uses `Have agent ...` grammar.
 - Blockers are primary UI object and own rationale/evidence context.
-- S2 execution model is `local selects, top runs`.
+- S2 execution model is blocker-workspace based (no global patient action bar).
 - Ranking uses `rank_position` + `rank_reasons` only.
 - Render no backend codes in user-facing UI.
 - Do not render source snippets in default UI.
@@ -51,31 +51,27 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] Legend text matches S0
 
 ### S2 Patient detail
-- [ ] Active blockers collapsed by default
-- [ ] Blocker card shows due-by + per-item freshness
-- [ ] Collapsed blocker summary labels use typed chip language where applicable
-- [ ] Blocker shows `Evidence: N sources` + `View evidence`
-- [ ] Evidence drawer lists source metadata (not snippets)
-- [ ] Nested steps shown only inside blocker detail
-- [ ] Blocker-local rationale appears under `Why this blocker matters`
+- [ ] Patient header shows only name, MRN, location, payer, close X
+- [ ] Patient milestone journey is the first section below identity
+- [ ] Active blocker cards are compact in primary view
 - [ ] No standalone `What the agent found` section
 - [ ] No standalone `Recommended action` section
-- [ ] Quick Action Center is sticky and always visible
-- [ ] Blocker-local CTA is `Select action for Quick Action Center`
-- [ ] Only Quick Action Center executes (`Have agent ...`)
-- [ ] Execution mode controls visible (`One-time` / `Keep monitoring in background`)
+- [ ] No Quick Action Center in patient panel
+- [ ] No top-level Automation Command Center in patient panel
+- [ ] Blocker card CTA is `Open blocker workspace`
 - [ ] `+ Add blocker` available at active blockers header (local state only)
 - [ ] `+ Add blocker task` available within blocker cards
-- [ ] Resolved blockers are collapsed by default
-- [ ] Patient milestone journey exists between resolved blockers and automation center
 - [ ] Milestone journey is collapsed by default
 - [ ] Milestone journey uses vertical progression (Admission top -> Discharge bottom)
 - [ ] Core scaffold milestones always visible
 - [ ] Conditional milestone markers only visible when blocker-linked or recently changed
-- [ ] Completed segments render in teal; blocked in rose; pending in amber; future in gray
+- [ ] No complete milestone appears after first active blocker marker
+- [ ] No color-legend explainer text appears in milestone section
+- [ ] Milestone detail area is always visible with empty-state skeleton before selection
 - [ ] Node click opens detail drawer with evidence metadata
 - [ ] Drawer supports `Focus blocker` action for linked blockers
-- [ ] Automation Command Center renders mode/status/last-run/next-run + start/pause/resume
+- [ ] Blocker workspace modal includes evidence, steps, decisions/actions, automation, activity log
+- [ ] Automation controls are blocker-scoped (inside blocker workspace only)
 
 ### S3 Confirm modal
 - [ ] Action, reason, target, microcopy shown
@@ -110,7 +106,7 @@ Precedence: use this checklist with `./cm-prototype-simple-ui-spec.md` as the im
 - [ ] `Go to worklist`
 - [ ] `Review flagged (N)`
 - [ ] `Open patient plan`
-- [ ] `Select action for Quick Action Center`
+- [ ] `Open blocker workspace`
 - [ ] `Have agent [verb] [target] [when]`
 - [ ] `Snooze [what] to [time]`
 - [ ] `Dismiss [what] suggestion`
@@ -146,4 +142,5 @@ Reference: `../data/ehr-mock-data/prototype-sequence.md`
 - [ ] Every primary action begins with `Have agent`.
 - [ ] Evidence drawer works for blockers and recommendations.
 - [ ] Background mode can be enabled and paused.
+- [ ] Background controls appear only in blocker workspace modal.
 - [ ] No backend codes shown in user-facing UI.

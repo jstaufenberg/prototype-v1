@@ -43,12 +43,12 @@ export default function MilestoneJourney({
     [patient, blockerStatusOverride, currentStateId]
   );
 
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(nodes[0]?.id ?? null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
     if (!nodes.some((node) => node.id === selectedNodeId)) {
-      setSelectedNodeId(nodes[0]?.id ?? null);
+      setSelectedNodeId(null);
     }
   }, [nodes, selectedNodeId]);
 
@@ -70,9 +70,7 @@ export default function MilestoneJourney({
       </summary>
 
       <div className="milestone-journey-content">
-        <p className="milestone-legend">
-          Teal = complete · Amber = in progress / pending · Rose = blocked / failed · Gray = not started / not reached
-        </p>
+        <p className="subtle milestone-node-affordance">Select any milestone to view details below.</p>
 
         <div className="milestone-timeline-scroll">
           <ul className="milestone-timeline" role="listbox" aria-label="Patient milestone timeline">
@@ -99,6 +97,7 @@ export default function MilestoneJourney({
                     buttonRefs.current[node.id] = element;
                   }}
                   className="milestone-node-content"
+                  disabled={!node.isClickable}
                   onClick={() => setSelectedNodeId(node.id)}
                   onKeyDown={(event) => {
                     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
@@ -135,13 +134,11 @@ export default function MilestoneJourney({
           </ul>
         </div>
 
-        {selectedNode && (
-          <MilestoneNodeDrawer
-            node={selectedNode}
-            blockersById={blockersById}
-            onFocusBlocker={onFocusBlocker}
-          />
-        )}
+        <MilestoneNodeDrawer
+          node={selectedNode}
+          blockersById={blockersById}
+          onFocusBlocker={onFocusBlocker}
+        />
       </div>
     </details>
   );

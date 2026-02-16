@@ -173,7 +173,10 @@ export interface MilestoneJourneyNode {
   nodeType: 'MILESTONE' | 'BLOCKER' | 'ENDPOINT';
   label: string;
   statusLabel: 'Complete' | 'Pending' | 'Blocked' | 'Not started';
+  displayState: 'COMPLETE' | 'PENDING' | 'BLOCKED' | 'FUTURE';
   statusTone: 'COMPLETE' | 'PENDING' | 'BLOCKED' | 'FUTURE';
+  isPostBlockerAdjusted?: boolean;
+  isClickable: boolean;
   timestampLocal?: string | null;
   why: string;
   chips: string[];

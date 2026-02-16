@@ -356,6 +356,11 @@ button.secondary:hover {
   box-shadow: inset 0 0 0 1px #d8e4ff;
 }
 
+.blocker.blocker-focused {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px #d8e4ff;
+}
+
 .blocker-toggle {
   width: 100%;
   text-align: left;
@@ -382,6 +387,31 @@ button.secondary:hover {
   padding: 0 10px 6px;
   display: grid;
   gap: 8px;
+}
+
+.blockers-compact {
+  margin-top: 8px;
+}
+
+.blocker-compact {
+  padding: 10px;
+}
+
+.blocker-compact p {
+  margin: 6px 0;
+}
+
+.blocker-compact-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.due-line {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8f2c2c;
 }
 
 .blocker-local-action-row {
@@ -764,10 +794,8 @@ button.secondary:hover {
   padding: 10px;
 }
 
-.milestone-legend {
-  margin: 0 0 10px;
-  font-size: 12px;
-  color: var(--muted);
+.milestone-node-affordance {
+  margin: 0 0 8px;
 }
 
 .milestone-timeline-scroll {
@@ -841,6 +869,10 @@ button.secondary:hover {
   margin-bottom: 8px;
 }
 
+.milestone-node-content:disabled {
+  cursor: default;
+}
+
 .milestone-node-head {
   display: flex;
   justify-content: space-between;
@@ -867,6 +899,16 @@ button.secondary:hover {
   border: 1px solid #d2d2d2;
   background: #fff;
   padding: 10px;
+}
+
+.milestone-node-drawer-empty {
+  border-style: dashed;
+}
+
+.milestone-drawer-skeleton {
+  margin-top: 8px;
+  border: 1px dashed #d0d0d0;
+  padding: 8px;
 }
 
 .milestone-node-drawer h4 {
@@ -911,6 +953,70 @@ button.secondary:hover {
 .milestone-evidence-drawer ul {
   margin: 8px 0 0;
   padding-left: 18px;
+}
+
+.blocker-workspace-modal {
+  width: min(900px, 96vw);
+}
+
+.blocker-workspace-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.blocker-workspace-head h3 {
+  margin: 0 0 4px;
+}
+
+.blocker-workspace-section {
+  border-top: 1px solid #d8d8d8;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.blocker-workspace-section h4 {
+  margin: 0 0 8px;
+}
+
+.blocker-workspace-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.blocker-automation-panel {
+  display: grid;
+  gap: 8px;
+}
+
+.blocker-automation-row {
+  border: 1px solid #d6d6d6;
+  padding: 8px;
+  background: #fcfcfc;
+}
+
+.blocker-automation-grid {
+  margin: 8px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 6px 10px;
+  font-size: 13px;
+}
+
+.blocker-automation-grid label {
+  display: grid;
+  gap: 4px;
+}
+
+.blocker-activity-log {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.blocker-activity-log li {
+  margin: 4px 0;
+  font-size: 13px;
 }
 
 .tone-complete {

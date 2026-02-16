@@ -1,7 +1,7 @@
 import type { Blocker, MilestoneJourneyNode } from '../types/mockData';
 
 interface MilestoneNodeDrawerProps {
-  node: MilestoneJourneyNode;
+  node: MilestoneJourneyNode | null;
   blockersById: Record<string, Blocker>;
   onFocusBlocker: (blockerId: string) => void;
 }
@@ -11,6 +11,23 @@ export default function MilestoneNodeDrawer({
   blockersById,
   onFocusBlocker
 }: MilestoneNodeDrawerProps) {
+  if (!node) {
+    return (
+      <section className="milestone-node-drawer milestone-node-drawer-empty" aria-live="polite">
+        <h4>Milestone details</h4>
+        <p className="subtle">Select a milestone to view details.</p>
+        <div className="milestone-drawer-skeleton" aria-hidden="true">
+          <div className="shell-line shell-label" />
+          <div className="shell-line shell-body" />
+          <div className="shell-line shell-label" />
+          <div className="shell-line shell-body short" />
+          <div className="shell-line shell-label" />
+          <div className="shell-line shell-body" />
+        </div>
+      </section>
+    );
+  }
+
   const linkedBlockers = node.linkedBlockerIds
     .map((blockerId) => blockersById[blockerId])
     .filter((blocker): blocker is Blocker => Boolean(blocker));
@@ -24,7 +41,10 @@ export default function MilestoneNodeDrawer({
       </p>
       <p className="milestone-drawer-line">
         <span className="milestone-drawer-label">Current state</span>
-        <span>{node.statusLabel}</span>
+        <span>
+          {node.statusLabel}
+          {node.isPostBlockerAdjusted ? ' (Blocked by active discharge barriers)' : ''}
+        </span>
       </p>
       <p className="milestone-drawer-line">
         <span className="milestone-drawer-label">Last updated</span>

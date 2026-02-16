@@ -19,10 +19,11 @@ Precedence: if this document conflicts with older roadmap/sprint/planning docs, 
 ### Interaction model
 - Worklist is triage-only: row action is only `Open patient plan`.
 - Blockers are the single source of truth for rationale and evidence.
-- Patient detail execution is top-driven:
-  - local blocker controls select action
-  - Quick Action Center executes action
-- Additional recommendations stay under blocker-level local selection controls.
+- Patient detail is timeline-first:
+  - patient identity
+  - patient milestone journey
+  - compact active blockers
+- Blocker actions and automation are managed inside `Blocker Workspace` modal.
 - `State view` control is internal-only (inside demo tools), not visible in patient UI.
 - `PT-##` identifiers are not rendered in user-facing UI.
 
@@ -115,52 +116,45 @@ Goal: decide + delegate.
 
 Information order:
 1. patient identity strip
-2. sticky Quick Action Center
-3. active blockers
-4. resolved blockers (collapsed)
-5. Patient milestone journey (collapsed)
-6. Automation Command Center
+2. Patient milestone journey (collapsed, at top)
+3. active blockers (compact cards)
 
 Shows:
-- active blockers (collapsed by default)
-- blocker due-by + evidence summary + per-item freshness
-- blocker-local rationale section (`Why this blocker matters`)
-- nested steps and referral tracking inside blocker only
-- local blocker controls: `Select action for Quick Action Center`
+- active blockers only in primary patient panel
+- blocker title, summary, due/urgency, evidence count, last updated
+- CTA per blocker: `Open blocker workspace`
 - no standalone `What the agent found` section
 - no standalone `Recommended action` section
-
-Quick Action Center controls:
-- primary: `Have agent ...`
-- secondary: snooze/dismiss phrasing
-- execution mode selector:
-  - `One-time` (default)
-  - `Keep monitoring in background`
-
-Background mode preset:
-- `Follow up every 12h until response or 72h max`
-- guardrails:
-  - `Stop after acceptance/decline`
-  - `Notify me only on change/failure`
+- no Quick Action Center
+- no top-level Automation Command Center
 
 Utility controls:
 - `+ Add blocker` (local-only prototype draft)
 - `+ Add blocker task` (local blocker-scoped tasks)
 
 Patient milestone journey:
-- collapsed section between resolved blockers and automation center
+- collapsed section directly below identity strip
 - vertical line progression from admission (top) to discharge (bottom)
-- completed segments/nodes shown in teal
 - hybrid density:
   - always show core scaffold milestones
   - show conditional milestone markers only when blocker-linked or recently changed
 - node click opens compact detail drawer (why/current state/last updated/evidence/linked blocker)
+- detail drawer is always visible and shows skeleton placeholder before selection
 - discharge endpoint always visible in muted style until reached
+- sequence sanity rule: no complete milestone renders after first active blocker marker
 
-Automation Command Center:
-- one row per automation-capable action
-- mode, status, last run, next run
-- controls: `Start`, `Pause`, `Resume`
+Blocker Workspace modal:
+- full blocker details/actions/automation for one blocker at a time
+- sections:
+  - why this blocker matters
+  - evidence metadata drawer
+  - progress steps
+  - decisions and actions
+  - automation for this blocker
+  - activity log
+
+Automation location:
+- automation setup/monitoring appears only inside Blocker Workspace modal
 
 ### S3: Confirm modal (`F-05`, `F-06`, `F-18`)
 Goal: explicit handoff boundary.
@@ -234,12 +228,14 @@ From `../data/ehr-mock-data/schema-v1.json`:
 - Confirm modal primary button is `Confirm and run`.
 - Each active blocker shows `Evidence: N sources` + `View evidence`.
 - Source snippets are not rendered in default UI.
-- S2 Quick Action Center is the only execution surface.
-- S2 local blocker controls select/sync top action and do not execute directly.
-- Background execution mode is visible and configurable per recommended action.
-- Automation Command Center is visible and controllable in patient detail.
+- S2 has no Quick Action Center.
+- S2 has no top-level Automation Command Center.
 - Milestone journey appears as collapsed section with admission-to-discharge vertical line.
+- Milestone journey has no color-legend text explainer.
+- Milestone journey detail drawer is always visible with empty-state skeleton.
 - Milestone journey node click opens drawer and can focus linked blocker.
+- Blocker cards are compact and open Blocker Workspace modal for deep details/actions.
+- Blocker automation controls are visible only inside Blocker Workspace modal.
 - `State view` appears only in internal demo tools.
 - `PT-##` is not rendered in user-facing screens.
 - Prototype runs non-linearly from any patient at `T0`.
