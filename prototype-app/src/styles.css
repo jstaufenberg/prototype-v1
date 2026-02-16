@@ -113,7 +113,7 @@ main {
 
 /* ── Network capability tick list ── */
 .network-capability-list {
-  margin: 0;
+  margin: 0 0 10px;
   padding: 0 0 0 8px;
   list-style: none;
   font-size: 13px;
@@ -122,6 +122,14 @@ main {
 
 .network-capability-list li::before {
   content: '\2713  ';
+}
+
+/* ── Network contact list ── */
+.network-contact-list {
+  margin: 0;
+  padding: 0 0 0 20px;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* ── Layout ── */

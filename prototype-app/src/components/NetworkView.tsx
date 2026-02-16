@@ -85,11 +85,13 @@ export default function NetworkView() {
                           <li key={key}>{capabilityLabel(key)}</li>
                         ))}
                     </ul>
-                    {facility.contacts.map((c) => (
-                      <p key={c.contact_id} className="network-contact-line">
-                        {c.channel.charAt(0).toUpperCase() + c.channel.slice(1)} {c.value}
-                      </p>
-                    ))}
+                    <ul className="network-contact-list">
+                      {facility.contacts.map((c) => (
+                        <li key={c.contact_id}>
+                          {c.channel.charAt(0).toUpperCase() + c.channel.slice(1)} {c.value}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ))}
