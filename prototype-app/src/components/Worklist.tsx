@@ -71,6 +71,16 @@ function authLabel(status?: string | null): { text: string; className: string } 
   return { text: `Auth: ${status}`, className: 'worklist-auth-na' };
 }
 
+const AMBER_KEYWORDS = ['pending', 'required', 'awaiting', 'needed', 'waiting'];
+const GREEN_KEYWORDS = ['ready', 'confirmed', 'complete', 'approved', 'cleared', 'scheduled'];
+
+function chipSentiment(text: string): string {
+  const lower = text.toLowerCase();
+  if (AMBER_KEYWORDS.some((kw) => lower.includes(kw))) return 'chip-amber';
+  if (GREEN_KEYWORDS.some((kw) => lower.includes(kw))) return 'chip-green';
+  return '';
+}
+
 export default function Worklist({
   patients,
   activePatientId,
@@ -118,6 +128,7 @@ export default function Worklist({
           const chips = patient.worklist_view_state.status_chips;
           const visibleChips = chips.slice(0, 2);
           const extraCount = chips.length - 2;
+          const agentUpdate = patient.worklist_view_state.last_agent_update;
 
           return (
             <li
@@ -151,12 +162,19 @@ export default function Worklist({
                 )}
               </p>
 
+              {agentUpdate && (
+                <p className="worklist-agent-line">
+                  <span className="worklist-agent-icon" aria-hidden="true">&#x27F3;</span>
+                  {agentUpdate}
+                </p>
+              )}
+
               {visibleChips.length > 0 && (
                 <div className="worklist-status-section">
                   <span className="worklist-status-label">STATUS</span>
                   <div className="worklist-status-chips">
                     {visibleChips.map((chip) => (
-                      <span key={chip} className="chip">{chip}</span>
+                      <span key={chip} className={`chip ${chipSentiment(chip)}`}>{chip}</span>
                     ))}
                     {extraCount > 0 && (
                       <span className="worklist-chip-overflow">+{extraCount} more</span>

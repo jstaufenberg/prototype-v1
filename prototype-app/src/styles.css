@@ -399,6 +399,19 @@ main {
   color: var(--muted);
 }
 
+.worklist-agent-line {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.worklist-agent-icon {
+  margin-right: 4px;
+}
+
 .blocker-stack {
   margin-top: 2px;
   display: grid;
@@ -427,6 +440,18 @@ main {
   display: inline-flex;
   width: fit-content;
   max-width: 100%;
+}
+
+.chip-amber {
+  background: #fef9ee;
+  border-color: #d4a017;
+  color: #92600a;
+}
+
+.chip-green {
+  background: #eefbf3;
+  border-color: #2a7a3b;
+  color: #1a5c2a;
 }
 
 .sub-tag {
