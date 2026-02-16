@@ -599,6 +599,11 @@
       "Respiratory-capable SNF required"
     ],
     "last_agent_update": "Auth deadline alert + packet draft ready",
+    "active_agents": [
+      { "agent": "Auth Tracking", "activity": "Auth deadline alert sent" },
+      { "agent": "Email Outreach", "activity": "Resent facility outreach" },
+      { "agent": "Clinical Notes", "activity": "New PT eval found" }
+    ],
     "next_recommended_action_id": "A-0201"
   },
   "demo_playback": [

@@ -71,16 +71,6 @@ function authLabel(status?: string | null): { text: string; className: string } 
   return { text: `Auth: ${status}`, className: 'worklist-auth-na' };
 }
 
-const AMBER_KEYWORDS = ['pending', 'required', 'awaiting', 'needed', 'waiting'];
-const GREEN_KEYWORDS = ['ready', 'confirmed', 'complete', 'approved', 'cleared', 'scheduled'];
-
-function chipSentiment(text: string): string {
-  const lower = text.toLowerCase();
-  if (AMBER_KEYWORDS.some((kw) => lower.includes(kw))) return 'chip-amber';
-  if (GREEN_KEYWORDS.some((kw) => lower.includes(kw))) return 'chip-green';
-  return '';
-}
-
 export default function Worklist({
   patients,
   activePatientId,
@@ -125,16 +115,21 @@ export default function Worklist({
           );
           const auth = authLabel(patient.patient_profile.insurance?.auth_status);
           const disposition = patient.patient_profile.disposition_target;
-          const chips = patient.worklist_view_state.status_chips;
-          const visibleChips = chips.slice(0, 2);
-          const extraCount = chips.length - 2;
-          const agentUpdate = patient.worklist_view_state.last_agent_update;
+          const activeAgents = patient.worklist_view_state.active_agents ?? [];
+          const activeBlockerCount = patient.blockers.items.filter(
+            (b) => b.status === 'ACTIVE'
+          ).length;
+          const topAction = patient.proposed_actions.items.find(
+            (a) => a.status === 'PROPOSED'
+          );
 
           return (
             <li
               key={patient.meta.patient_id}
               className={`worklist-row worklist-card ${isActive ? 'active' : ''}`}
               aria-current={isActive ? 'true' : undefined}
+              onClick={() => onSelectPatient(patient.meta.patient_id)}
+              style={{ cursor: 'pointer' }}
             >
               <div className="worklist-card-header">
                 <strong className="worklist-patient-line">
@@ -144,6 +139,11 @@ export default function Worklist({
                   )}
                 </strong>
                 <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
+                {activeBlockerCount > 0 && (
+                  <span className="worklist-blocker-count">
+                    {activeBlockerCount} blocker{activeBlockerCount > 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
 
               <p className="worklist-context-line">
@@ -159,32 +159,23 @@ export default function Worklist({
                 <span className={auth.className}>{auth.text}</span>
               </p>
 
-              {agentUpdate && (
-                <p className="worklist-agent-line">
-                  <span className="worklist-agent-icon" aria-hidden="true">&#x27F3;</span>
-                  {agentUpdate}
+              {activeAgents.length > 0 && (
+                <ul className="worklist-agent-list">
+                  {activeAgents.map((a) => (
+                    <li key={a.agent} className="worklist-agent-item">
+                      <span className="worklist-agent-dot" />
+                      <span className="worklist-agent-name">{a.agent}</span>
+                      <span className="worklist-agent-activity">{a.activity}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {topAction && (
+                <p className="worklist-next-step">
+                  Next: {topAction.title}
                 </p>
               )}
-
-              {visibleChips.length > 0 && (
-                <div className="worklist-status-section">
-                  <span className="worklist-status-label">STATUS</span>
-                  <div className="worklist-status-chips">
-                    {visibleChips.map((chip) => (
-                      <span key={chip} className={`chip ${chipSentiment(chip)}`}>{chip}</span>
-                    ))}
-                    {extraCount > 0 && (
-                      <span className="worklist-chip-overflow">+{extraCount} more</span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="worklist-actions">
-                <button className="row-select-button" onClick={() => onSelectPatient(patient.meta.patient_id)}>
-                  View Patient
-                </button>
-              </div>
             </li>
           );
         })}

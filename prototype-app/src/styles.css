@@ -399,43 +399,53 @@ main {
   margin-left: 4px;
 }
 
-/* ── Worklist Status Section ── */
-.worklist-status-section {
-  display: grid;
-  gap: 4px;
+/* ── Worklist Agent Activity ── */
+.worklist-agent-list {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.worklist-status-label {
+.worklist-agent-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.worklist-agent-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2a7a3b;
+  flex-shrink: 0;
+}
+
+.worklist-agent-name {
+  font-weight: 600;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.worklist-agent-activity {
+  color: var(--muted);
+}
+
+.worklist-next-step {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.worklist-blocker-count {
   font-size: 11px;
   font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.worklist-status-chips {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.worklist-chip-overflow {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.worklist-agent-line {
-  margin: 0;
-  font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.worklist-agent-icon {
-  margin-right: 4px;
+  color: #b91c1c;
+  background: #fef2f2;
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 .blocker-stack {
@@ -468,29 +478,12 @@ main {
   max-width: 100%;
 }
 
-.chip-amber {
-  background: #fef9ee;
-  border-color: #d4a017;
-  color: #92600a;
-}
-
-.chip-green {
-  background: #eefbf3;
-  border-color: #2a7a3b;
-  color: #1a5c2a;
-}
-
 .sub-tag {
   border-style: dashed;
 }
 
 .worklist-parent-toggle {
   margin-left: 0;
-}
-
-.worklist-actions {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .worklist-card-tabs {
@@ -852,6 +845,20 @@ button.secondary:hover {
 }
 
 /* ── Next Steps (Care Plan tab) ── */
+.next-steps-section {
+  background: var(--row-hover);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.next-step-rationale {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 2px 0 0;
+  font-style: italic;
+}
+
 .next-steps-list {
   list-style: none;
   margin: 0;
@@ -2463,12 +2470,6 @@ button.secondary:hover {
   border: 1px solid #ddd;
 }
 
-.row-select-button {
-  color: #3d3d3d;
-  border-color: #8d8d8d;
-  min-width: 120px;
-}
-
 /* ── Single-Pane View (Agents, Intel, Network, Performance) ── */
 .view-single-pane {
   max-width: 960px;
@@ -3192,14 +3193,6 @@ button.secondary:hover {
 
   .worklist-badge-stack {
     justify-items: start;
-  }
-
-  .worklist-actions {
-    justify-content: flex-start;
-  }
-
-  .row-select-button {
-    width: 100%;
   }
 
   .worklist-tab-strip {

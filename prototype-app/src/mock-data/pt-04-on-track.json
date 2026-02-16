@@ -235,6 +235,10 @@
       "Instructions completed"
     ],
     "last_agent_update": "Workup complete; no action needed",
+    "active_agents": [
+      { "agent": "Clinical Notes", "activity": "Workup complete" },
+      { "agent": "Inbox Monitor", "activity": "No new messages" }
+    ],
     "next_recommended_action_id": null
   },
   "demo_playback": [

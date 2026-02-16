@@ -165,30 +165,50 @@ export default function CareplanTab({
         onFocusBlocker={focusBlockerInView}
       />
 
-      {/* Key Findings */}
-      {keyFindings.length > 0 && (
-        <div className="key-findings-section">
-          <div className="section-head">
-            <h3>Key Findings ({keyFindings.length})</h3>
-          </div>
-          <ul className="key-findings-list">
-            {keyFindings.map((insight) => (
-              <li key={insight.insight_id} className="key-finding-card">
-                <div className="key-finding-header">
-                  <strong>{insight.title}</strong>
-                  <span className={`confidence-badge ${insight.confidence_label === 'High' ? 'confidence-high' : 'confidence-moderate'}`}>
-                    {insight.confidence_label}
-                  </span>
-                </div>
-                <p className="key-finding-value">{insight.value}</p>
-                {insight.source_snippets && insight.source_snippets.length > 0 && (
-                  <p className="key-finding-snippet">{insight.source_snippets[0]}</p>
-                )}
-              </li>
-            ))}
-          </ul>
+      {/* Next Steps — promoted to top for CM workflow */}
+      <div className="next-steps-section">
+        <div className="section-head">
+          <h3>Next Steps ({proposedActions.length})</h3>
         </div>
-      )}
+
+        {proposedActions.length === 0 ? (
+          <p className="subtle">No pending actions right now.</p>
+        ) : (
+          <ul className="next-steps-list">
+            {proposedActions.map((action) => {
+              const mode = executionModeByAction[action.action_id] ?? action.execution_mode_default;
+              const linkedBlocker = action.dependencies.length > 0
+                ? patient.blockers.items.find((b) => b.blocker_id === action.dependencies[0])
+                : null;
+              return (
+                <li key={action.action_id} className="next-step-card">
+                  <div className="next-step-header">
+                    <strong>{action.title}</strong>
+                    <span className={`priority-badge ${priorityClass(action.priority)}`}>{action.priority}</span>
+                  </div>
+                  <p className="next-step-reason">{action.reason}</p>
+                  {linkedBlocker && (
+                    <p className="next-step-rationale">Based on: {linkedBlocker.description}</p>
+                  )}
+                  <div className="next-step-footer">
+                    <span className="next-step-mode">{mode === 'BACKGROUND' ? 'Background' : 'One-time'}</span>
+                    <div className="inline-actions">
+                      {action.cta_secondary && (
+                        <button className="secondary" onClick={() => onSecondaryAction(action)}>
+                          {action.cta_secondary}
+                        </button>
+                      )}
+                      <button className="primary-action" onClick={() => onPrimaryAction(action, mode)}>
+                        {action.cta_primary}
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
       {/* Blockers */}
       <div className="section-head">
@@ -311,41 +331,29 @@ export default function CareplanTab({
         </ul>
       )}
 
-      {/* Next Steps — proposed actions elevated from blocker workspace */}
-      <div className="section-head">
-        <h3>Next Steps ({proposedActions.length})</h3>
-      </div>
-
-      {proposedActions.length === 0 ? (
-        <p className="subtle">No pending actions right now.</p>
-      ) : (
-        <ul className="next-steps-list">
-          {proposedActions.map((action) => {
-            const mode = executionModeByAction[action.action_id] ?? action.execution_mode_default;
-            return (
-              <li key={action.action_id} className="next-step-card">
-                <div className="next-step-header">
-                  <strong>{action.title}</strong>
-                  <span className={`priority-badge ${priorityClass(action.priority)}`}>{action.priority}</span>
+      {/* Key Findings */}
+      {keyFindings.length > 0 && (
+        <div className="key-findings-section">
+          <div className="section-head">
+            <h3>Key Findings ({keyFindings.length})</h3>
+          </div>
+          <ul className="key-findings-list">
+            {keyFindings.map((insight) => (
+              <li key={insight.insight_id} className="key-finding-card">
+                <div className="key-finding-header">
+                  <strong>{insight.title}</strong>
+                  <span className={`confidence-badge ${insight.confidence_label === 'High' ? 'confidence-high' : 'confidence-moderate'}`}>
+                    {insight.confidence_label}
+                  </span>
                 </div>
-                <p className="next-step-reason">{action.reason}</p>
-                <div className="next-step-footer">
-                  <span className="next-step-mode">{mode === 'BACKGROUND' ? 'Background' : 'One-time'}</span>
-                  <div className="inline-actions">
-                    {action.cta_secondary && (
-                      <button className="secondary" onClick={() => onSecondaryAction(action)}>
-                        {action.cta_secondary}
-                      </button>
-                    )}
-                    <button className="primary-action" onClick={() => onPrimaryAction(action, mode)}>
-                      {action.cta_primary}
-                    </button>
-                  </div>
-                </div>
+                <p className="key-finding-value">{insight.value}</p>
+                {insight.source_snippets && insight.source_snippets.length > 0 && (
+                  <p className="key-finding-snippet">{insight.source_snippets[0]}</p>
+                )}
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+        </div>
       )}
 
       {workspaceBlocker && (

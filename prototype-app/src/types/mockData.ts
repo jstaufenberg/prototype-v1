@@ -38,6 +38,7 @@ export interface PatientRecord {
     status_chips: string[];
     sub_tags: string[];
     last_agent_update: string;
+    active_agents: Array<{ agent: string; activity: string }>;
     next_recommended_action_id?: string | null;
   };
   blockers: {

@@ -440,6 +440,10 @@
       "Task due 14:00"
     ],
     "last_agent_update": "Family follow-up task created",
+    "active_agents": [
+      { "agent": "Task Scheduler", "activity": "Family follow-up created" },
+      { "agent": "Clinical Notes", "activity": "Discharge note scanned" }
+    ],
     "next_recommended_action_id": "A-0302"
   },
   "demo_playback": [

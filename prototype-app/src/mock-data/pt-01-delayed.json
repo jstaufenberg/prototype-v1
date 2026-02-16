@@ -517,6 +517,11 @@
       "No facility response"
     ],
     "last_agent_update": "Auth deadline + outreach failure surfaced",
+    "active_agents": [
+      { "agent": "Auth Tracking", "activity": "Monitoring UHC Medicare auth" },
+      { "agent": "Deadline Tracking", "activity": "Auth deadline in 2h" },
+      { "agent": "Fax Delivery", "activity": "Retrying fax to Maplewood" }
+    ],
     "next_recommended_action_id": "A-0101"
   },
   "demo_playback": [
