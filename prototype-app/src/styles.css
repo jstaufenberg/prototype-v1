@@ -314,15 +314,15 @@ main {
   border: 1.5px solid var(--text);
   background: #fff;
   color: var(--text);
-  padding: 0 5px;
-  font-size: 14px;
+  padding: 1px 7px;
+  font-size: 16px;
   font-weight: 700;
 }
 .blocker-count-active {
   background: var(--text);
   color: #fff;
-  padding: 0 5px;
-  font-size: 14px;
+  padding: 1px 7px;
+  font-size: 16px;
   font-weight: 700;
 }
 
