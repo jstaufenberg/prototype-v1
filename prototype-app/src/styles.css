@@ -316,6 +316,7 @@ main {
 /* ── Worklist Agent Summary ── */
 .worklist-agent-summary {
   margin: 4px 0 0;
+  padding-left: 12px;
 }
 
 .agent-status-line {
@@ -2041,8 +2042,8 @@ button.secondary:hover {
   text-transform: uppercase;
 }
 
-.agent-status-warning { color: var(--orange); border: 1px solid var(--orange); }
-.agent-status-error { color: var(--red); border: 1px solid var(--red); }
+.agent-status-tag.agent-status-warning { color: var(--orange); border: 1px solid var(--orange); }
+.agent-status-tag.agent-status-error { color: var(--red); border: 1px solid var(--red); }
 
 /* ── Context tab ── */
 .los-over {
