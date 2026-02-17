@@ -310,6 +310,9 @@ main {
   color: #1f6b5f;
 }
 
+.blocker-count-zero { color: var(--muted); }
+.blocker-count-active { color: var(--text); }
+
 /* ── Worklist Agent Summary ── */
 .worklist-agent-summary {
   margin: 4px 0 0;

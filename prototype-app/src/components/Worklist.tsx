@@ -108,7 +108,10 @@ export default function Worklist({
               </div>
 
               <p className="worklist-disposition-line">
-                &rarr; {disposition || 'TBD'} &middot; {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
+                &rarr; {disposition || 'TBD'} &middot;{' '}
+                <span className={activeBlockerCount > 0 ? 'blocker-count-active' : 'blocker-count-zero'}>
+                  {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
+                </span>
               </p>
 
               {activeAgents.length > 0 && (() => {

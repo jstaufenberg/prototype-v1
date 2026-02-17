@@ -91,7 +91,10 @@ export default function PatientDetail({
             {patient.patient_profile.patient_name} &middot; {demo} &middot; {bed}
           </h2>
           <p className="detail-disposition-line">
-            &rarr; {disposition || 'TBD'} &middot; {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
+            &rarr; {disposition || 'TBD'} &middot;{' '}
+            <span className={activeBlockerCount > 0 ? 'blocker-count-active' : 'blocker-count-zero'}>
+              {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
+            </span>
           </p>
         </div>
         <div className="detail-header-right">
