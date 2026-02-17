@@ -534,7 +534,7 @@
     ]
   },
   "worklist_view_state": {
-    "bucket_status": "Delayed",
+    "bucket_status": "Needs Action",
     "rank_position": 1,
     "los_day": 5,
     "expected_los_day": 3,
@@ -545,11 +545,13 @@
       },
       {
         "agent": "Deadline Tracking",
-        "activity": "Auth deadline in 6h"
+        "activity": "Auth deadline in 6h",
+        "status": "warning"
       },
       {
         "agent": "Fax Delivery",
-        "activity": "Fax to Maplewood failed"
+        "activity": "Fax to Maplewood failed",
+        "status": "error"
       }
     ]
   },
@@ -621,7 +623,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "Delayed",
+        "bucket_status": "Needs Action",
         "rank_position": 1,
         "active_agents": [
           {
@@ -630,11 +632,13 @@
           },
           {
             "agent": "Deadline Tracking",
-            "activity": "Auth deadline in 6h"
+            "activity": "Auth deadline in 6h",
+            "status": "warning"
           },
           {
             "agent": "Fax Delivery",
-            "activity": "Fax to Maplewood failed"
+            "activity": "Fax to Maplewood failed",
+            "status": "error"
           }
         ]
       },
@@ -668,7 +672,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "Delayed",
+        "bucket_status": "Needs Action",
         "rank_position": 1,
         "active_agents": [
           {
@@ -681,7 +685,8 @@
           },
           {
             "agent": "Deadline Tracking",
-            "activity": "Auth deadline in 5h 40m"
+            "activity": "Auth deadline in 5h 40m",
+            "status": "warning"
           }
         ]
       },
@@ -715,7 +720,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "Pending",
+        "bucket_status": "In Progress",
         "rank_position": 2,
         "active_agents": [
           {

@@ -66,9 +66,9 @@ export default function PatientDetail({
   const bucket = patient.worklist_view_state.bucket_status;
 
   const bucketClass = (() => {
-    if (bucket === 'Delayed') return 'bucket-delayed';
-    if (bucket === 'At Risk') return 'bucket-at-risk';
-    if (bucket === 'Pending') return 'bucket-pending';
+    if (bucket === 'Needs Action') return 'bucket-needs-action';
+    if (bucket === 'Watch') return 'bucket-watch';
+    if (bucket === 'In Progress') return 'bucket-in-progress';
     return 'bucket-on-track';
   })();
 

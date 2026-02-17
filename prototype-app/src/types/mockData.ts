@@ -34,7 +34,7 @@ export interface PatientRecord {
     rank_position: number;
     los_day: number;
     expected_los_day?: number;
-    active_agents: Array<{ agent: string; activity: string }>;
+    active_agents: Array<{ agent: string; activity: string; status?: 'ok' | 'warning' | 'error' }>;
   };
   blockers: {
     items: Blocker[];
@@ -173,7 +173,7 @@ export interface DemoSnapshot {
   worklist_state: {
     bucket_status: string;
     rank_position: number;
-    active_agents?: Array<{ agent: string; activity: string }>;
+    active_agents?: Array<{ agent: string; activity: string; status?: 'ok' | 'warning' | 'error' }>;
   };
   action_statuses: Array<{ action_id: string; status: ActionStatus }>;
 }

@@ -16,16 +16,16 @@ function getSnapshot(patient: PatientRecord, stateId: string) {
 }
 
 function bucketRank(bucket: string) {
-  if (bucket === 'Delayed') return 0;
-  if (bucket === 'At Risk') return 1;
-  if (bucket === 'Pending') return 2;
+  if (bucket === 'Needs Action') return 0;
+  if (bucket === 'Watch') return 1;
+  if (bucket === 'In Progress') return 2;
   return 3;
 }
 
 function bucketClass(bucket: string) {
-  if (bucket === 'Delayed') return 'bucket-delayed';
-  if (bucket === 'At Risk') return 'bucket-at-risk';
-  if (bucket === 'Pending') return 'bucket-pending';
+  if (bucket === 'Needs Action') return 'bucket-needs-action';
+  if (bucket === 'Watch') return 'bucket-watch';
+  if (bucket === 'In Progress') return 'bucket-in-progress';
   return 'bucket-on-track';
 }
 
@@ -49,9 +49,10 @@ function demographicToken(age: number | null, sex?: string | null): string {
 function losLine(actual: number, expected?: number): { label: string; delta: number | null } {
   if (!expected || expected <= 0) return { label: `LOS ${actual}d`, delta: null };
   const delta = actual - expected;
+  if (delta === 0) return { label: `LOS ${actual}d`, delta: 0 };
   const sign = delta > 0 ? '+' : '';
   return {
-    label: `LOS ${actual}d / Exp ${expected}d (${sign}${delta}d)`,
+    label: `LOS ${actual}d (${sign}${delta}d)`,
     delta
   };
 }
@@ -136,20 +137,22 @@ export default function Worklist({
               <div className="worklist-card-header">
                 <strong className="worklist-patient-line">
                   {patient.patient_profile.patient_name} · {demographicToken(age, sex)} · {bed}
-                  {disposition && (
-                    <span className="worklist-disposition-inline">&rarr; {disposition}</span>
-                  )}
                 </strong>
-                <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
-                {activeBlockerCount > 0 && (
-                  <span className="worklist-blocker-count">
-                    {activeBlockerCount} blocker{activeBlockerCount > 1 ? 's' : ''}
-                  </span>
-                )}
+                <div className="worklist-header-badges">
+                  <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
+                  {activeBlockerCount > 0 && (
+                    <span className="worklist-blocker-count">
+                      {activeBlockerCount} blocker{activeBlockerCount > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
               </div>
 
+              {disposition && (
+                <p className="worklist-disposition-line">&rarr; {disposition}</p>
+              )}
+
               <p className="worklist-context-line">
-                <span className="worklist-mrn">{patient.patient_profile.mrn}</span>
                 <span className="worklist-diagnosis" title={patient.patient_profile.primary_diagnosis}>
                   {patient.patient_profile.primary_diagnosis}
                 </span>
@@ -162,15 +165,14 @@ export default function Worklist({
               </p>
 
               {activeAgents.length > 0 && (
-                <ul className="worklist-agent-list">
+                <div className="worklist-agent-chips">
                   {activeAgents.map((a) => (
-                    <li key={a.agent} className="worklist-agent-item">
-                      <span className="worklist-agent-dot" />
-                      <span className="worklist-agent-name">{a.agent}</span>
-                      <span className="worklist-agent-activity">{a.activity}</span>
-                    </li>
+                    <span key={a.agent} className="worklist-agent-chip" title={a.activity}>
+                      <span className={`agent-dot dot-${a.status ?? 'ok'}`} />
+                      {a.agent}
+                    </span>
                   ))}
-                </ul>
+                </div>
               )}
 
               {topAction && (

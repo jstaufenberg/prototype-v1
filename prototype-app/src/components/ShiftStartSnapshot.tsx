@@ -96,9 +96,9 @@ function makeHeader(name: string, age: number | null, sex: string | null | undef
 }
 
 function bucketClass(bucket: string) {
-  if (bucket === 'Delayed') return 'bucket-delayed';
-  if (bucket === 'At Risk') return 'bucket-at-risk';
-  if (bucket === 'Pending') return 'bucket-pending';
+  if (bucket === 'Needs Action') return 'bucket-needs-action';
+  if (bucket === 'Watch') return 'bucket-watch';
+  if (bucket === 'In Progress') return 'bucket-in-progress';
   return 'bucket-on-track';
 }
 
@@ -130,7 +130,7 @@ export default function ShiftStartSnapshot({
       reviewCount: 0
     };
 
-    if (bucket === 'Delayed' || bucket === 'At Risk') {
+    if (bucket === 'Needs Action' || bucket === 'Watch') {
       for (const blocker of patient.blockers.items) {
         const dueAt = toTimestamp(blocker.due_by_local);
         if (blocker.status === 'ACTIVE' && dueAt != null) {
@@ -152,7 +152,7 @@ export default function ShiftStartSnapshot({
     }
 
     const pendingActions = patient.proposed_actions.items.filter((a) => a.status === 'PROPOSED');
-    if (pendingActions.length > 0 && (bucket === 'Delayed' || bucket === 'At Risk')) {
+    if (pendingActions.length > 0 && (bucket === 'Needs Action' || bucket === 'Watch')) {
       aggregate.reviewCount = pendingActions.length;
     }
 

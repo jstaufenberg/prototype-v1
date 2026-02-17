@@ -269,17 +269,17 @@ main {
   padding: 3px 10px;
 }
 
-.bucket-delayed {
+.bucket-needs-action {
   color: var(--red);
   border: 1px solid var(--red);
 }
 
-.bucket-at-risk {
+.bucket-watch {
   color: var(--orange);
   border: 1px solid var(--orange);
 }
 
-.bucket-pending {
+.bucket-in-progress {
   color: var(--yellow);
   border: 1px solid var(--yellow);
 }
@@ -311,11 +311,6 @@ main {
   min-width: 0;
 }
 
-.worklist-mrn {
-  font-size: 12px;
-  color: var(--muted);
-  flex-shrink: 0;
-}
 
 .worklist-diagnosis {
   font-size: 13px;
@@ -393,50 +388,59 @@ main {
   color: var(--muted);
 }
 
-.worklist-disposition-inline {
-  font-weight: 600;
-  color: #1f6b5f;
-  margin-left: 4px;
-}
-
-/* ── Worklist Agent Activity ── */
-.worklist-agent-list {
-  margin: 6px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.worklist-agent-item {
+.worklist-header-badges {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.worklist-agent-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #2a7a3b;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.worklist-agent-name {
+.worklist-disposition-line {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f6b5f;
+}
+
+/* ── Worklist Agent Chips ── */
+.worklist-agent-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 0;
+}
+
+.worklist-agent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--fg);
-  white-space: nowrap;
+  background: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 10px;
+  cursor: default;
 }
 
-.worklist-agent-activity {
-  color: var(--muted);
+.agent-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
+
+.dot-ok { background: #2a7a3b; }
+.dot-warning { background: var(--orange); }
+.dot-error { background: var(--red); }
 
 .worklist-next-step {
-  margin: 4px 0 0;
-  font-size: 12px;
+  margin: 6px 0 0;
+  font-size: 13px;
   font-weight: 600;
   color: var(--accent);
+  padding-left: 8px;
+  border-left: 3px solid var(--accent);
 }
 
 .worklist-blocker-count {

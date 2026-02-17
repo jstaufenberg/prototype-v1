@@ -442,7 +442,7 @@
     ]
   },
   "worklist_view_state": {
-    "bucket_status": "Pending",
+    "bucket_status": "In Progress",
     "rank_position": 3,
     "los_day": 5,
     "expected_los_day": 4,
@@ -516,7 +516,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "Pending",
+        "bucket_status": "In Progress",
         "rank_position": 3,
         "active_agents": [
           {
@@ -559,7 +559,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "Pending",
+        "bucket_status": "In Progress",
         "rank_position": 3,
         "active_agents": [
           {
@@ -602,7 +602,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "Pending",
+        "bucket_status": "In Progress",
         "rank_position": 3,
         "active_agents": [
           {

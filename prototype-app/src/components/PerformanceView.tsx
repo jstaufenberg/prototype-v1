@@ -60,7 +60,7 @@ export default function PerformanceView({ patients, actionStatusById, blockerSta
   /* ── My Metrics: supporting ── */
   const mySupporting: MetricCard[] = useMemo(() => {
     const total = patients.length;
-    const delayedCount = patients.filter(p => p.worklist_view_state.bucket_status === 'Delayed').length;
+    const delayedCount = patients.filter(p => p.worklist_view_state.bucket_status === 'Needs Action').length;
     const onTrackCount = patients.filter(p => p.worklist_view_state.bucket_status === 'On Track').length;
     const totalActions = patients.reduce((sum, p) => sum + p.proposed_actions.items.length, 0);
     const completedActions = patients.reduce((sum, p) =>

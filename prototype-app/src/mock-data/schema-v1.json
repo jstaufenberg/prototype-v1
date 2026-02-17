@@ -2,7 +2,7 @@
   "schema_version": "v1",
   "description": "CM prototype mock EHR schema for deterministic, blocker-centric demo data",
   "status_enums": {
-    "bucket_status": ["Delayed", "At Risk", "Pending", "On Track"],
+    "bucket_status": ["Needs Action", "Watch", "In Progress", "On Track"],
     "milestone_status": ["DONE", "PENDING", "NOT_STARTED", "NOT_NEEDED"],
     "milestone_tier": ["SCAFFOLD", "CM_CRITICAL"],
     "display_emphasis": ["MUTED", "PROMINENT"],
@@ -201,8 +201,8 @@
         "los_day",
         "active_agents"
       ],
-      "active_agents_item_fields": ["agent", "activity"],
-      "notes": "High-signal triage row data. active_agents is an array of { agent, activity } objects shown on worklist cards."
+      "active_agents_item_fields": ["agent", "activity", "status?"],
+      "notes": "High-signal triage row data. active_agents is an array of { agent, activity, status? } objects shown as chips on worklist cards. status is optional: 'ok' (default), 'warning', or 'error'."
     },
     "demo_playback": {
       "required_fields": ["step", "screen", "what_cm_sees", "cm_action", "other_visible_options"],

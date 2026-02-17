@@ -617,7 +617,7 @@
     ]
   },
   "worklist_view_state": {
-    "bucket_status": "At Risk",
+    "bucket_status": "Watch",
     "rank_position": 2,
     "los_day": 4,
     "expected_los_day": 3,
@@ -632,7 +632,8 @@
       },
       {
         "agent": "Deadline Tracking",
-        "activity": "Auth deadline in 8h"
+        "activity": "Auth deadline in 8h",
+        "status": "warning"
       }
     ]
   },
@@ -732,7 +733,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "At Risk",
+        "bucket_status": "Watch",
         "rank_position": 2,
         "active_agents": [
           {
@@ -745,7 +746,8 @@
           },
           {
             "agent": "Deadline Tracking",
-            "activity": "Auth deadline in 8h"
+            "activity": "Auth deadline in 8h",
+            "status": "warning"
           }
         ]
       },
@@ -779,7 +781,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "At Risk",
+        "bucket_status": "Watch",
         "rank_position": 2,
         "active_agents": [
           {
@@ -826,7 +828,7 @@
         }
       ],
       "worklist_state": {
-        "bucket_status": "Pending",
+        "bucket_status": "In Progress",
         "rank_position": 3,
         "active_agents": [
           {
