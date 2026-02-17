@@ -1,0 +1,188 @@
+{
+  "meta": {
+    "patient_id": "PT-14",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 14",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Gloria Martin",
+    "dob": "1939-08-14",
+    "mrn": "MRN-2165312",
+    "sex": "F",
+    "language": "English",
+    "primary_diagnosis": "Diabetic ketoacidosis",
+    "attending_physician": "Dr. M. Patel",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "4E Med-Surg",
+      "bed": "4E-25A"
+    },
+    "disposition_target": "Home",
+    "insurance": {
+      "payer_id": "PAY-14",
+      "payer_name": "Cigna",
+      "plan_type": "Cigna",
+      "member_id": "MEM-241443",
+      "auth_required_for": [
+        "post_acute_placement"
+      ],
+      "auth_reference": "AUTH-44839",
+      "auth_status": "APPROVED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-14",
+        "name": "Dr. M. Patel"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "Watch",
+    "rank_position": 14,
+    "los_day": 5,
+    "expected_los_day": 4,
+    "active_agents": [
+      {
+        "agent": "Auth Monitor",
+        "activity": "Monitoring payer portal",
+        "status": "warning"
+      },
+      {
+        "agent": "Facility Outreach",
+        "activity": "Calling facility",
+        "status": "ok"
+      },
+      {
+        "agent": "Referral Sender",
+        "activity": "Sending referral packets",
+        "status": "ok"
+      },
+      {
+        "agent": "Status Monitor",
+        "activity": "Checking bed availability",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-1401",
+        "type": "placement",
+        "severity": "YELLOW",
+        "status": "ACTIVE",
+        "description": "Facility bed not yet confirmed",
+        "summary_line": "Preferred facility has no available beds; awaiting confirmation from alternatives.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 2,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-1401",
+        "title": "Resolve: Facility bed not yet confirmed",
+        "reason": "Preferred facility has no available beds; awaiting confirmation from alternatives.",
+        "status": "APPROVED",
+        "priority": "LOW",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-1401:ACTIVE"
+        ],
+        "target_entities": []
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-1401",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Watch",
+        "rank_position": 14,
+        "active_agents": [
+          {
+            "agent": "Auth Monitor",
+            "activity": "Monitoring payer portal",
+            "status": "warning"
+          },
+          {
+            "agent": "Facility Outreach",
+            "activity": "Calling facility",
+            "status": "ok"
+          },
+          {
+            "agent": "Referral Sender",
+            "activity": "Sending referral packets",
+            "status": "ok"
+          },
+          {
+            "agent": "Status Monitor",
+            "activity": "Checking bed availability",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-1401",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ]
+}

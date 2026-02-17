@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "patient_id": "PT-19",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 19",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Albert Thomas",
+    "dob": "1935-03-28",
+    "mrn": "MRN-3725113",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "Cellulitis requiring IV antibiotics",
+    "attending_physician": "Dr. R. Kim",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "3N Med-Surg",
+      "bed": "3N-29C"
+    },
+    "disposition_target": "Rehab",
+    "insurance": {
+      "payer_id": "PAY-19",
+      "payer_name": "Aetna",
+      "plan_type": "Aetna",
+      "member_id": "MEM-998311",
+      "auth_required_for": [
+        "post_acute_placement"
+      ],
+      "auth_reference": null,
+      "auth_status": "PENDING",
+      "auth_deadline_local": "2026-02-16T17:00:00"
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-19",
+        "name": "Dr. R. Kim"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "On Track",
+    "rank_position": 19,
+    "los_day": 4,
+    "expected_los_day": 4,
+    "active_agents": [
+      {
+        "agent": "Status Monitor",
+        "activity": "Checking bed availability",
+        "status": "warning"
+      },
+      {
+        "agent": "Facility Outreach",
+        "activity": "Calling facility",
+        "status": "ok"
+      },
+      {
+        "agent": "Deadline Tracker",
+        "activity": "Tracking authorization deadline",
+        "status": "ok"
+      },
+      {
+        "agent": "Document Collector",
+        "activity": "Gathering discharge documents",
+        "status": "warning"
+      }
+    ]
+  },
+  "blockers": {
+    "items": []
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": []
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [],
+      "worklist_state": {
+        "bucket_status": "On Track",
+        "rank_position": 19,
+        "active_agents": [
+          {
+            "agent": "Status Monitor",
+            "activity": "Checking bed availability",
+            "status": "warning"
+          },
+          {
+            "agent": "Facility Outreach",
+            "activity": "Calling facility",
+            "status": "ok"
+          },
+          {
+            "agent": "Deadline Tracker",
+            "activity": "Tracking authorization deadline",
+            "status": "ok"
+          },
+          {
+            "agent": "Document Collector",
+            "activity": "Gathering discharge documents",
+            "status": "warning"
+          }
+        ]
+      },
+      "action_statuses": []
+    }
+  ]
+}

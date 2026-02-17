@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "patient_id": "PT-13",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 13",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Lillian Walker",
+    "dob": "1958-10-23",
+    "mrn": "MRN-4856463",
+    "sex": "F",
+    "language": "English",
+    "primary_diagnosis": "Pulmonary embolism on anticoagulation",
+    "attending_physician": "Dr. K. Williams",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "7S Med-Surg",
+      "bed": "7S-13A"
+    },
+    "disposition_target": "Rehab",
+    "insurance": {
+      "payer_id": "PAY-13",
+      "payer_name": "Blue Cross Blue Shield",
+      "plan_type": "Blue Cross Blue Shield",
+      "member_id": "MEM-757996",
+      "auth_required_for": [],
+      "auth_reference": null,
+      "auth_status": "NOT_NEEDED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-13",
+        "name": "Dr. K. Williams"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "Watch",
+    "rank_position": 13,
+    "los_day": 5,
+    "expected_los_day": 4,
+    "active_agents": [
+      {
+        "agent": "Referral Sender",
+        "activity": "Sending referral packets",
+        "status": "warning"
+      },
+      {
+        "agent": "Deadline Tracker",
+        "activity": "Tracking authorization deadline",
+        "status": "warning"
+      },
+      {
+        "agent": "Facility Outreach",
+        "activity": "Calling facility",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-1301",
+        "type": "authorization",
+        "severity": "YELLOW",
+        "status": "ACTIVE",
+        "description": "Insurance authorization pending",
+        "summary_line": "Awaiting payer response for post-acute placement authorization.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 3,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-1301",
+        "title": "Resolve: Insurance authorization pending",
+        "reason": "Awaiting payer response for post-acute placement authorization.",
+        "status": "APPROVED",
+        "priority": "LOW",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-1301:ACTIVE"
+        ],
+        "target_entities": []
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-1301",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Watch",
+        "rank_position": 13,
+        "active_agents": [
+          {
+            "agent": "Referral Sender",
+            "activity": "Sending referral packets",
+            "status": "warning"
+          },
+          {
+            "agent": "Deadline Tracker",
+            "activity": "Tracking authorization deadline",
+            "status": "warning"
+          },
+          {
+            "agent": "Facility Outreach",
+            "activity": "Calling facility",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-1301",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ]
+}

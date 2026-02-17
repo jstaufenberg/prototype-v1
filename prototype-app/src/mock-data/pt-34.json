@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "patient_id": "PT-34",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 34",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Roy Lewis",
+    "dob": "1941-12-14",
+    "mrn": "MRN-9316042",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "Total knee replacement",
+    "attending_physician": "Dr. L. Chen",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "2S Med-Surg",
+      "bed": "2S-17A"
+    },
+    "disposition_target": "LTACH",
+    "insurance": {
+      "payer_id": "PAY-34",
+      "payer_name": "Cigna",
+      "plan_type": "Cigna",
+      "member_id": "MEM-772483",
+      "auth_required_for": [
+        "post_acute_placement"
+      ],
+      "auth_reference": "AUTH-33493",
+      "auth_status": "APPROVED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-34",
+        "name": "Dr. L. Chen"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "Watch",
+    "rank_position": 34,
+    "los_day": 3,
+    "expected_los_day": 3,
+    "active_agents": [
+      {
+        "agent": "Document Collector",
+        "activity": "Gathering discharge documents",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": []
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": []
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [],
+      "worklist_state": {
+        "bucket_status": "Watch",
+        "rank_position": 34,
+        "active_agents": [
+          {
+            "agent": "Document Collector",
+            "activity": "Gathering discharge documents",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": []
+    }
+  ]
+}

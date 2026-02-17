@@ -1,0 +1,296 @@
+{
+  "meta": {
+    "patient_id": "PT-31",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 31",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Stanley Williams",
+    "dob": "1938-12-03",
+    "mrn": "MRN-2261949",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "UTI with sepsis",
+    "attending_physician": "Dr. A. Thompson",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "4E Med-Surg",
+      "bed": "4E-23B"
+    },
+    "disposition_target": "LTACH",
+    "insurance": {
+      "payer_id": "PAY-31",
+      "payer_name": "Cigna",
+      "plan_type": "Cigna",
+      "member_id": "MEM-658697",
+      "auth_required_for": [
+        "post_acute_placement"
+      ],
+      "auth_reference": null,
+      "auth_status": "PENDING",
+      "auth_deadline_local": "2026-02-16T17:00:00"
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-31",
+        "name": "Dr. A. Thompson"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "Needs Action",
+    "rank_position": 31,
+    "los_day": 2,
+    "expected_los_day": 5,
+    "active_agents": [
+      {
+        "agent": "Deadline Tracker",
+        "activity": "Tracking authorization deadline",
+        "status": "ok"
+      },
+      {
+        "agent": "Auth Monitor",
+        "activity": "Monitoring payer portal",
+        "status": "ok"
+      },
+      {
+        "agent": "Referral Sender",
+        "activity": "Sending referral packets",
+        "status": "ok"
+      },
+      {
+        "agent": "Facility Outreach",
+        "activity": "Calling facility",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-3101",
+        "type": "physician_order",
+        "severity": "YELLOW",
+        "status": "ACTIVE",
+        "description": "Physician discharge order pending",
+        "summary_line": "Attending has not yet signed discharge orders.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 4,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-3102",
+        "type": "authorization",
+        "severity": "YELLOW",
+        "status": "ACTIVE",
+        "description": "Insurance authorization pending",
+        "summary_line": "Awaiting payer response for post-acute placement authorization.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 1,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-3103",
+        "type": "family_decision",
+        "severity": "RED",
+        "status": "ACTIVE",
+        "description": "Family decision pending",
+        "summary_line": "Family has not yet agreed on discharge disposition.",
+        "due_by_local": "2026-02-16T15:00:00",
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 1,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-3101",
+        "title": "Resolve: Physician discharge order pending",
+        "reason": "Attending has not yet signed discharge orders.",
+        "status": "APPROVED",
+        "priority": "LOW",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-3101:ACTIVE"
+        ],
+        "target_entities": []
+      },
+      {
+        "action_id": "A-3102",
+        "title": "Resolve: Insurance authorization pending",
+        "reason": "Awaiting payer response for post-acute placement authorization.",
+        "status": "APPROVED",
+        "priority": "LOW",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-3102:ACTIVE"
+        ],
+        "target_entities": []
+      },
+      {
+        "action_id": "A-3103",
+        "title": "Resolve: Family decision pending",
+        "reason": "Family has not yet agreed on discharge disposition.",
+        "status": "APPROVED",
+        "priority": "HIGH",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-3103:ACTIVE"
+        ],
+        "target_entities": []
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-3101",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-3102",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-3103",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Needs Action",
+        "rank_position": 31,
+        "active_agents": [
+          {
+            "agent": "Deadline Tracker",
+            "activity": "Tracking authorization deadline",
+            "status": "ok"
+          },
+          {
+            "agent": "Auth Monitor",
+            "activity": "Monitoring payer portal",
+            "status": "ok"
+          },
+          {
+            "agent": "Referral Sender",
+            "activity": "Sending referral packets",
+            "status": "ok"
+          },
+          {
+            "agent": "Facility Outreach",
+            "activity": "Calling facility",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-3101",
+          "status": "APPROVED"
+        },
+        {
+          "action_id": "A-3102",
+          "status": "APPROVED"
+        },
+        {
+          "action_id": "A-3103",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ]
+}

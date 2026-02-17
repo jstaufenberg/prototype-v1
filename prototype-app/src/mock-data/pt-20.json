@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "patient_id": "PT-20",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 20",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Charles Walker",
+    "dob": "1940-07-20",
+    "mrn": "MRN-8781401",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "Diabetic ketoacidosis",
+    "attending_physician": "Dr. S. Okafor",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "5E Med-Surg",
+      "bed": "5E-19B"
+    },
+    "disposition_target": "IRF",
+    "insurance": {
+      "payer_id": "PAY-20",
+      "payer_name": "Cigna",
+      "plan_type": "Cigna",
+      "member_id": "MEM-402021",
+      "auth_required_for": [],
+      "auth_reference": null,
+      "auth_status": "NOT_NEEDED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-20",
+        "name": "Dr. S. Okafor"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "On Track",
+    "rank_position": 20,
+    "los_day": 10,
+    "expected_los_day": 10,
+    "active_agents": [
+      {
+        "agent": "Status Monitor",
+        "activity": "Checking bed availability",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": []
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": []
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [],
+      "worklist_state": {
+        "bucket_status": "On Track",
+        "rank_position": 20,
+        "active_agents": [
+          {
+            "agent": "Status Monitor",
+            "activity": "Checking bed availability",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": []
+    }
+  ]
+}

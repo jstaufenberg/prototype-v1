@@ -1,0 +1,295 @@
+{
+  "meta": {
+    "patient_id": "PT-18",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 18",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Doris Robinson",
+    "dob": "1958-01-06",
+    "mrn": "MRN-6077431",
+    "sex": "F",
+    "language": "English",
+    "primary_diagnosis": "Hip fracture s/p ORIF",
+    "attending_physician": "Dr. J. Rivera",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "4E Med-Surg",
+      "bed": "4E-23A"
+    },
+    "disposition_target": "Home",
+    "insurance": {
+      "payer_id": "PAY-18",
+      "payer_name": "Aetna",
+      "plan_type": "Aetna",
+      "member_id": "MEM-839896",
+      "auth_required_for": [],
+      "auth_reference": null,
+      "auth_status": "NOT_NEEDED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-18",
+        "name": "Dr. J. Rivera"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "Needs Action",
+    "rank_position": 18,
+    "los_day": 4,
+    "expected_los_day": 5,
+    "active_agents": [
+      {
+        "agent": "Status Monitor",
+        "activity": "Checking bed availability",
+        "status": "ok"
+      },
+      {
+        "agent": "Facility Outreach",
+        "activity": "Calling facility",
+        "status": "ok"
+      },
+      {
+        "agent": "Auth Monitor",
+        "activity": "Monitoring payer portal",
+        "status": "ok"
+      },
+      {
+        "agent": "Referral Sender",
+        "activity": "Sending referral packets",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-1801",
+        "type": "authorization",
+        "severity": "YELLOW",
+        "status": "ACTIVE",
+        "description": "Insurance authorization pending",
+        "summary_line": "Awaiting payer response for post-acute placement authorization.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 1,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-1802",
+        "type": "dme",
+        "severity": "YELLOW",
+        "status": "ACTIVE",
+        "description": "DME delivery pending",
+        "summary_line": "Home medical equipment has not been delivered.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 1,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-1803",
+        "type": "transport",
+        "severity": "YELLOW",
+        "status": "ACTIVE",
+        "description": "Transport not yet arranged",
+        "summary_line": "Medical transport has not been scheduled for transfer.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 2,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-1801",
+        "title": "Resolve: Insurance authorization pending",
+        "reason": "Awaiting payer response for post-acute placement authorization.",
+        "status": "PROPOSED",
+        "priority": "LOW",
+        "cta_primary": "Approve action",
+        "cta_secondary": "Dismiss",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-1801:ACTIVE"
+        ],
+        "target_entities": []
+      },
+      {
+        "action_id": "A-1802",
+        "title": "Resolve: DME delivery pending",
+        "reason": "Home medical equipment has not been delivered.",
+        "status": "APPROVED",
+        "priority": "LOW",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-1802:ACTIVE"
+        ],
+        "target_entities": []
+      },
+      {
+        "action_id": "A-1803",
+        "title": "Resolve: Transport not yet arranged",
+        "reason": "Medical transport has not been scheduled for transfer.",
+        "status": "APPROVED",
+        "priority": "LOW",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-1803:ACTIVE"
+        ],
+        "target_entities": []
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-1801",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-1802",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-1803",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Needs Action",
+        "rank_position": 18,
+        "active_agents": [
+          {
+            "agent": "Status Monitor",
+            "activity": "Checking bed availability",
+            "status": "ok"
+          },
+          {
+            "agent": "Facility Outreach",
+            "activity": "Calling facility",
+            "status": "ok"
+          },
+          {
+            "agent": "Auth Monitor",
+            "activity": "Monitoring payer portal",
+            "status": "ok"
+          },
+          {
+            "agent": "Referral Sender",
+            "activity": "Sending referral packets",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-1801",
+          "status": "PROPOSED"
+        },
+        {
+          "action_id": "A-1802",
+          "status": "APPROVED"
+        },
+        {
+          "action_id": "A-1803",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "patient_id": "PT-10",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 10",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Harold Martin",
+    "dob": "1949-04-10",
+    "mrn": "MRN-7071341",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "UTI with sepsis",
+    "attending_physician": "Dr. B. Nguyen",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "3N Med-Surg",
+      "bed": "3N-22B"
+    },
+    "disposition_target": "LTACH",
+    "insurance": {
+      "payer_id": "PAY-10",
+      "payer_name": "Humana",
+      "plan_type": "Humana",
+      "member_id": "MEM-903189",
+      "auth_required_for": [],
+      "auth_reference": null,
+      "auth_status": "NOT_NEEDED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-10",
+        "name": "Dr. B. Nguyen"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "Needs Action",
+    "rank_position": 10,
+    "los_day": 3,
+    "expected_los_day": 6,
+    "active_agents": [
+      {
+        "agent": "Facility Outreach",
+        "activity": "Calling facility",
+        "status": "ok"
+      },
+      {
+        "agent": "Status Monitor",
+        "activity": "Checking bed availability",
+        "status": "ok"
+      },
+      {
+        "agent": "Deadline Tracker",
+        "activity": "Tracking authorization deadline",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": []
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": []
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [],
+      "worklist_state": {
+        "bucket_status": "Needs Action",
+        "rank_position": 10,
+        "active_agents": [
+          {
+            "agent": "Facility Outreach",
+            "activity": "Calling facility",
+            "status": "ok"
+          },
+          {
+            "agent": "Status Monitor",
+            "activity": "Checking bed availability",
+            "status": "ok"
+          },
+          {
+            "agent": "Deadline Tracker",
+            "activity": "Tracking authorization deadline",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": []
+    }
+  ]
+}

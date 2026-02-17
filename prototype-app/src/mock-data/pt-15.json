@@ -1,0 +1,232 @@
+{
+  "meta": {
+    "patient_id": "PT-15",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 15",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Donald Allen",
+    "dob": "1956-01-20",
+    "mrn": "MRN-4963037",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "Acute pancreatitis",
+    "attending_physician": "Dr. S. Okafor",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "4E Med-Surg",
+      "bed": "4E-03C"
+    },
+    "disposition_target": "Home with Home Health",
+    "insurance": {
+      "payer_id": "PAY-15",
+      "payer_name": "Aetna",
+      "plan_type": "Aetna",
+      "member_id": "MEM-776644",
+      "auth_required_for": [
+        "post_acute_placement"
+      ],
+      "auth_reference": "AUTH-96213",
+      "auth_status": "APPROVED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-15",
+        "name": "Dr. S. Okafor"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "In Progress",
+    "rank_position": 15,
+    "los_day": 12,
+    "expected_los_day": 11,
+    "active_agents": [
+      {
+        "agent": "Deadline Tracker",
+        "activity": "Tracking authorization deadline",
+        "status": "ok"
+      },
+      {
+        "agent": "Status Monitor",
+        "activity": "Checking bed availability",
+        "status": "ok"
+      },
+      {
+        "agent": "Facility Outreach",
+        "activity": "Calling facility",
+        "status": "warning"
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-1501",
+        "type": "placement",
+        "severity": "ORANGE",
+        "status": "ACTIVE",
+        "description": "Facility bed not yet confirmed",
+        "summary_line": "Preferred facility has no available beds; awaiting confirmation from alternatives.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 3,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      },
+      {
+        "blocker_id": "B-1502",
+        "type": "medication",
+        "severity": "ORANGE",
+        "status": "ACTIVE",
+        "description": "Medication reconciliation incomplete",
+        "summary_line": "Pharmacy review of discharge medications is pending.",
+        "due_by_local": null,
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 3,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-1501",
+        "title": "Resolve: Facility bed not yet confirmed",
+        "reason": "Preferred facility has no available beds; awaiting confirmation from alternatives.",
+        "status": "APPROVED",
+        "priority": "MEDIUM",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-1501:ACTIVE"
+        ],
+        "target_entities": []
+      },
+      {
+        "action_id": "A-1502",
+        "title": "Resolve: Medication reconciliation incomplete",
+        "reason": "Pharmacy review of discharge medications is pending.",
+        "status": "APPROVED",
+        "priority": "MEDIUM",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-1502:ACTIVE"
+        ],
+        "target_entities": []
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-1501",
+          "status": "ACTIVE"
+        },
+        {
+          "blocker_id": "B-1502",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "In Progress",
+        "rank_position": 15,
+        "active_agents": [
+          {
+            "agent": "Deadline Tracker",
+            "activity": "Tracking authorization deadline",
+            "status": "ok"
+          },
+          {
+            "agent": "Status Monitor",
+            "activity": "Checking bed availability",
+            "status": "ok"
+          },
+          {
+            "agent": "Facility Outreach",
+            "activity": "Calling facility",
+            "status": "warning"
+          }
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-1501",
+          "status": "APPROVED"
+        },
+        {
+          "action_id": "A-1502",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ]
+}

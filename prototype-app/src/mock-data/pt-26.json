@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "patient_id": "PT-26",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 26",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Howard Baker",
+    "dob": "1960-01-08",
+    "mrn": "MRN-7599679",
+    "sex": "M",
+    "language": "English",
+    "primary_diagnosis": "Atrial fibrillation with RVR",
+    "attending_physician": "Dr. J. Rivera",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "7S Med-Surg",
+      "bed": "7S-19A"
+    },
+    "disposition_target": "LTACH",
+    "insurance": {
+      "payer_id": "PAY-26",
+      "payer_name": "Blue Cross Blue Shield",
+      "plan_type": "Blue Cross Blue Shield",
+      "member_id": "MEM-581639",
+      "auth_required_for": [
+        "post_acute_placement"
+      ],
+      "auth_reference": null,
+      "auth_status": "PENDING",
+      "auth_deadline_local": "2026-02-16T17:00:00"
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-26",
+        "name": "Dr. J. Rivera"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "Watch",
+    "rank_position": 26,
+    "los_day": 10,
+    "expected_los_day": 13,
+    "active_agents": [
+      {
+        "agent": "Status Monitor",
+        "activity": "Checking bed availability",
+        "status": "error"
+      }
+    ]
+  },
+  "blockers": {
+    "items": [
+      {
+        "blocker_id": "B-2601",
+        "type": "authorization",
+        "severity": "RED",
+        "status": "ACTIVE",
+        "description": "Insurance authorization pending",
+        "summary_line": "Awaiting payer response for post-acute placement authorization.",
+        "due_by_local": "2026-02-16T15:00:00",
+        "surfaced_at_local": "2026-02-15T08:00:00",
+        "related_milestones": [],
+        "source_refs": [],
+        "nested_steps": [],
+        "evidence_summary": {
+          "source_count": 1,
+          "source_types": [
+            "EHR"
+          ],
+          "last_evidence_update_local": "2026-02-16T09:00:00",
+          "view_evidence_label": "View evidence"
+        }
+      }
+    ]
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": [
+      {
+        "action_id": "A-2601",
+        "title": "Resolve: Insurance authorization pending",
+        "reason": "Awaiting payer response for post-acute placement authorization.",
+        "status": "APPROVED",
+        "priority": "HIGH",
+        "cta_primary": "View details",
+        "execution_mode_default": "BACKGROUND",
+        "background_policy": {
+          "enabled": true,
+          "cadence_hours": 4,
+          "max_duration_hours": 48,
+          "stop_conditions": [
+            "Blocker resolved"
+          ],
+          "notify_on": [
+            "status_change"
+          ]
+        },
+        "permission_microcopy": "",
+        "dependencies": [
+          "B-2601:ACTIVE"
+        ],
+        "target_entities": []
+      }
+    ]
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [
+        {
+          "blocker_id": "B-2601",
+          "status": "ACTIVE"
+        }
+      ],
+      "worklist_state": {
+        "bucket_status": "Watch",
+        "rank_position": 26,
+        "active_agents": [
+          {
+            "agent": "Status Monitor",
+            "activity": "Checking bed availability",
+            "status": "error"
+          }
+        ]
+      },
+      "action_statuses": [
+        {
+          "action_id": "A-2601",
+          "status": "APPROVED"
+        }
+      ]
+    }
+  ]
+}

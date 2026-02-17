@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "patient_id": "PT-30",
+    "schema_version": "v1",
+    "scenario_name": "Volume test patient 30",
+    "as_of_local": "2026-02-16T09:00:00",
+    "timezone": "America/Chicago"
+  },
+  "patient_profile": {
+    "patient_name": "Frances Young",
+    "dob": "1944-11-10",
+    "mrn": "MRN-2796016",
+    "sex": "F",
+    "language": "English",
+    "primary_diagnosis": "Dehydration and acute kidney injury",
+    "attending_physician": "Dr. S. Okafor",
+    "current_location": {
+      "facility": "Memorial Medical Center",
+      "unit": "4W Med-Surg",
+      "bed": "4W-02A"
+    },
+    "disposition_target": "Home",
+    "insurance": {
+      "payer_id": "PAY-30",
+      "payer_name": "Medicare Traditional (Part A)",
+      "plan_type": "Medicare Traditional (Part A)",
+      "member_id": "MEM-964936",
+      "auth_required_for": [
+        "post_acute_placement"
+      ],
+      "auth_reference": "AUTH-29016",
+      "auth_status": "APPROVED",
+      "auth_deadline_local": null
+    },
+    "care_team": {
+      "case_manager": {
+        "staff_id": "ST-001",
+        "name": "A. Rivera, RN"
+      },
+      "hospitalist": {
+        "staff_id": "ST-30",
+        "name": "Dr. S. Okafor"
+      }
+    }
+  },
+  "encounter_timeline": {
+    "events": []
+  },
+  "milestones": {
+    "items": []
+  },
+  "worklist_view_state": {
+    "bucket_status": "In Progress",
+    "rank_position": 30,
+    "los_day": 8,
+    "expected_los_day": 9,
+    "active_agents": [
+      {
+        "agent": "Document Collector",
+        "activity": "Gathering discharge documents",
+        "status": "ok"
+      },
+      {
+        "agent": "Deadline Tracker",
+        "activity": "Tracking authorization deadline",
+        "status": "ok"
+      }
+    ]
+  },
+  "blockers": {
+    "items": []
+  },
+  "parsed_insights": {
+    "items": []
+  },
+  "proposed_actions": {
+    "items": []
+  },
+  "execution_log": {
+    "entries": []
+  },
+  "evidence_items": {
+    "items": []
+  },
+  "demo_state_snapshots": [
+    {
+      "state_id": "T0",
+      "label": "Current state",
+      "timestamp_local": "2026-02-16T09:00:00",
+      "blocker_statuses": [],
+      "worklist_state": {
+        "bucket_status": "In Progress",
+        "rank_position": 30,
+        "active_agents": [
+          {
+            "agent": "Document Collector",
+            "activity": "Gathering discharge documents",
+            "status": "ok"
+          },
+          {
+            "agent": "Deadline Tracker",
+            "activity": "Tracking authorization deadline",
+            "status": "ok"
+          }
+        ]
+      },
+      "action_statuses": []
+    }
+  ]
+}
