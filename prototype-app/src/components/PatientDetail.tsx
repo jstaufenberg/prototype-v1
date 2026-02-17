@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import CareplanTab from './patient-tabs/CareplanTab';
-import AutomationTab from './patient-tabs/AutomationTab';
-import ContactsTab from './patient-tabs/ContactsTab';
-import MetricsTab from './patient-tabs/MetricsTab';
+import BlockersTab from './patient-tabs/BlockersTab';
+import ActivityTab from './patient-tabs/ActivityTab';
+import ContextTab from './patient-tabs/ContextTab';
 import type {
   ActionStatus,
   BlockerStatus,
@@ -11,13 +10,12 @@ import type {
   ProposedAction
 } from '../types/mockData';
 
-type PatientTab = 'care-plan' | 'automation' | 'contacts' | 'metrics';
+type PatientTab = 'blockers' | 'activity' | 'context';
 
 const PATIENT_TABS: Array<{ id: PatientTab; label: string }> = [
-  { id: 'care-plan', label: 'Care Plan' },
-  { id: 'automation', label: 'Automation' },
-  { id: 'contacts', label: 'Contacts' },
-  { id: 'metrics', label: 'Metrics' },
+  { id: 'blockers', label: 'Blockers' },
+  { id: 'activity', label: 'Activity' },
+  { id: 'context', label: 'Context' },
 ];
 
 interface PatientDetailProps {
@@ -56,7 +54,7 @@ export default function PatientDetail({
   onClose,
   showHandoff
 }: PatientDetailProps) {
-  const [activeTab, setActiveTab] = useState<PatientTab>('care-plan');
+  const [activeTab, setActiveTab] = useState<PatientTab>('blockers');
 
   const age = computeAge(patient.patient_profile.dob);
   const sex = patient.patient_profile.sex ?? '';
@@ -64,6 +62,9 @@ export default function PatientDetail({
   const bed = patient.patient_profile.current_location.bed;
   const disposition = patient.patient_profile.disposition_target;
   const bucket = patient.worklist_view_state.bucket_status;
+  const activeBlockerCount = patient.blockers.items.filter(
+    (b) => (blockerStatusOverride[b.blocker_id] ?? b.status) === 'ACTIVE'
+  ).length;
 
   const bucketClass = (() => {
     if (bucket === 'Needs Action') return 'bucket-needs-action';
@@ -84,17 +85,13 @@ export default function PatientDetail({
         </div>
       )}
 
-      {/* Shared header — mirrors worklist card identity line */}
       <div className="detail-header">
         <div className="detail-identity">
           <h2 className="detail-patient-line">
-            {patient.patient_profile.patient_name} · {demo} · {bed}
-            {disposition && (
-              <span className="worklist-disposition-inline">&rarr; {disposition}</span>
-            )}
+            {patient.patient_profile.patient_name} &middot; {demo} &middot; {bed}
           </h2>
-          <p className="detail-context-line">
-            {patient.patient_profile.mrn} · {patient.patient_profile.primary_diagnosis}
+          <p className="detail-disposition-line">
+            &rarr; {disposition || 'TBD'} &middot; {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
           </p>
         </div>
         <div className="detail-header-right">
@@ -105,7 +102,6 @@ export default function PatientDetail({
         </div>
       </div>
 
-      {/* Patient-level tab bar */}
       <nav className="detail-tabs" role="tablist" aria-label="Patient sections">
         {PATIENT_TABS.map((tab) => (
           <button
@@ -120,10 +116,9 @@ export default function PatientDetail({
         ))}
       </nav>
 
-      {/* Tab content */}
       <div className="detail-tab-content">
-        {activeTab === 'care-plan' && (
-          <CareplanTab
+        {activeTab === 'blockers' && (
+          <BlockersTab
             patient={patient}
             currentStateId={currentStateId}
             actionStatusOverride={actionStatusOverride}
@@ -135,25 +130,12 @@ export default function PatientDetail({
           />
         )}
 
-        {activeTab === 'automation' && (
-          <AutomationTab
-            patient={patient}
-            actionStatusOverride={actionStatusOverride}
-            executionModeByAction={executionModeByAction}
-            onExecutionModeChange={onExecutionModeChange}
-          />
+        {activeTab === 'activity' && (
+          <ActivityTab patient={patient} />
         )}
 
-        {activeTab === 'contacts' && (
-          <ContactsTab patient={patient} />
-        )}
-
-        {activeTab === 'metrics' && (
-          <MetricsTab
-            patient={patient}
-            actionStatusOverride={actionStatusOverride}
-            blockerStatusOverride={blockerStatusOverride}
-          />
+        {activeTab === 'context' && (
+          <ContextTab patient={patient} />
         )}
       </div>
     </section>
