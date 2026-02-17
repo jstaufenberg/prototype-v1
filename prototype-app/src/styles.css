@@ -311,16 +311,18 @@ main {
 }
 
 .blocker-count-zero {
-  border: 2px solid var(--text);
+  border: 1.5px solid var(--text);
   background: #fff;
   color: var(--text);
-  padding: 1px 7px;
+  padding: 0 5px;
+  font-size: 14px;
   font-weight: 700;
 }
 .blocker-count-active {
   background: var(--text);
   color: #fff;
-  padding: 1px 7px;
+  padding: 0 5px;
+  font-size: 14px;
   font-weight: 700;
 }
 
