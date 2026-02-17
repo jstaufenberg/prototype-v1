@@ -425,7 +425,7 @@
         "action_id": "A-0201",
         "title": "Call BCBS auth — deadline today",
         "reason": "Auth is pending with deadline today 17:00; prevent avoidable discharge delay.",
-        "status": "PROPOSED",
+        "status": "APPROVED",
         "priority": "HIGH",
         "cta_primary": "Have agent call BCBS now",
         "cta_secondary": "Snooze auth follow-up to 14:00",
@@ -461,7 +461,7 @@
         "action_id": "A-0202",
         "title": "Start SNF placement outreach with respiratory requirements",
         "reason": "Placement can start in parallel while auth is pending; respiratory requirement must be visible in packet.",
-        "status": "PROPOSED",
+        "status": "APPROVED",
         "priority": "HIGH",
         "cta_primary": "Have agent send to 4 facilities",
         "cta_secondary": "Dismiss referral send suggestion",
@@ -515,7 +515,7 @@
         "action_id": "A-0203",
         "title": "Prevent stalled referrals",
         "reason": "Standard 24h follow-up improves response reliability after send.",
-        "status": "PROPOSED",
+        "status": "APPROVED",
         "priority": "MEDIUM",
         "cta_primary": "Have agent schedule 24h follow-up",
         "cta_secondary": "Dismiss follow-up scheduling suggestion",
@@ -754,15 +754,15 @@
       "action_statuses": [
         {
           "action_id": "A-0201",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         },
         {
           "action_id": "A-0202",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         },
         {
           "action_id": "A-0203",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         }
       ]
     },
@@ -805,11 +805,11 @@
         },
         {
           "action_id": "A-0202",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         },
         {
           "action_id": "A-0203",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         }
       ]
     },

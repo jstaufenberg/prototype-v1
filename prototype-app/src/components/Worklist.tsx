@@ -46,32 +46,6 @@ function demographicToken(age: number | null, sex?: string | null): string {
   return `${age}${sex ?? ''}`;
 }
 
-function losLine(actual: number, expected?: number): { label: string; delta: number | null } {
-  if (!expected || expected <= 0) return { label: `LOS ${actual}d`, delta: null };
-  const delta = actual - expected;
-  if (delta === 0) return { label: `LOS ${actual}d`, delta: 0 };
-  const sign = delta > 0 ? '+' : '';
-  return {
-    label: `LOS ${actual}d (${sign}${delta}d)`,
-    delta
-  };
-}
-
-function deltaClass(delta: number | null): string {
-  if (delta == null) return '';
-  if (delta > 0) return 'los-over';
-  if (delta < 0) return 'los-under';
-  return 'los-even';
-}
-
-function authLabel(status?: string | null): { text: string; className: string } {
-  if (!status || status === 'NOT_NEEDED') return { text: 'Auth: N/A', className: 'worklist-auth-na' };
-  if (status === 'PENDING') return { text: 'Auth: Pending', className: 'worklist-auth-pending' };
-  if (status === 'APPROVED') return { text: 'Auth: Approved', className: 'worklist-auth-approved' };
-  if (status === 'DENIED') return { text: 'Auth: Denied', className: 'worklist-auth-denied' };
-  return { text: `Auth: ${status}`, className: 'worklist-auth-na' };
-}
-
 export default function Worklist({
   patients,
   activePatientId,
@@ -110,11 +84,6 @@ export default function Worklist({
           const age = computeAge(patient.patient_profile.dob);
           const sex = patient.patient_profile.sex ?? null;
           const bed = patient.patient_profile.current_location?.bed ?? 'Unknown';
-          const los = losLine(
-            patient.worklist_view_state.los_day,
-            patient.worklist_view_state.expected_los_day
-          );
-          const auth = authLabel(patient.patient_profile.insurance?.auth_status);
           const disposition = patient.patient_profile.disposition_target;
           const activeAgents = snapshot?.worklist_state.active_agents
             ?? patient.worklist_view_state.active_agents
@@ -122,9 +91,6 @@ export default function Worklist({
           const activeBlockerCount = patient.blockers.items.filter(
             (b) => b.status === 'ACTIVE'
           ).length;
-          const topAction = patient.proposed_actions.items.find(
-            (a) => a.status === 'PROPOSED'
-          );
 
           return (
             <li
@@ -138,48 +104,40 @@ export default function Worklist({
                 <strong className="worklist-patient-line">
                   {patient.patient_profile.patient_name} · {demographicToken(age, sex)} · {bed}
                 </strong>
-                <div className="worklist-header-badges">
-                  <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
-                  {activeBlockerCount > 0 && (
-                    <span className="worklist-blocker-count">
-                      {activeBlockerCount} blocker{activeBlockerCount > 1 ? 's' : ''}
-                    </span>
-                  )}
-                </div>
+                <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
               </div>
 
-              {disposition && (
-                <p className="worklist-disposition-line">&rarr; {disposition}</p>
-              )}
-
-              <p className="worklist-context-line">
-                <span className="worklist-diagnosis" title={patient.patient_profile.primary_diagnosis}>
-                  {patient.patient_profile.primary_diagnosis}
-                </span>
+              <p className="worklist-disposition-line">
+                &rarr; {disposition || 'TBD'} &middot; {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
               </p>
 
-              <p className="worklist-ops-line">
-                <span className={`worklist-los-inline ${deltaClass(los.delta)}`}>{los.label}</span>
-                <span className="worklist-ops-sep">&middot;</span>
-                <span className={auth.className}>{auth.text}</span>
-              </p>
-
-              {activeAgents.length > 0 && (
-                <div className="worklist-agent-chips">
-                  {activeAgents.map((a) => (
-                    <span key={a.agent} className="worklist-agent-chip" title={a.activity}>
-                      <span className={`agent-dot dot-${a.status ?? 'ok'}`} />
-                      {a.agent}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {topAction && (
-                <p className="worklist-next-step">
-                  Next: {topAction.title}
-                </p>
-              )}
+              {activeAgents.length > 0 && (() => {
+                const okCount = activeAgents.filter(a => !a.status || a.status === 'ok').length;
+                const warnCount = activeAgents.filter(a => a.status === 'warning').length;
+                const errorCount = activeAgents.filter(a => a.status === 'error').length;
+                return (
+                  <div className="worklist-agent-summary">
+                    {okCount > 0 && (
+                      <p className="agent-status-line">
+                        <span className="agent-dot dot-ok" />
+                        {okCount} agent{okCount > 1 ? 's' : ''} active
+                      </p>
+                    )}
+                    {warnCount > 0 && (
+                      <p className="agent-status-line agent-status-warning">
+                        <span className="agent-dot dot-warning" />
+                        {warnCount} agent{warnCount > 1 ? 's' : ''} issue
+                      </p>
+                    )}
+                    {errorCount > 0 && (
+                      <p className="agent-status-line agent-status-error">
+                        <span className="agent-dot dot-error" />
+                        {errorCount} agent{errorCount > 1 ? 's' : ''} failed
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
             </li>
           );
         })}

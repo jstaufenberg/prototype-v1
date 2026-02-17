@@ -8,6 +8,7 @@ This folder contains the complete prototype v1.0 workspace, organized for design
   - `prototype-wireframe-checklist.md` — implementation checklist
   - `cm-prototype-decision-brief.md`
   - `cm-prototype-phase-0-spec.md`
+  - `cofounder-walkthrough-plan.md` — 35-minute co-founder walkthrough + JSON model guide
 - `data/ehr-mock-data/`
   - schema, patient JSON scenarios, reference data, runbook
 - `wireframes/`
@@ -21,6 +22,7 @@ This folder contains the complete prototype v1.0 workspace, organized for design
 2. Demo runbook: `data/ehr-mock-data/prototype-sequence.md`
 3. Mock data contract: `data/ehr-mock-data/schema-v1.json`
 4. App scaffold: `prototype-app/README.md`
+5. Co-founder walkthrough: `docs/cofounder-walkthrough-plan.md`
 
 ## Quick start (app)
 ```bash

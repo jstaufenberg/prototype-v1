@@ -303,124 +303,34 @@ main {
   color: #4d4d4d;
 }
 
-.worklist-context-line {
-  margin: 0;
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  min-width: 0;
-}
-
-
-.worklist-diagnosis {
-  font-size: 13px;
-  color: #3e3e3e;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.worklist-los-line {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.worklist-los-line.los-over {
-  color: #8f2c2c;
-}
-
-.worklist-los-line.los-under {
-  color: #1f6b5f;
-}
-
-.worklist-los-line.los-even {
-  color: #444;
-}
-
-/* ── Worklist Operational Snapshot Line ── */
-.worklist-ops-line {
-  margin: 0;
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  font-size: 13px;
-  flex-wrap: wrap;
-}
-
-.worklist-ops-sep {
-  color: #bbb;
-}
-
-.worklist-los-inline {
-  font-weight: 600;
-}
-
-.worklist-los-inline.los-over {
-  color: #8f2c2c;
-}
-
-.worklist-los-inline.los-under {
-  color: #1f6b5f;
-}
-
-.worklist-los-inline.los-even {
-  color: #444;
-}
-
-.worklist-auth-pending {
-  color: var(--orange);
-  font-weight: 600;
-}
-
-.worklist-auth-approved {
-  color: #2a7a3b;
-  font-weight: 600;
-}
-
-.worklist-auth-denied {
-  color: var(--red);
-  font-weight: 600;
-}
-
-.worklist-auth-na {
-  color: var(--muted);
-}
-
-.worklist-header-badges {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
 .worklist-disposition-line {
   margin: 0;
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 700;
   color: #1f6b5f;
 }
 
-/* ── Worklist Agent Chips ── */
-.worklist-agent-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+/* ── Worklist Agent Summary ── */
+.worklist-agent-summary {
   margin: 4px 0 0;
 }
 
-.worklist-agent-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
+.agent-status-line {
+  margin: 0;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--fg);
-  background: #f5f5f5;
-  padding: 2px 8px;
-  border-radius: 10px;
-  cursor: default;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.agent-status-warning {
+  color: var(--orange);
+}
+
+.agent-status-error {
+  color: var(--red);
 }
 
 .agent-dot {
@@ -433,24 +343,6 @@ main {
 .dot-ok { background: #2a7a3b; }
 .dot-warning { background: var(--orange); }
 .dot-error { background: var(--red); }
-
-.worklist-next-step {
-  margin: 6px 0 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  padding-left: 8px;
-  border-left: 3px solid var(--accent);
-}
-
-.worklist-blocker-count {
-  font-size: 11px;
-  font-weight: 600;
-  color: #b91c1c;
-  background: #fef2f2;
-  padding: 1px 6px;
-  border-radius: 4px;
-}
 
 .blocker-stack {
   margin-top: 2px;

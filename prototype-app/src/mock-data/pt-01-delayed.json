@@ -360,7 +360,7 @@
         "action_id": "A-0101",
         "title": "Call UHC auth line now",
         "reason": "Prevent avoidable day delay from missed auth window.",
-        "status": "PROPOSED",
+        "status": "APPROVED",
         "priority": "HIGH",
         "cta_primary": "Have agent call UHC now",
         "cta_secondary": "Snooze auth follow-up to 11:00",
@@ -431,7 +431,7 @@
         "action_id": "A-0103",
         "title": "Keep backup options active",
         "reason": "No response from Willowbrook; keep optional path warm in case Sunrise bed falls through.",
-        "status": "PROPOSED",
+        "status": "APPROVED",
         "priority": "MEDIUM",
         "cta_primary": "Have agent follow up with Willowbrook",
         "cta_secondary": "Dismiss backup follow-up suggestion",
@@ -645,7 +645,7 @@
       "action_statuses": [
         {
           "action_id": "A-0101",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         },
         {
           "action_id": "A-0102",
@@ -653,7 +653,7 @@
         },
         {
           "action_id": "A-0103",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         }
       ]
     },
@@ -701,7 +701,7 @@
         },
         {
           "action_id": "A-0103",
-          "status": "PROPOSED"
+          "status": "APPROVED"
         }
       ]
     },
