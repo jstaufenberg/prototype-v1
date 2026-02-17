@@ -310,12 +310,17 @@ main {
   color: #1f6b5f;
 }
 
-.blocker-count-zero { color: var(--muted); }
+.blocker-count-zero {
+  border: 2px solid var(--text);
+  background: #fff;
+  color: var(--text);
+  padding: 1px 7px;
+  font-weight: 700;
+}
 .blocker-count-active {
   background: var(--text);
   color: #fff;
   padding: 1px 7px;
-  font-size: 0.8em;
   font-weight: 700;
 }
 
