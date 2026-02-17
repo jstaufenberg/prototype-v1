@@ -2,6 +2,8 @@ import { useState } from 'react';
 import BlockersTab from './patient-tabs/BlockersTab';
 import ActivityTab from './patient-tabs/ActivityTab';
 import ContextTab from './patient-tabs/ContextTab';
+import { getDispositionDisplay } from '../utils/disposition';
+import { getMostUrgentDeadline } from '../utils/deadlineUtils';
 import type {
   ActionStatus,
   BlockerStatus,
@@ -28,6 +30,7 @@ interface PatientDetailProps {
   onSecondaryAction: (action: ProposedAction) => void;
   onExecutionModeChange: (actionId: string, mode: ExecutionModeDefault) => void;
   onClose: () => void;
+  onNavigate?: (direction: 'prev' | 'next') => void;
   showHandoff?: boolean;
 }
 
@@ -52,6 +55,7 @@ export default function PatientDetail({
   onSecondaryAction,
   onExecutionModeChange,
   onClose,
+  onNavigate,
   showHandoff
 }: PatientDetailProps) {
   const [activeTab, setActiveTab] = useState<PatientTab>('blockers');
@@ -60,13 +64,15 @@ export default function PatientDetail({
   const sex = patient.patient_profile.sex ?? '';
   const demo = age != null ? `${age}${sex}` : sex || 'N/A';
   const bed = patient.patient_profile.current_location.bed;
-  const disposition = patient.patient_profile.disposition_target;
+  const disposition = getDispositionDisplay(patient.patient_profile.disposition_target);
   const bucket = patient.worklist_view_state.bucket_status;
   const activeBlockerCount = patient.blockers.items.filter(
     (b) => (blockerStatusOverride[b.blocker_id] ?? b.status) === 'ACTIVE'
   ).length;
 
-  const bucketClass = (() => {
+  const deadline = getMostUrgentDeadline(patient, blockerStatusOverride);
+
+  const bucketCls = (() => {
     if (bucket === 'Needs Action') return 'bucket-needs-action';
     if (bucket === 'Watch') return 'bucket-watch';
     if (bucket === 'In Progress') return 'bucket-in-progress';
@@ -88,17 +94,45 @@ export default function PatientDetail({
       <div className="detail-header">
         <div className="detail-identity">
           <h2 className="detail-patient-line">
-            {patient.patient_profile.patient_name} &middot; {demo} &middot; {bed}
+            {patient.patient_profile.patient_name}
+            <span className="sep-dot" aria-hidden="true"> · </span>
+            {demo}
+            <span className="sep-dot" aria-hidden="true"> · </span>
+            {bed}
           </h2>
           <p className="detail-disposition-line">
-            &rarr; {disposition || 'TBD'} &middot;{' '}
+            <span className="disposition-text">
+              &rarr; {disposition.destinationLabel}
+              {disposition.dependencyLabel && (
+                <span className="disposition-dependency-tag">{disposition.dependencyLabel}</span>
+              )}
+            </span>
+            <span className="sep-dot" aria-hidden="true"> · </span>
             <span className={activeBlockerCount > 0 ? 'blocker-count-active' : 'blocker-count-zero'}>
               {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
             </span>
+            {deadline && (
+              <>
+                <span className="sep-dot" aria-hidden="true"> · </span>
+                <span className={`card-deadline deadline-${deadline.proximity}`}>
+                  {deadline.shortLabel}
+                </span>
+              </>
+            )}
           </p>
         </div>
         <div className="detail-header-right">
-          <span className={`bucket ${bucketClass}`}>{bucket}</span>
+          <span className={`bucket ${bucketCls}`}>{bucket}</span>
+          {onNavigate && (
+            <div className="detail-nav">
+              <button className="detail-nav-btn" aria-label="Previous patient" onClick={() => onNavigate('prev')}>
+                ‹
+              </button>
+              <button className="detail-nav-btn" aria-label="Next patient" onClick={() => onNavigate('next')}>
+                ›
+              </button>
+            </div>
+          )}
           <button className="detail-close" aria-label="Close patient panel" onClick={onClose}>
             ×
           </button>

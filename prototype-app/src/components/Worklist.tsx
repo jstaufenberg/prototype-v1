@@ -1,7 +1,7 @@
+import { useMemo } from 'react';
 import type { PatientRecord } from '../types/mockData';
-
-// WorklistCardTabs kept in codebase — used by patient detail views
-// import WorklistCardTabs from './WorklistCardTabs';
+import { getDispositionDisplay } from '../utils/disposition';
+import { getMostUrgentDeadline, type DeadlineInfo } from '../utils/deadlineUtils';
 
 interface WorklistProps {
   patients: PatientRecord[];
@@ -15,12 +15,7 @@ function getSnapshot(patient: PatientRecord, stateId: string) {
   return patient.demo_state_snapshots.find((snapshot) => snapshot.state_id === stateId);
 }
 
-function bucketRank(bucket: string) {
-  if (bucket === 'Needs Action') return 0;
-  if (bucket === 'Watch') return 1;
-  if (bucket === 'In Progress') return 2;
-  return 3;
-}
+const BUCKET_ORDER = ['Needs Action', 'Watch', 'In Progress', 'On Track'] as const;
 
 function bucketClass(bucket: string) {
   if (bucket === 'Needs Action') return 'bucket-needs-action';
@@ -46,6 +41,16 @@ function demographicToken(age: number | null, sex?: string | null): string {
   return `${age}${sex ?? ''}`;
 }
 
+interface PreparedCard {
+  patient: PatientRecord;
+  bucket: string;
+  deadline: DeadlineInfo | null;
+  decisionsNeeded: number;
+  agentCount: number;
+  agentFailCount: number;
+  activeBlockerCount: number;
+}
+
 export default function Worklist({
   patients,
   activePatientId,
@@ -53,15 +58,65 @@ export default function Worklist({
   onSelectPatient,
   showHandoff
 }: WorklistProps) {
-  const sorted = [...patients].sort((a, b) => {
-    const stateA = getSnapshot(a, stateByPatientId[a.meta.patient_id]);
-    const stateB = getSnapshot(b, stateByPatientId[b.meta.patient_id]);
-    const bucketA = stateA?.worklist_state.bucket_status ?? a.worklist_view_state.bucket_status;
-    const bucketB = stateB?.worklist_state.bucket_status ?? b.worklist_view_state.bucket_status;
-    const bucketDelta = bucketRank(bucketA) - bucketRank(bucketB);
-    if (bucketDelta !== 0) return bucketDelta;
-    return (stateA?.worklist_state.rank_position ?? 99) - (stateB?.worklist_state.rank_position ?? 99);
-  });
+  // Pre-compute card data for all patients
+  const cards: PreparedCard[] = useMemo(() =>
+    patients.map((patient) => {
+      const stateId = stateByPatientId[patient.meta.patient_id];
+      const snapshot = getSnapshot(patient, stateId);
+      const bucket = snapshot?.worklist_state.bucket_status ?? patient.worklist_view_state.bucket_status;
+      const activeAgents = snapshot?.worklist_state.active_agents
+        ?? patient.worklist_view_state.active_agents
+        ?? [];
+      const activeBlockerCount = patient.blockers.items.filter(
+        (b) => b.status === 'ACTIVE'
+      ).length;
+      const decisionsNeeded = patient.proposed_actions.items.filter(
+        (a) => a.status === 'PROPOSED'
+      ).length;
+      const deadline = getMostUrgentDeadline(patient);
+
+      return {
+        patient,
+        bucket,
+        deadline,
+        decisionsNeeded,
+        agentCount: activeAgents.length,
+        agentFailCount: activeAgents.filter(a => a.status === 'error').length,
+        activeBlockerCount
+      };
+    }),
+    [patients, stateByPatientId]
+  );
+
+  // Group by bucket, sorted by deadline within each group
+  const groups = useMemo(() => {
+    const byBucket = new Map<string, PreparedCard[]>();
+    for (const bucket of BUCKET_ORDER) byBucket.set(bucket, []);
+
+    for (const card of cards) {
+      const group = byBucket.get(card.bucket);
+      if (group) group.push(card);
+      else {
+        // Unknown bucket — append to On Track
+        byBucket.get('On Track')!.push(card);
+      }
+    }
+
+    // Sort within each group: deadline first (nearest → farthest), then rank
+    for (const [, group] of byBucket) {
+      group.sort((a, b) => {
+        const aMs = a.deadline?.deadlineMs ?? Infinity;
+        const bMs = b.deadline?.deadlineMs ?? Infinity;
+        if (aMs !== bMs) return aMs - bMs;
+        return (a.patient.worklist_view_state.rank_position ?? 99)
+          - (b.patient.worklist_view_state.rank_position ?? 99);
+      });
+    }
+
+    return Array.from(byBucket.entries())
+      .filter(([, group]) => group.length > 0)
+      .map(([bucket, group]) => ({ bucket, cards: group }));
+  }, [cards]);
 
   return (
     <section className="panel">
@@ -75,76 +130,124 @@ export default function Worklist({
         </div>
       )}
       <h2>My Patients</h2>
-      <ul className="worklist" aria-label="My Patients">
-        {sorted.map((patient) => {
-          const stateId = stateByPatientId[patient.meta.patient_id];
-          const snapshot = getSnapshot(patient, stateId);
-          const isActive = activePatientId === patient.meta.patient_id;
-          const bucket = snapshot?.worklist_state.bucket_status ?? patient.worklist_view_state.bucket_status;
-          const age = computeAge(patient.patient_profile.dob);
-          const sex = patient.patient_profile.sex ?? null;
-          const bed = patient.patient_profile.current_location?.bed ?? 'Unknown';
-          const disposition = patient.patient_profile.disposition_target;
-          const activeAgents = snapshot?.worklist_state.active_agents
-            ?? patient.worklist_view_state.active_agents
-            ?? [];
-          const activeBlockerCount = patient.blockers.items.filter(
-            (b) => b.status === 'ACTIVE'
-          ).length;
+
+      <div className="worklist" role="list" aria-label="My Patients">
+        {groups.map(({ bucket, cards: groupCards }) => {
+          const isOnTrack = bucket === 'On Track';
 
           return (
-            <li
-              key={patient.meta.patient_id}
-              className={`worklist-row worklist-card ${isActive ? 'active' : ''}`}
-              aria-current={isActive ? 'true' : undefined}
-              onClick={() => onSelectPatient(patient.meta.patient_id)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="worklist-card-header">
-                <strong className="worklist-patient-line">
-                  {patient.patient_profile.patient_name} · {demographicToken(age, sex)} · {bed}
-                </strong>
-                <span className={`bucket bucket-large ${bucketClass(bucket)}`}>{bucket}</span>
+            <div key={bucket} className="worklist-group">
+              <div className={`worklist-group-header ${bucketClass(bucket)}-header`}>
+                <span className="worklist-group-label">{bucket}</span>
+                <span className="worklist-group-count">{groupCards.length}</span>
               </div>
 
-              <p className="worklist-disposition-line">
-                &rarr; {disposition || 'TBD'} &middot;{' '}
-                <span className={activeBlockerCount > 0 ? 'blocker-count-active' : 'blocker-count-zero'}>
-                  {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
-                </span>
-              </p>
+              <ul className="worklist-group-list">
+                {groupCards.map((card) => {
+                  const { patient, deadline, decisionsNeeded, agentCount, agentFailCount, activeBlockerCount } = card;
+                  const isActive = activePatientId === patient.meta.patient_id;
+                  const age = computeAge(patient.patient_profile.dob);
+                  const sex = patient.patient_profile.sex ?? null;
+                  const bed = patient.patient_profile.current_location?.bed ?? 'Unknown';
+                  const disposition = getDispositionDisplay(patient.patient_profile.disposition_target);
 
-              {activeAgents.length > 0 && (() => {
-                const okCount = activeAgents.filter(a => !a.status || a.status === 'ok').length;
-                const warnCount = activeAgents.filter(a => a.status === 'warning').length;
-                const errorCount = activeAgents.filter(a => a.status === 'error').length;
-                return (
-                  <div className="worklist-agent-summary">
-                    {okCount > 0 && (
-                      <p className="agent-status-line">
-                        <span className="agent-dot dot-ok" />
-                        {okCount} agent{okCount > 1 ? 's' : ''} active
+                  if (isOnTrack) {
+                    // Compact card for On Track patients
+                    return (
+                      <li
+                        key={patient.meta.patient_id}
+                        className={`worklist-row worklist-card worklist-card-compact ${isActive ? 'active' : ''}`}
+                        aria-current={isActive ? 'true' : undefined}
+                        onClick={() => onSelectPatient(patient.meta.patient_id)}
+                        role="listitem"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="worklist-compact-line">
+                          <strong className="worklist-compact-name">
+                            {patient.patient_profile.patient_name}
+                          </strong>
+                          <span className="worklist-compact-meta">
+                            {bed}
+                            <span className="sep-dot" aria-hidden="true"> · </span>
+                            &rarr; {disposition.destinationLabel}
+                            {disposition.dependencyLabel && (
+                              <span className="disposition-dependency-tag">{disposition.dependencyLabel}</span>
+                            )}
+                          </span>
+                        </div>
+                      </li>
+                    );
+                  }
+
+                  // Full card for Needs Action / Watch / In Progress
+                  return (
+                    <li
+                      key={patient.meta.patient_id}
+                      className={`worklist-row worklist-card ${isActive ? 'active' : ''}`}
+                      aria-current={isActive ? 'true' : undefined}
+                      onClick={() => onSelectPatient(patient.meta.patient_id)}
+                      role="listitem"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {/* Line 1: Identity */}
+                      <strong className="worklist-patient-line">
+                        {patient.patient_profile.patient_name}
+                        <span className="sep-dot" aria-hidden="true"> · </span>
+                        {demographicToken(age, sex)}
+                        <span className="sep-dot" aria-hidden="true"> · </span>
+                        {bed}
+                      </strong>
+
+                      {/* Line 2: Goal + obstacles + deadline */}
+                      <p className="worklist-disposition-line">
+                        <span className="disposition-text">
+                          &rarr; {disposition.destinationLabel}
+                          {disposition.dependencyLabel && (
+                            <span className="disposition-dependency-tag">{disposition.dependencyLabel}</span>
+                          )}
+                        </span>
+                        <span className="sep-dot" aria-hidden="true"> · </span>
+                        <span className={activeBlockerCount > 0 ? 'blocker-count-active' : 'blocker-count-zero'}>
+                          {activeBlockerCount} blocker{activeBlockerCount !== 1 ? 's' : ''}
+                        </span>
+                        {deadline && (
+                          <>
+                            <span className="sep-dot" aria-hidden="true"> · </span>
+                            <span className={`card-deadline deadline-${deadline.proximity}`}>
+                              {deadline.shortLabel}
+                            </span>
+                          </>
+                        )}
                       </p>
-                    )}
-                    {warnCount > 0 && (
-                      <p className="agent-status-line agent-status-warning">
-                        <span className="agent-dot dot-warning" />
-                        {warnCount} agent{warnCount > 1 ? 's' : ''} issue
-                      </p>
-                    )}
-                    {errorCount > 0 && (
-                      <p className="agent-status-line agent-status-error">
-                        <span className="agent-dot dot-error" />
-                        {errorCount} agent{errorCount > 1 ? 's' : ''} failed
-                      </p>
-                    )}
-                  </div>
-                );
-              })()}
-            </li>
+
+                      {/* Line 3: What needs the CM + system health */}
+                      {(decisionsNeeded > 0 || agentCount > 0) && (
+                        <p className="worklist-status-line">
+                          {decisionsNeeded > 0 && (
+                            <span className="decisions-needed">
+                              {decisionsNeeded} decision{decisionsNeeded !== 1 ? 's' : ''} needed
+                            </span>
+                          )}
+                          {decisionsNeeded > 0 && agentCount > 0 && (
+                            <span className="sep-dot" aria-hidden="true"> · </span>
+                          )}
+                          {agentCount > 0 && (
+                            <span className={agentFailCount > 0 ? 'agent-summary-error' : 'agent-summary-ok'}>
+                              {agentFailCount > 0
+                                ? `${agentFailCount} agent${agentFailCount !== 1 ? 's' : ''} failed`
+                                : `${agentCount} agent${agentCount !== 1 ? 's' : ''} active`}
+                            </span>
+                          )}
+                        </p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </section>
   );
 }

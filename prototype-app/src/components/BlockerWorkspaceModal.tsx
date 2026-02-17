@@ -114,11 +114,18 @@ export default function BlockerWorkspaceModal({
           <div>
             <h3 id="blocker-workspace-title">{blocker.description}</h3>
             <p className="subtle">
-              Severity: {blocker.severity} · Status: {blocker.status}
+              Severity: {blocker.severity}
+              <span className="sep-dot" aria-hidden="true"> · </span>
+              Status: {blocker.status}
             </p>
             <p className="subtle">
               Owner: {blocker.owner ?? 'Unassigned'}
-              {blocker.due_by_local ? ` · Due by ${blocker.due_by_local}` : ''}
+              {blocker.due_by_local && (
+                <>
+                  <span className="sep-dot" aria-hidden="true"> · </span>
+                  Due by {blocker.due_by_local}
+                </>
+              )}
             </p>
           </div>
           <button className="detail-close" aria-label="Close blocker workspace" onClick={onClose}>
@@ -150,7 +157,11 @@ export default function BlockerWorkspaceModal({
             <ul>
               {linkedEvidence.map((item) => (
                 <li key={item.evidence_id}>
-                  {item.source_label} · {item.author_or_system} · {item.timestamp_local}
+                  {item.source_label}
+                  <span className="sep-dot" aria-hidden="true"> · </span>
+                  {item.author_or_system}
+                  <span className="sep-dot" aria-hidden="true"> · </span>
+                  {item.timestamp_local}
                 </li>
               ))}
             </ul>
@@ -277,12 +288,19 @@ export default function BlockerWorkspaceModal({
           <ul className="blocker-activity-log">
             {blocker.nested_steps.map((step) => (
               <li key={`step-${step.step_id}`}>
-                {step.last_updated_local ?? 'No timestamp'} · {step.label} · {step.status}
+                {step.last_updated_local ?? 'No timestamp'}
+                <span className="sep-dot" aria-hidden="true"> · </span>
+                {step.label}
+                <span className="sep-dot" aria-hidden="true"> · </span>
+                {step.status}
               </li>
             ))}
             {linkedActions.map((action) => (
               <li key={`action-${action.action_id}`}>
-                {currentTimestamp ?? 'Current state'} · {action.title} ·{' '}
+                {currentTimestamp ?? 'Current state'}
+                <span className="sep-dot" aria-hidden="true"> · </span>
+                {action.title}
+                <span className="sep-dot" aria-hidden="true"> · </span>
                 {actionStatusOverride[action.action_id] ?? action.status}
               </li>
             ))}

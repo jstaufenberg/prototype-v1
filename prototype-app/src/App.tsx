@@ -153,6 +153,16 @@ export default function App() {
     setPendingModalAction(null);
   };
 
+  const handlePatientNavigate = (direction: 'prev' | 'next') => {
+    if (!selectedPatientId) return;
+    const idx = patients.findIndex((p) => p.meta.patient_id === selectedPatientId);
+    if (idx < 0) return;
+    const nextIdx = direction === 'next'
+      ? (idx + 1) % patients.length
+      : (idx - 1 + patients.length) % patients.length;
+    setSelectedPatientId(patients[nextIdx].meta.patient_id);
+  };
+
   const failureRecoveryAction = useMemo(() => {
     if (!selectedPatient) return null;
     return selectedPatient.proposed_actions.items.find(
@@ -206,6 +216,7 @@ export default function App() {
                   setExecutionModeByAction((prev) => ({ ...prev, [actionId]: mode }))
                 }
                 onClose={() => setSelectedPatientId(null)}
+                onNavigate={handlePatientNavigate}
                 showHandoff={showHandoff}
               />
             ) : (

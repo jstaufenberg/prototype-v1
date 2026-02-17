@@ -69,15 +69,17 @@ export default function MilestoneJourney({
   );
 
   const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? null;
-  const summary = `${completeCount} milestones complete · ${activeBlockerCount} active blockers · ${
-    hasReachedDischarge ? 'Discharge reached' : 'Discharge not reached'
-  }`;
-
   return (
     <details className="milestone-journey-panel">
       <summary>
         <span>Patient milestone journey</span>
-        <span className="subtle">{summary}</span>
+        <span className="subtle">
+          {completeCount} milestones complete
+          <span className="sep-dot" aria-hidden="true"> · </span>
+          {activeBlockerCount} active blockers
+          <span className="sep-dot" aria-hidden="true"> · </span>
+          {hasReachedDischarge ? 'Discharge reached' : 'Discharge not reached'}
+        </span>
       </summary>
 
       <div className="milestone-journey-content">

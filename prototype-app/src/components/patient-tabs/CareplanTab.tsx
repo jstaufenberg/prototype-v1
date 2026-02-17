@@ -262,7 +262,9 @@ export default function CareplanTab({
                 <p className="due-line">{formatDueLine(blocker.due_by_local)}</p>
               )}
               <p className="subtle">
-                {blocker.evidence_summary.source_count} source{blocker.evidence_summary.source_count !== 1 ? 's' : ''} · Updated{' '}
+                {blocker.evidence_summary.source_count} source{blocker.evidence_summary.source_count !== 1 ? 's' : ''}
+                <span className="sep-dot" aria-hidden="true"> · </span>
+                Updated{' '}
                 {blocker.evidence_summary.last_evidence_update_local.slice(11, 16)}
               </p>
               <div className="card-actions-footer">

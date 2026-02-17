@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { PatientRecord } from '../../types/mockData';
+import { getDispositionDisplay } from '../../utils/disposition';
 
 interface ContextTabProps {
   patient: PatientRecord;
@@ -28,6 +29,7 @@ export default function ContextTab({ patient }: ContextTabProps) {
   const expectedLos = patient.worklist_view_state.expected_los_day;
   const losDelta = expectedLos ? los - expectedLos : null;
   const insurance = patient.patient_profile.insurance;
+  const disposition = getDispositionDisplay(patient.patient_profile.disposition_target);
 
   /* ── Care Team ── */
   const careTeam = useMemo(() => {
@@ -136,8 +138,14 @@ export default function ContextTab({ patient }: ContextTabProps) {
         </div>
         <div className="contact-detail-row">
           <span className="contact-label">Disposition</span>
-          <strong className="disposition-value">&rarr; {patient.patient_profile.disposition_target}</strong>
+          <strong className="disposition-value">&rarr; {disposition.destinationLabel}</strong>
         </div>
+        {disposition.dependencyLabel && (
+          <div className="contact-detail-row">
+            <span className="contact-label">Dependency</span>
+            <span className="disposition-dependency-note">{disposition.dependencyLabel}</span>
+          </div>
+        )}
       </div>
 
       {/* Insurance & Authorization */}
@@ -206,12 +214,23 @@ export default function ContextTab({ patient }: ContextTabProps) {
       <div className="contact-detail-block">
         <div className="contact-detail-row">
           <span className="contact-label">Target</span>
-          <strong className="disposition-value">&rarr; {patient.patient_profile.disposition_target}</strong>
+          <strong className="disposition-value">&rarr; {disposition.destinationLabel}</strong>
         </div>
+        {disposition.dependencyLabel && (
+          <div className="contact-detail-row">
+            <span className="contact-label">Dependency</span>
+            <span className="disposition-dependency-note">{disposition.dependencyLabel}</span>
+          </div>
+        )}
         {facilityContacts.map((fc, i) => (
           <div key={i} className="contact-detail-row">
             <span className="contact-label">Facility</span>
-            <span>{fc.name} · {fc.contact}{fc.channel ? ` (${fc.channel})` : ''}</span>
+            <span>
+              {fc.name}
+              <span className="sep-dot" aria-hidden="true"> · </span>
+              {fc.contact}
+              {fc.channel ? ` (${fc.channel})` : ''}
+            </span>
           </div>
         ))}
       </div>

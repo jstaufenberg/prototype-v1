@@ -6,6 +6,7 @@ export interface PatientRecord {
   meta: {
     patient_id: string;
     scenario_name: string;
+    as_of_local?: string;
   };
   patient_profile: {
     patient_name: string;

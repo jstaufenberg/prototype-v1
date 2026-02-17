@@ -325,16 +325,28 @@ export default function SystemStatusView({
                   <p className="agent-card-desc">{agent.description}</p>
                   <div className="agent-card-action">
                     <span>
-                      {agent.status === 'Retrying'
-                        ? `${agent.detail} · Retry at ${agent.retryTime}`
-                        : agent.detail}
+                      {agent.status === 'Retrying' ? (
+                        <>
+                          {agent.detail}
+                          <span className="sep-dot" aria-hidden="true"> · </span>
+                          Retry at {agent.retryTime}
+                        </>
+                      ) : (
+                        agent.detail
+                      )}
                     </span>
                     <span className="agent-card-time">{formatTimeWithDate(agent.lastTime)}</span>
                   </div>
                   <p className="agent-card-schedule">
                     {agent.schedule}
-                    {agent.nextRun && ` · Next: ${agent.nextRun}`}
-                    {' · '}{agent.runsToday} {agent.runsToday === 1 ? 'run' : 'runs'} today
+                    {agent.nextRun && (
+                      <>
+                        <span className="sep-dot" aria-hidden="true"> · </span>
+                        Next: {agent.nextRun}
+                      </>
+                    )}
+                    <span className="sep-dot" aria-hidden="true"> · </span>
+                    {agent.runsToday} {agent.runsToday === 1 ? 'run' : 'runs'} today
                   </p>
                 </div>
               ))}

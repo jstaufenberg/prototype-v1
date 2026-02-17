@@ -3,6 +3,7 @@ import type { ActionStatus, BlockerStatus, ExecutionModeDefault, PatientRecord }
 import type { ChipGroup } from '../utils/chipGrouping';
 import { buildWorklistTimelineItems } from '../utils/worklistTimeline';
 import { buildWorklistAgentRows } from '../utils/worklistAgents';
+import { getDispositionDisplay } from '../utils/disposition';
 import WorklistTimelineMini from './WorklistTimelineMini';
 import WorklistAgentsMini from './WorklistAgentsMini';
 
@@ -88,6 +89,7 @@ export default function WorklistCardTabs({
   const visibleParentCount = expandedParents ? groupedBlockers.length : 2;
   const visibleGroups = groupedBlockers.slice(0, visibleParentCount);
   const hiddenParentCount = Math.max(groupedBlockers.length - visibleGroups.length, 0);
+  const disposition = getDispositionDisplay(patient.patient_profile.disposition_target);
 
   return (
     <div className="worklist-card-tabs">
@@ -193,7 +195,13 @@ export default function WorklistCardTabs({
               <p>
                 <span className="subtle">Disposition</span>
                 <br />
-                {patient.patient_profile.disposition_target}
+                {disposition.destinationLabel}
+                {disposition.dependencyLabel && (
+                  <>
+                    <br />
+                    <span className="disposition-dependency-note">{disposition.dependencyLabel}</span>
+                  </>
+                )}
               </p>
               <p>
                 <span className="subtle">Payer/auth class</span>

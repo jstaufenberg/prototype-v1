@@ -3,6 +3,7 @@ import BlockerWorkspaceModal from '../BlockerWorkspaceModal';
 import { type AutomationStatus } from '../BlockerAutomationPanel';
 import MilestoneJourney from '../MilestoneJourney';
 import { actionsForBlocker } from '../../utils/patientActionSelection';
+import { formatBlockerDeadline, scenarioNow } from '../../utils/deadlineUtils';
 import type {
   ActionStatus,
   BlockerStatus,
@@ -33,28 +34,6 @@ function severityClass(severity: string) {
   if (severity === 'RED') return 'sev-red';
   if (severity === 'ORANGE') return 'sev-orange';
   return 'sev-yellow';
-}
-
-function formatDueLine(value?: string | null): string | null {
-  if (!value) return null;
-  const dueAt = new Date(value);
-  if (Number.isNaN(dueAt.getTime())) return `Action by ${value}`;
-
-  const now = Date.now();
-  const dueMs = dueAt.getTime();
-  const diffMinutes = Math.round((dueMs - now) / 60000);
-  const absMinutes = Math.abs(diffMinutes);
-  const hours = Math.floor(absMinutes / 60);
-  const minutes = absMinutes % 60;
-  const clock = dueAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-
-  if (diffMinutes >= 0) {
-    if (hours > 0) return `Action by ${clock} (in ${hours}h${minutes ? ` ${minutes}m` : ''})`;
-    return `Action by ${clock} (in ${minutes}m)`;
-  }
-
-  if (hours > 0) return `Action by ${clock} (overdue ${hours}h${minutes ? ` ${minutes}m` : ''})`;
-  return `Action by ${clock} (overdue ${absMinutes}m)`;
 }
 
 function priorityClass(priority: string) {
@@ -88,6 +67,8 @@ export default function BlockersTab({
     () => patient.demo_state_snapshots.find((snapshot) => snapshot.state_id === currentStateId),
     [patient.demo_state_snapshots, currentStateId]
   );
+
+  const nowMs = scenarioNow(patient);
 
   const activeBlockers = useMemo(
     () =>
@@ -215,12 +196,16 @@ export default function BlockersTab({
               >
                 <div className="blocker-compact-head">
                   <strong>{blocker.description}</strong>
-                  <span className="subtle">{blocker.status}</span>
+                  {(() => {
+                    const dl = formatBlockerDeadline(blocker.due_by_local, 'Action', nowMs);
+                    return dl ? (
+                      <span className={`blocker-deadline deadline-${dl.proximity}`}>{dl.label}</span>
+                    ) : (
+                      <span className="subtle">{blocker.status}</span>
+                    );
+                  })()}
                 </div>
                 <p className="blocker-summary-text">{blocker.summary_line}</p>
-                {formatDueLine(blocker.due_by_local) && (
-                  <p className="due-line">{formatDueLine(blocker.due_by_local)}</p>
-                )}
 
                 {/* Inline agent status — what agents are doing about this blocker */}
                 {agentActions.length > 0 && (
@@ -267,7 +252,9 @@ export default function BlockersTab({
                 )}
 
                 <p className="subtle">
-                  {blocker.evidence_summary.source_count} source{blocker.evidence_summary.source_count !== 1 ? 's' : ''} · Updated{' '}
+                  {blocker.evidence_summary.source_count} source{blocker.evidence_summary.source_count !== 1 ? 's' : ''}
+                  <span className="sep-dot" aria-hidden="true"> · </span>
+                  Updated{' '}
                   {blocker.evidence_summary.last_evidence_update_local.slice(11, 16)}
                 </p>
                 <div className="card-actions-footer">

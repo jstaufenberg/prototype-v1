@@ -164,6 +164,11 @@ main {
   font-size: 13px;
 }
 
+.sep-dot {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .panel-top-actions {
   margin: 10px 0 12px;
 }
@@ -221,14 +226,59 @@ main {
   flex-wrap: wrap;
 }
 
+/* ── Worklist ── */
 .worklist {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+/* ── Worklist Group Headers ── */
+.worklist-group {
+  margin-bottom: 4px;
+}
+
+.worklist-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px 6px;
+  border-bottom: 2px solid #d0d0d0;
+  margin-bottom: 6px;
+}
+
+.worklist-group-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.worklist-group-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.bucket-needs-action-header .worklist-group-label { color: var(--red); }
+.bucket-needs-action-header { border-bottom-color: var(--red); }
+.bucket-watch-header .worklist-group-label { color: var(--orange); }
+.bucket-watch-header { border-bottom-color: var(--orange); }
+.bucket-in-progress-header .worklist-group-label { color: var(--yellow); }
+.bucket-in-progress-header { border-bottom-color: var(--yellow); }
+.bucket-on-track-header .worklist-group-label { color: #2a7a3b; }
+.bucket-on-track-header { border-bottom-color: #2a7a3b; }
+
+.worklist-group-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 10px;
+  gap: 6px;
 }
 
+/* ── Worklist Card ── */
 .worklist-row {
   border: 1px solid #d0d0d0;
   padding: 10px 12px;
@@ -236,7 +286,7 @@ main {
 
 .worklist-card {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .worklist-row.active {
@@ -244,17 +294,32 @@ main {
   box-shadow: inset 0 0 0 1px #d8e4ff;
 }
 
-.worklist-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
+/* ── Compact Card (On Track) ── */
+.worklist-card-compact {
+  padding: 6px 12px;
 }
 
+.worklist-compact-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.worklist-compact-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.worklist-compact-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── Full Card Elements ── */
 .worklist-patient-line {
   display: block;
-  font-size: 20px;
-  line-height: 1.1;
+  font-size: 18px;
+  line-height: 1.2;
   font-weight: 700;
 }
 
@@ -289,67 +354,101 @@ main {
   border: 1px solid #2a7a3b;
 }
 
-.worklist-badge-stack {
-  display: grid;
-  justify-items: end;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.worklist-urgency-badge {
-  font-size: 12px;
-  padding: 1px 7px;
-  border: 1px solid #8d8d8d;
-  color: #4d4d4d;
-}
-
+/* ── Disposition Line (Line 2) ── */
 .worklist-disposition-line {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.disposition-text {
   color: #1f6b5f;
+}
+
+.disposition-dependency-tag {
+  margin-left: 8px;
+  display: inline-block;
+  border: 1px solid #8d8d8d;
+  background: #f2f2f2;
+  color: var(--text);
+  padding: 1px 7px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.disposition-dependency-note {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .blocker-count-zero {
   border: 1.5px solid var(--text);
   background: #fff;
   color: var(--text);
-  padding: 1px 7px;
-  font-size: 16px;
+  padding: 1px 6px;
+  font-size: 14px;
   font-weight: 700;
 }
 .blocker-count-active {
   background: var(--text);
   color: #fff;
-  padding: 1px 7px;
-  font-size: 16px;
+  padding: 1px 6px;
+  font-size: 14px;
   font-weight: 700;
 }
 
-/* ── Worklist Agent Summary ── */
-.worklist-agent-summary {
-  margin: 4px 0 0;
-  padding-left: 12px;
+/* ── Deadline (Line 2 / Detail) ── */
+.card-deadline {
+  font-weight: 700;
+  font-size: 14px;
 }
 
-.agent-status-line {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.agent-status-warning {
-  color: var(--orange);
-}
-
-.agent-status-error {
+.deadline-overdue {
   color: var(--red);
 }
 
+.deadline-urgent {
+  color: var(--red);
+}
+
+.deadline-soon {
+  color: var(--orange);
+}
+
+.deadline-today {
+  color: var(--text);
+}
+
+.deadline-future {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ── Status Line (Line 3) ── */
+.worklist-status-line {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding-left: 2px;
+}
+
+.decisions-needed {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.agent-summary-ok {
+  color: var(--muted);
+}
+
+.agent-summary-error {
+  color: var(--red);
+}
+
+/* ── Agent dots (used in detail panel) ── */
 .agent-dot {
   width: 6px;
   height: 6px;
@@ -360,6 +459,27 @@ main {
 .dot-ok { background: #2a7a3b; }
 .dot-warning { background: var(--orange); }
 .dot-error { background: var(--red); }
+
+/* ── Legacy agent status (Activity tab) ── */
+.agent-status-line {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.agent-status-tag.agent-status-warning {
+  color: var(--orange);
+  border: 1px solid var(--orange);
+}
+
+.agent-status-tag.agent-status-error {
+  color: var(--red);
+  border: 1px solid var(--red);
+}
 
 .blocker-stack {
   margin-top: 2px;
@@ -688,9 +808,36 @@ button.secondary:hover {
 
 .detail-disposition-line {
   margin: 2px 0 0;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.detail-disposition-line .disposition-text {
   color: #1f6b5f;
+}
+
+/* ── Detail Nav (prev/next) ── */
+.detail-nav {
+  display: flex;
+  gap: 2px;
+}
+
+.detail-nav-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  border: 1px solid #999;
+  background: #fff;
+  cursor: pointer;
+}
+
+.detail-nav-btn:hover {
+  background: #f0f0f0;
 }
 
 .detail-header-right {
@@ -1186,6 +1333,12 @@ button.secondary:hover {
   font-size: 13px;
   font-weight: 600;
   color: #8f2c2c;
+}
+
+.blocker-deadline {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .blocker-local-action-row {

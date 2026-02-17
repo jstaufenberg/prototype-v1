@@ -95,6 +95,16 @@ function makeHeader(name: string, age: number | null, sex: string | null | undef
   return `${name} · ${demographicToken(age, sex)} · ${room}`;
 }
 
+function renderSeparatedText(value: string) {
+  const parts = value.split(' · ');
+  return parts.map((part, index) => (
+    <span key={`${part}-${index}`}>
+      {index > 0 && <span className="sep-dot" aria-hidden="true"> · </span>}
+      {part}
+    </span>
+  ));
+}
+
 function bucketClass(bucket: string) {
   if (bucket === 'Needs Action') return 'bucket-needs-action';
   if (bucket === 'Watch') return 'bucket-watch';
@@ -256,12 +266,15 @@ export default function ShiftStartSnapshot({
   const parsedLastActive = lastActiveAt ? new Date(lastActiveAt).getTime() : NaN;
   const gapHours = Number.isNaN(parsedLastActive) ? Infinity : (now - parsedLastActive) / 3600000;
   const contextPrefix = gapHours >= 8 ? 'Since your last shift' : 'Since your last check-in';
-  const contextLine = `${contextPrefix} · Data current as of ${timestamp}`;
 
   return (
     <section className="snapshot-screen">
       <h2>What changed while you were away</h2>
-      <p className="freshness">{contextLine}</p>
+      <p className="freshness">
+        {contextPrefix}
+        <span className="sep-dot" aria-hidden="true"> · </span>
+        Data current as of {timestamp}
+      </p>
       <StickyActionBar
         primaryAction={<button className="primary-action" onClick={onGoToWorklist}>Go to worklist</button>}
         secondaryActions={
@@ -289,7 +302,7 @@ export default function ShiftStartSnapshot({
               {card.items.slice(0, 3).map((entry) => (
                 <article key={entry.id} className="snapshot-entry">
                   <div className="snapshot-entry-head">
-                    <p className="snapshot-entry-name">{entry.header}</p>
+                    <p className="snapshot-entry-name">{renderSeparatedText(entry.header)}</p>
                     <span className={`bucket ${bucketClass(entry.bucket)}`}>{entry.bucket}</span>
                   </div>
                   {entry.chipGroups.length > 0 && (

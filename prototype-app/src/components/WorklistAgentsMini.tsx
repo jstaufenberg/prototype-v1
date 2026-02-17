@@ -63,10 +63,14 @@ export default function WorklistAgentsMini({ agents }: WorklistAgentsMiniProps) 
           <div className="mini-agent-main">
             <p className="mini-agent-name">{agent.name}</p>
             <p className="mini-agent-meta">
-              {agent.mode} · {agent.state}
+              {agent.mode}
+              <span className="sep-dot" aria-hidden="true"> · </span>
+              {agent.state}
             </p>
             <p className="mini-agent-meta">
-              Last {formatClock(agent.lastRun)} · Next {formatClock(agent.nextRun)}
+              Last {formatClock(agent.lastRun)}
+              <span className="sep-dot" aria-hidden="true"> · </span>
+              Next {formatClock(agent.nextRun)}
             </p>
             {agent.failureText && <p className="mini-agent-failure">{agent.failureText}</p>}
           </div>

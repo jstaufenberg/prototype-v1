@@ -294,7 +294,10 @@ export default function AutomationTab({
                 </div>
                 {mode === 'BACKGROUND' && action.background_policy && (
                   <div className="config-details subtle">
-                    Every {action.background_policy.cadence_hours}h · Max {action.background_policy.max_duration_hours}h ·
+                    Every {action.background_policy.cadence_hours}h
+                    <span className="sep-dot" aria-hidden="true"> · </span>
+                    Max {action.background_policy.max_duration_hours}h
+                    <span className="sep-dot" aria-hidden="true"> · </span>
                     Stops: {action.background_policy.stop_conditions.join(', ')}
                   </div>
                 )}

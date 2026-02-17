@@ -109,9 +109,12 @@ export default function NetworkView() {
                   <strong>{payer.name}</strong>
                   <div className="network-card-body">
                     <p className="network-channels">
-                      {payer.default_channels
-                        .map((ch) => ch.charAt(0).toUpperCase() + ch.slice(1))
-                        .join(' · ')}
+                      {payer.default_channels.map((ch, index) => (
+                        <span key={`${payer.payer_id}-${ch}-${index}`}>
+                          {index > 0 && <span className="sep-dot" aria-hidden="true"> · </span>}
+                          {ch.charAt(0).toUpperCase() + ch.slice(1)}
+                        </span>
+                      ))}
                     </p>
                     {payer.auth_phone && (
                       <p className="network-contact-bottom">Auth line: {payer.auth_phone}</p>
