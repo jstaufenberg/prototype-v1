@@ -170,7 +170,9 @@ main {
   border: 2px solid var(--border);
   padding: 14px;
   position: relative;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   min-height: 0;
 }
 
@@ -247,6 +249,9 @@ main {
   padding: 0;
   display: grid;
   gap: 0;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ── Worklist Group Headers ── */
@@ -947,6 +952,9 @@ button.secondary:hover {
 
 .detail-tab-content {
   margin-top: 12px;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ── Next Steps (Care Plan tab) ── */
@@ -3068,6 +3076,17 @@ button.secondary:hover {
 
   .panel {
     overflow-y: visible;
+    display: block;
+  }
+
+  .worklist {
+    overflow-y: visible;
+    flex: none;
+  }
+
+  .detail-tab-content {
+    overflow-y: visible;
+    flex: none;
   }
 }
 
