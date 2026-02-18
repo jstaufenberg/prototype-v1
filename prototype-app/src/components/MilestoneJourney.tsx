@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import MilestoneNodeDrawer from './MilestoneNodeDrawer';
-import { buildMilestoneJourney } from '../utils/milestoneJourney';
+import {
+  buildTimelineEntries,
+  formatTimelineTimestamp,
+  getTimelineReferenceMs,
+  timelineStateLabel,
+  type TimelineEntryState
+} from '../utils/timelineModel';
 import type { Blocker, BlockerStatus, PatientRecord } from '../types/mockData';
 
 interface MilestoneJourneyProps {
@@ -10,31 +16,11 @@ interface MilestoneJourneyProps {
   onFocusBlocker: (blockerId: string) => void;
 }
 
-function toneClass(tone: string) {
-  if (tone === 'COMPLETE') return 'tone-complete';
-  if (tone === 'PENDING') return 'tone-pending';
-  if (tone === 'BLOCKED') return 'tone-blocked';
-  if (tone === 'FUTURE') return 'tone-future';
-  return 'tone-none';
-}
-
-function statusIcon(statusTone: string, nodeType: string) {
-  if (nodeType === 'ENDPOINT') return '◎';
-  if (statusTone === 'COMPLETE') return '✓';
-  if (statusTone === 'BLOCKED') return '!';
-  if (statusTone === 'PENDING') return '•';
-  return '○';
-}
-
-function formatNodeDate(value?: string | null): string | null {
-  if (!value) return null;
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return parsed.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
+function toneClass(state: TimelineEntryState): string {
+  if (state === 'complete') return 'tone-complete';
+  if (state === 'pending') return 'tone-pending';
+  if (state === 'blocked') return 'tone-blocked';
+  return 'tone-future';
 }
 
 export default function MilestoneJourney({
@@ -43,34 +29,68 @@ export default function MilestoneJourney({
   currentStateId,
   onFocusBlocker
 }: MilestoneJourneyProps) {
-  const { nodes, completeCount, activeBlockerCount, hasReachedDischarge } = useMemo(
-    () =>
-      buildMilestoneJourney({
-        patient,
-        blockerStatusOverride,
-        currentStateId,
-        recentlyChangedHours: 24
-      }),
+  const timelineEntries = useMemo(
+    () => buildTimelineEntries(patient, {
+      blockerStatusOverride,
+      currentStateId,
+      sortMode: 'blocker-first',
+      includeEncounterFallback: true
+    }),
     [patient, blockerStatusOverride, currentStateId]
   );
+  const timelineReferenceMs = useMemo(
+    () => getTimelineReferenceMs(patient, currentStateId),
+    [patient, currentStateId]
+  );
+  const completeCount = timelineEntries.filter((item) => item.kind === 'milestone' && item.state === 'complete').length;
+  const activeBlockerCount = patient.blockers.items.filter(
+    (item) => (blockerStatusOverride[item.blocker_id] ?? item.status) === 'ACTIVE'
+  ).length;
+  const hasReachedDischarge = timelineEntries.some(
+    (item) =>
+      item.kind === 'milestone' &&
+      item.state === 'complete' &&
+      /(physical departure|discharge completed)/i.test(item.label)
+  ) && activeBlockerCount === 0;
 
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
+  const visibleEntries = useMemo(
+    () => (showAll ? timelineEntries : timelineEntries.slice(0, 6)),
+    [timelineEntries, showAll]
+  );
+  const hiddenCount = Math.max(timelineEntries.length - visibleEntries.length, 0);
+
   useEffect(() => {
-    if (!nodes.some((node) => node.id === selectedNodeId)) {
-      setSelectedNodeId(null);
+    if (!isExpanded) return;
+    if (visibleEntries.length === 0) {
+      setSelectedEntryId(null);
+      return;
     }
-  }, [nodes, selectedNodeId]);
+    const selectedStillVisible = selectedEntryId && visibleEntries.some((item) => item.id === selectedEntryId);
+    if (!selectedStillVisible) {
+      setSelectedEntryId(visibleEntries[0].id);
+    }
+  }, [isExpanded, visibleEntries, selectedEntryId]);
 
   const blockersById = useMemo<Record<string, Blocker>>(
     () => Object.fromEntries(patient.blockers.items.map((blocker) => [blocker.blocker_id, blocker])),
     [patient.blockers.items]
   );
 
-  const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? null;
+  const selectedEntry = timelineEntries.find((item) => item.id === selectedEntryId) ?? null;
   return (
-    <details className="milestone-journey-panel">
+    <details
+      className="milestone-journey-panel"
+      onToggle={(event) => {
+        const open = event.currentTarget.open;
+        setIsExpanded(open);
+        if (!open) setShowAll(false);
+      }}
+    >
       <summary>
         <span>Patient milestone journey</span>
         <span className="subtle">
@@ -83,72 +103,58 @@ export default function MilestoneJourney({
       </summary>
 
       <div className="milestone-journey-content">
-        <p className="subtle milestone-node-affordance">
-          Scroll horizontally to review the full journey. Select a node to view details below.
-        </p>
+        <p className="subtle milestone-node-affordance">Select a timeline row to inspect details and linked blockers.</p>
 
-        <div className="milestone-timeline-scroll">
-          <ul className="milestone-timeline" role="listbox" aria-label="Patient milestone timeline">
-            {nodes.map((node, index) => {
-              const nodeDate = formatNodeDate(node.timestampLocal);
-              return (
-                <li
-                  key={node.id}
-                  className={`milestone-node ${index % 2 === 0 ? 'milestone-node-top' : 'milestone-node-bottom'} ${selectedNodeId === node.id ? 'is-selected' : ''}`}
-                  aria-selected={selectedNodeId === node.id}
-                >
-                  <div className="milestone-node-rail" aria-hidden="true">
-                    <span
-                      className={`milestone-segment milestone-segment-top ${toneClass(node.segmentBefore)}`}
-                    />
-                    <span className={`milestone-dot ${toneClass(node.statusTone)}`}>
-                      {statusIcon(node.statusTone, node.nodeType)}
-                    </span>
-                    <span
-                      className={`milestone-segment milestone-segment-bottom ${toneClass(node.segmentAfter)}`}
-                    />
-                  </div>
-
-                  <button
-                    ref={(element) => {
-                      buttonRefs.current[node.id] = element;
-                    }}
-                    className="milestone-node-content"
-                    disabled={!node.isClickable}
-                    onClick={() => setSelectedNodeId(node.id)}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-                      event.preventDefault();
-                      const direction = event.key === 'ArrowRight' ? 1 : -1;
-                      const nextIndex = index + direction;
-                      if (nextIndex < 0 || nextIndex >= nodes.length) return;
-                      const nextNode = nodes[nextIndex];
-                      buttonRefs.current[nextNode.id]?.focus();
-                      setSelectedNodeId(nextNode.id);
-                    }}
-                    role="option"
-                    aria-selected={selectedNodeId === node.id}
-                  >
-                    <div className="milestone-node-head">
-                      <div className="milestone-node-meta">
-                        {nodeDate && (
-                          <span className="milestone-node-date">{nodeDate}</span>
-                        )}
-                        <span className={`milestone-status-chip ${toneClass(node.statusTone)}`}>
-                          {node.statusLabel}
-                        </span>
-                      </div>
-                      <strong>{node.label}</strong>
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+        <div className="detail-timeline-list" role="list" aria-label="Patient timeline">
+          {visibleEntries.length === 0 ? (
+            <p className="subtle">No timeline events captured for this patient yet.</p>
+          ) : (
+            visibleEntries.map((entry, index) => (
+              <button
+                key={entry.id}
+                ref={(element) => {
+                  buttonRefs.current[entry.id] = element;
+                }}
+                className={`detail-timeline-row ${toneClass(entry.state)}${selectedEntryId === entry.id ? ' is-selected' : ''}`}
+                onClick={() => setSelectedEntryId(entry.id)}
+                onKeyDown={(event) => {
+                  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+                  event.preventDefault();
+                  const direction = event.key === 'ArrowDown' ? 1 : -1;
+                  const next = visibleEntries[index + direction];
+                  if (!next) return;
+                  buttonRefs.current[next.id]?.focus();
+                  setSelectedEntryId(next.id);
+                }}
+              >
+                <div className="detail-timeline-row-head">
+                  <span className="detail-timeline-time">
+                    {formatTimelineTimestamp(entry.timestampLocal, timelineReferenceMs)}
+                  </span>
+                  <span className={`milestone-status-chip ${toneClass(entry.state)}`}>
+                    {timelineStateLabel(entry.state)}
+                  </span>
+                </div>
+                <p className="detail-timeline-label">{entry.label}</p>
+                <p className="detail-timeline-detail">{entry.detail}</p>
+                <p className="detail-timeline-source subtle">{entry.sourceLabel}</p>
+              </button>
+            ))
+          )}
         </div>
+        {hiddenCount > 0 && (
+          <button className="subchip-toggle" onClick={() => setShowAll(true)}>
+            Show more timeline items ({hiddenCount} more)
+          </button>
+        )}
+        {showAll && timelineEntries.length > 6 && (
+          <button className="subchip-toggle" onClick={() => setShowAll(false)}>
+            Show fewer timeline items
+          </button>
+        )}
 
         <MilestoneNodeDrawer
-          node={selectedNode}
+          entry={selectedEntry}
           blockersById={blockersById}
           onFocusBlocker={onFocusBlocker}
         />

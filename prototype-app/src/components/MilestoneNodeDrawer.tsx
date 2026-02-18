@@ -1,21 +1,22 @@
-import type { Blocker, MilestoneJourneyNode } from '../types/mockData';
+import { formatTimelineFullTimestamp, timelineStateLabel, type TimelineEntry } from '../utils/timelineModel';
+import type { Blocker } from '../types/mockData';
 
 interface MilestoneNodeDrawerProps {
-  node: MilestoneJourneyNode | null;
+  entry: TimelineEntry | null;
   blockersById: Record<string, Blocker>;
   onFocusBlocker: (blockerId: string) => void;
 }
 
 export default function MilestoneNodeDrawer({
-  node,
+  entry,
   blockersById,
   onFocusBlocker
 }: MilestoneNodeDrawerProps) {
-  if (!node) {
+  if (!entry) {
     return (
       <section className="milestone-node-drawer milestone-node-drawer-empty" aria-live="polite">
-        <h4>Milestone details</h4>
-        <p className="subtle">Select a milestone to view details.</p>
+        <h4>Timeline details</h4>
+        <p className="subtle">Select a timeline row to view details.</p>
         <div className="milestone-drawer-skeleton" aria-hidden="true">
           <div className="shell-line shell-label" />
           <div className="shell-line shell-body" />
@@ -28,36 +29,37 @@ export default function MilestoneNodeDrawer({
     );
   }
 
-  const linkedBlockers = node.linkedBlockerIds
+  const linkedBlockers = entry.linkedBlockerIds
     .map((blockerId) => blockersById[blockerId])
     .filter((blocker): blocker is Blocker => Boolean(blocker));
 
   return (
     <section className="milestone-node-drawer" aria-live="polite">
-      <h4>{node.label}</h4>
+      <h4>{entry.label}</h4>
       <p className="milestone-drawer-line">
-        <span className="milestone-drawer-label">Why this milestone matters</span>
-        <span>{node.why}</span>
+        <span className="milestone-drawer-label">Why this item matters</span>
+        <span>{entry.detail}</span>
       </p>
       <p className="milestone-drawer-line">
         <span className="milestone-drawer-label">Current state</span>
-        <span>
-          {node.statusLabel}
-          {node.isPostBlockerAdjusted ? ' (Blocked by active discharge barriers)' : ''}
-        </span>
+        <span>{timelineStateLabel(entry.state)}</span>
       </p>
       <p className="milestone-drawer-line">
         <span className="milestone-drawer-label">Last updated</span>
-        <span>{node.timestampLocal ?? 'Not yet updated'}</span>
+        <span>{formatTimelineFullTimestamp(entry.timestampLocal)}</span>
+      </p>
+      <p className="milestone-drawer-line">
+        <span className="milestone-drawer-label">Source</span>
+        <span>{entry.sourceLabel}</span>
       </p>
       <p className="milestone-drawer-line">
         <span className="milestone-drawer-label">Evidence</span>
-        <span>{node.evidenceCount} sources</span>
+        <span>{entry.evidenceCount} sources</span>
       </p>
 
       {linkedBlockers.length > 0 && (
         <div className="milestone-linked-blockers">
-          <span className="milestone-drawer-label">Linked blocker</span>
+          <span className="milestone-drawer-label">Linked blockers</span>
           <div className="milestone-linked-blocker-list">
             {linkedBlockers.map((blocker) => (
               <button
@@ -72,11 +74,11 @@ export default function MilestoneNodeDrawer({
         </div>
       )}
 
-      {node.evidenceItems.length > 0 && (
+      {entry.evidenceItems.length > 0 && (
         <details className="milestone-evidence-drawer">
           <summary>View evidence</summary>
           <ul>
-            {node.evidenceItems.map((item) => (
+            {entry.evidenceItems.map((item) => (
               <li key={item.id}>
                 {item.label} - {item.source} - {item.timestamp}
               </li>

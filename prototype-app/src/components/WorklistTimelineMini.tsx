@@ -1,17 +1,16 @@
 import { useMemo, useState } from 'react';
-import type { WorklistTimelineItem, WorklistTimelineItemType } from '../utils/worklistTimeline';
+import {
+  formatTimelineTimestamp,
+  type TimelineEntry,
+  type TimelineEntryKind
+} from '../utils/timelineModel';
 
 interface WorklistTimelineMiniProps {
-  items: WorklistTimelineItem[];
+  entries: TimelineEntry[];
+  referenceMs: number;
 }
 
-function formatClock(value: string): string {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-
-function TimelineIcon({ type }: { type: WorklistTimelineItemType }) {
+function TimelineIcon({ type }: { type: TimelineEntryKind }) {
   if (type === 'blocker') {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -36,6 +35,14 @@ function TimelineIcon({ type }: { type: WorklistTimelineItemType }) {
       </svg>
     );
   }
+  if (type === 'encounter') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8" />
+        <path d="M12 8v8M8 12h8" />
+      </svg>
+    );
+  }
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M3 12h5l2-7 4 14 2-7h5" />
@@ -44,12 +51,19 @@ function TimelineIcon({ type }: { type: WorklistTimelineItemType }) {
   );
 }
 
-export default function WorklistTimelineMini({ items }: WorklistTimelineMiniProps) {
+export default function WorklistTimelineMini({ entries, referenceMs }: WorklistTimelineMiniProps) {
+  const COLLAPSED_COUNT = 3;
+  const MAX_EXPANDED = 12;
   const [showAll, setShowAll] = useState(false);
-  const visible = useMemo(() => (showAll ? items : items.slice(0, 6)), [items, showAll]);
-  const hiddenCount = Math.max(items.length - visible.length, 0);
 
-  if (items.length === 0) {
+  const trimmedEntries = useMemo(() => entries.slice(0, MAX_EXPANDED), [entries]);
+  const visible = useMemo(
+    () => (showAll ? trimmedEntries : trimmedEntries.slice(0, COLLAPSED_COUNT)),
+    [trimmedEntries, showAll]
+  );
+  const hiddenCount = Math.max(trimmedEntries.length - visible.length, 0);
+
+  if (entries.length === 0) {
     return <p className="subtle">No major timeline changes captured.</p>;
   }
 
@@ -57,14 +71,14 @@ export default function WorklistTimelineMini({ items }: WorklistTimelineMiniProp
     <div className="mini-timeline">
       {visible.map((item) => (
         <article key={item.id} className={`mini-timeline-item state-${item.state}`}>
-          <span className={`mono-icon timeline-icon type-${item.type} state-${item.state}`}>
-            <TimelineIcon type={item.type} />
+          <span className={`mono-icon timeline-icon type-${item.kind} state-${item.state}`}>
+            <TimelineIcon type={item.kind} />
           </span>
           <div className="mini-timeline-copy">
-            <p className="mini-timeline-time">{formatClock(item.timestampLocal)}</p>
+            <p className="mini-timeline-time">{formatTimelineTimestamp(item.timestampLocal, referenceMs)}</p>
             <p className="mini-timeline-label">
               {item.label}
-              {item.emphasis && <span className="mini-major-pill">Major</span>}
+              {item.isMajor && <span className="mini-major-pill">Major</span>}
             </p>
             <p className="mini-timeline-detail">{item.detail}</p>
           </div>
@@ -75,10 +89,13 @@ export default function WorklistTimelineMini({ items }: WorklistTimelineMiniProp
           Show all timeline events ({hiddenCount} more)
         </button>
       )}
-      {showAll && items.length > 6 && (
+      {showAll && trimmedEntries.length > COLLAPSED_COUNT && (
         <button className="subchip-toggle mini-show-all" onClick={() => setShowAll(false)}>
           Show fewer events
         </button>
+      )}
+      {entries.length > MAX_EXPANDED && (
+        <p className="subtle">Showing latest {MAX_EXPANDED} events.</p>
       )}
     </div>
   );

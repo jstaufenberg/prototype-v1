@@ -123,10 +123,14 @@ export default function BlockersTab({
   const focusBlockerInView = (blockerId: string) => {
     setFocusedBlockerId(blockerId);
     window.setTimeout(() => {
-      document.getElementById(`blocker-card-${blockerId}`)?.scrollIntoView({
+      const target = document.getElementById(`blocker-card-${blockerId}`) as HTMLElement | null;
+      target?.scrollIntoView({
         behavior: 'smooth',
         block: 'center'
       });
+      window.setTimeout(() => {
+        target?.focus({ preventScroll: true });
+      }, 220);
     }, 0);
   };
 
@@ -193,6 +197,7 @@ export default function BlockersTab({
                 key={blocker.blocker_id}
                 id={`blocker-card-${blocker.blocker_id}`}
                 className={`blocker ${severityClass(blocker.severity)} blocker-compact${focusedBlockerId === blocker.blocker_id ? ' blocker-focused' : ''}`}
+                tabIndex={-1}
               >
                 <div className="blocker-compact-head">
                   <strong>{blocker.description}</strong>

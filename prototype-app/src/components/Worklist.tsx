@@ -1,12 +1,23 @@
 import { useMemo } from 'react';
-import type { PatientRecord } from '../types/mockData';
+import type { ActionStatus, BlockerStatus, ExecutionModeDefault, PatientRecord } from '../types/mockData';
+import WorklistCardTabs from './WorklistCardTabs';
+import { groupChips, type ChipGroup } from '../utils/chipGrouping';
 import { getDispositionDisplay } from '../utils/disposition';
 import { getMostUrgentDeadline, type DeadlineInfo } from '../utils/deadlineUtils';
+import {
+  buildTimelineEntries,
+  formatTimelineTimestamp,
+  getTimelineReferenceMs,
+  type TimelineEntry
+} from '../utils/timelineModel';
 
 interface WorklistProps {
   patients: PatientRecord[];
   activePatientId: string | null;
   stateByPatientId: Record<string, string>;
+  actionStatusById: Record<string, ActionStatus>;
+  blockerStatusById: Record<string, BlockerStatus>;
+  executionModeByAction: Record<string, ExecutionModeDefault>;
   onSelectPatient: (patientId: string | null) => void;
   showHandoff?: boolean;
 }
@@ -49,12 +60,53 @@ interface PreparedCard {
   agentCount: number;
   agentFailCount: number;
   activeBlockerCount: number;
+  blockerStatusOverride: Record<string, BlockerStatus>;
+  actionStatusOverride: Record<string, ActionStatus>;
+  groupedBlockers: ChipGroup[];
+  losLabel: string;
+  losDeltaClass: string;
+  timelineEntries: TimelineEntry[];
+  timelineReferenceMs: number;
+  lastUpdatedLabel: string | null;
+}
+
+function blockerParentChip(blockerType: string, blockerDescription: string): string {
+  const combined = `${blockerType} ${blockerDescription}`.toLowerCase();
+  if (/auth|insurance|payer/.test(combined)) return 'Auth Pending';
+  if (/placement|facility|snf|irf|referral/.test(combined)) return 'Placement Needed';
+  if (/sign[- ]?off|physician|md/.test(combined)) return 'MD Sign-off Needed';
+  if (/family|consent|decision/.test(combined)) return 'Family Decision Needed';
+  return 'Discharge Blocker';
+}
+
+function blockerDueSubtag(value?: string | null): string | null {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const date = parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const time = parsed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return `Deadline ${date} ${time}`;
+}
+
+function buildLosSummary(patient: PatientRecord): { label: string; cls: string } {
+  const actual = patient.worklist_view_state.los_day;
+  const expected = patient.worklist_view_state.expected_los_day;
+  if (!expected) return { label: `LOS ${actual}d`, cls: 'los-neutral' };
+
+  const delta = actual - expected;
+  const signed = delta > 0 ? `+${delta}` : `${delta}`;
+  if (delta > 0) return { label: `LOS ${actual}d / Exp ${expected}d (${signed}d)`, cls: 'los-over' };
+  if (delta < 0) return { label: `LOS ${actual}d / Exp ${expected}d (${signed}d)`, cls: 'los-under' };
+  return { label: `LOS ${actual}d / Exp ${expected}d (0d)`, cls: 'los-neutral' };
 }
 
 export default function Worklist({
   patients,
   activePatientId,
   stateByPatientId,
+  actionStatusById,
+  blockerStatusById,
+  executionModeByAction,
   onSelectPatient,
   showHandoff
 }: WorklistProps) {
@@ -63,17 +115,58 @@ export default function Worklist({
     patients.map((patient) => {
       const stateId = stateByPatientId[patient.meta.patient_id];
       const snapshot = getSnapshot(patient, stateId);
+      const snapshotActionStatus: Record<string, ActionStatus> = {};
+      const snapshotBlockerStatus: Record<string, BlockerStatus> = {};
+      for (const item of snapshot?.action_statuses ?? []) snapshotActionStatus[item.action_id] = item.status;
+      for (const item of snapshot?.blocker_statuses ?? []) snapshotBlockerStatus[item.blocker_id] = item.status;
+
+      const actionStatusOverride: Record<string, ActionStatus> = {};
+      for (const action of patient.proposed_actions.items) {
+        actionStatusOverride[action.action_id] =
+          actionStatusById[action.action_id] ?? snapshotActionStatus[action.action_id] ?? action.status;
+      }
+      const blockerStatusOverride: Record<string, BlockerStatus> = {};
+      for (const blocker of patient.blockers.items) {
+        blockerStatusOverride[blocker.blocker_id] =
+          blockerStatusById[blocker.blocker_id] ?? snapshotBlockerStatus[blocker.blocker_id] ?? blocker.status;
+      }
+
       const bucket = snapshot?.worklist_state.bucket_status ?? patient.worklist_view_state.bucket_status;
       const activeAgents = snapshot?.worklist_state.active_agents
         ?? patient.worklist_view_state.active_agents
         ?? [];
       const activeBlockerCount = patient.blockers.items.filter(
-        (b) => b.status === 'ACTIVE'
+        (b) => blockerStatusOverride[b.blocker_id] === 'ACTIVE'
       ).length;
       const decisionsNeeded = patient.proposed_actions.items.filter(
-        (a) => a.status === 'PROPOSED'
+        (a) => actionStatusOverride[a.action_id] === 'PROPOSED'
       ).length;
-      const deadline = getMostUrgentDeadline(patient);
+      const deadline = getMostUrgentDeadline(patient, blockerStatusOverride);
+
+      const statusChips: string[] = [];
+      const subTags: string[] = [];
+      for (const blocker of patient.blockers.items) {
+        if (blockerStatusOverride[blocker.blocker_id] !== 'ACTIVE') continue;
+        statusChips.push(blockerParentChip(blocker.type, blocker.description));
+        subTags.push(blocker.summary_line);
+        const dueTag = blockerDueSubtag(blocker.due_by_local);
+        if (dueTag) subTags.push(dueTag);
+      }
+
+      const groupedBlockers = groupChips(statusChips, subTags);
+      const los = buildLosSummary(patient);
+      const timelineReferenceMs = getTimelineReferenceMs(patient, stateId);
+      const timelineEntries = buildTimelineEntries(patient, {
+        blockerStatusOverride,
+        currentStateId: stateId,
+        sortMode: 'blocker-first',
+        includeEncounterFallback: true
+      });
+
+      const lastUpdatedValue = snapshot?.timestamp_local ?? patient.meta.as_of_local ?? null;
+      const lastUpdatedLabel = lastUpdatedValue
+        ? formatTimelineTimestamp(lastUpdatedValue, timelineReferenceMs)
+        : null;
 
       return {
         patient,
@@ -82,10 +175,18 @@ export default function Worklist({
         decisionsNeeded,
         agentCount: activeAgents.length,
         agentFailCount: activeAgents.filter(a => a.status === 'error').length,
-        activeBlockerCount
+        activeBlockerCount,
+        blockerStatusOverride,
+        actionStatusOverride,
+        groupedBlockers,
+        losLabel: los.label,
+        losDeltaClass: los.cls,
+        timelineEntries,
+        timelineReferenceMs,
+        lastUpdatedLabel
       };
     }),
-    [patients, stateByPatientId]
+    [patients, stateByPatientId, actionStatusById, blockerStatusById]
   );
 
   // Group by bucket, sorted by deadline within each group
@@ -144,7 +245,22 @@ export default function Worklist({
 
               <ul className="worklist-group-list">
                 {groupCards.map((card) => {
-                  const { patient, deadline, decisionsNeeded, agentCount, agentFailCount, activeBlockerCount } = card;
+                  const {
+                    patient,
+                    deadline,
+                    decisionsNeeded,
+                    agentCount,
+                    agentFailCount,
+                    activeBlockerCount,
+                    blockerStatusOverride,
+                    actionStatusOverride,
+                    groupedBlockers,
+                    losLabel,
+                    losDeltaClass,
+                    timelineEntries,
+                    timelineReferenceMs,
+                    lastUpdatedLabel
+                  } = card;
                   const isActive = activePatientId === patient.meta.patient_id;
                   const age = computeAge(patient.patient_profile.dob);
                   const sex = patient.patient_profile.sex ?? null;
@@ -238,8 +354,21 @@ export default function Worklist({
                                 : `${agentCount} agent${agentCount !== 1 ? 's' : ''} active`}
                             </span>
                           )}
-                        </p>
-                      )}
+                      </p>
+                    )}
+
+                      <WorklistCardTabs
+                        patient={patient}
+                        groupedBlockers={groupedBlockers}
+                        losLabel={losLabel}
+                        losDeltaClass={losDeltaClass}
+                        blockerStatusOverride={blockerStatusOverride}
+                        actionStatusById={actionStatusOverride}
+                        executionModeByAction={executionModeByAction}
+                        timelineEntries={timelineEntries}
+                        timelineReferenceMs={timelineReferenceMs}
+                        lastUpdatedLabel={lastUpdatedLabel}
+                      />
                     </li>
                   );
                 })}

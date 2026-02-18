@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type MouseEvent } from 'react';
 import type { ActionStatus, BlockerStatus, ExecutionModeDefault, PatientRecord } from '../types/mockData';
 import type { ChipGroup } from '../utils/chipGrouping';
-import { buildWorklistTimelineItems } from '../utils/worklistTimeline';
+import type { TimelineEntry } from '../utils/timelineModel';
 import { buildWorklistAgentRows } from '../utils/worklistAgents';
 import { getDispositionDisplay } from '../utils/disposition';
 import WorklistTimelineMini from './WorklistTimelineMini';
@@ -17,6 +17,8 @@ interface WorklistCardTabsProps {
   blockerStatusOverride: Record<string, BlockerStatus>;
   actionStatusById: Record<string, ActionStatus>;
   executionModeByAction: Record<string, ExecutionModeDefault>;
+  timelineEntries: TimelineEntry[];
+  timelineReferenceMs: number;
   lastUpdatedLabel?: string | null;
 }
 
@@ -70,16 +72,13 @@ export default function WorklistCardTabs({
   blockerStatusOverride,
   actionStatusById,
   executionModeByAction,
+  timelineEntries,
+  timelineReferenceMs,
   lastUpdatedLabel
 }: WorklistCardTabsProps) {
   const [activeTab, setActiveTab] = useState<WorklistCardTab>('blockers');
   const [expandedParents, setExpandedParents] = useState(false);
   const [expandedSubchips, setExpandedSubchips] = useState<Record<string, boolean>>({});
-
-  const timelineItems = useMemo(
-    () => buildWorklistTimelineItems(patient, blockerStatusOverride, 32),
-    [patient, blockerStatusOverride]
-  );
 
   const agentRows = useMemo(
     () => buildWorklistAgentRows(patient, actionStatusById, executionModeByAction, blockerStatusOverride),
@@ -91,14 +90,21 @@ export default function WorklistCardTabs({
   const hiddenParentCount = Math.max(groupedBlockers.length - visibleGroups.length, 0);
   const disposition = getDispositionDisplay(patient.patient_profile.disposition_target);
 
+  const stopRowClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
+
   return (
-    <div className="worklist-card-tabs">
+    <div className="worklist-card-tabs" onClick={stopRowClick}>
       <div className="worklist-tab-strip" role="tablist" aria-label="Patient card views">
         <button
           role="tab"
           aria-selected={activeTab === 'blockers'}
           className={`worklist-tab ${activeTab === 'blockers' ? 'worklist-tab-active' : ''}`}
-          onClick={() => setActiveTab('blockers')}
+          onClick={(event) => {
+            event.stopPropagation();
+            setActiveTab('blockers');
+          }}
         >
           Blockers
         </button>
@@ -106,7 +112,10 @@ export default function WorklistCardTabs({
           role="tab"
           aria-selected={activeTab === 'timeline'}
           className={`worklist-tab ${activeTab === 'timeline' ? 'worklist-tab-active' : ''}`}
-          onClick={() => setActiveTab('timeline')}
+          onClick={(event) => {
+            event.stopPropagation();
+            setActiveTab('timeline');
+          }}
         >
           Timeline
         </button>
@@ -114,7 +123,10 @@ export default function WorklistCardTabs({
           role="tab"
           aria-selected={activeTab === 'agents'}
           className={`worklist-tab ${activeTab === 'agents' ? 'worklist-tab-active' : ''}`}
-          onClick={() => setActiveTab('agents')}
+          onClick={(event) => {
+            event.stopPropagation();
+            setActiveTab('agents');
+          }}
         >
           Active agents
         </button>
@@ -151,9 +163,10 @@ export default function WorklistCardTabs({
                             <button
                               className="subchip-toggle"
                               aria-expanded={subchipExpanded}
-                              onClick={() =>
-                                setExpandedSubchips((previous) => ({ ...previous, [subchipKey]: true }))
-                              }
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setExpandedSubchips((previous) => ({ ...previous, [subchipKey]: true }));
+                              }}
                             >
                               +{hiddenTagCount} more
                             </button>
@@ -162,9 +175,10 @@ export default function WorklistCardTabs({
                             <button
                               className="subchip-toggle"
                               aria-expanded={subchipExpanded}
-                              onClick={() =>
-                                setExpandedSubchips((previous) => ({ ...previous, [subchipKey]: false }))
-                              }
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setExpandedSubchips((previous) => ({ ...previous, [subchipKey]: false }));
+                              }}
                             >
                               Show less
                             </button>
@@ -179,13 +193,23 @@ export default function WorklistCardTabs({
                   <button
                     className="subchip-toggle worklist-parent-toggle"
                     aria-expanded={expandedParents}
-                    onClick={() => setExpandedParents(true)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setExpandedParents(true);
+                    }}
                   >
                     +{hiddenParentCount} more blockers
                   </button>
                 )}
                 {expandedParents && groupedBlockers.length > 2 && (
-                  <button className="subchip-toggle worklist-parent-toggle" aria-expanded onClick={() => setExpandedParents(false)}>
+                  <button
+                    className="subchip-toggle worklist-parent-toggle"
+                    aria-expanded
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setExpandedParents(false);
+                    }}
+                  >
                     Show fewer blockers
                   </button>
                 )}
@@ -219,7 +243,9 @@ export default function WorklistCardTabs({
           </div>
         )}
 
-        {activeTab === 'timeline' && <WorklistTimelineMini items={timelineItems} />}
+        {activeTab === 'timeline' && (
+          <WorklistTimelineMini entries={timelineEntries} referenceMs={timelineReferenceMs} />
+        )}
         {activeTab === 'agents' && <WorklistAgentsMini agents={agentRows} />}
       </div>
     </div>
